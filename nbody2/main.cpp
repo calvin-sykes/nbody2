@@ -10,7 +10,11 @@
 #include "Error.h"
 
 #include <sstream>
+
+#ifdef WINDOWS
 #include <Windows.h>
+#endif
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Main.hpp>
 
@@ -399,7 +403,12 @@ int main()
 	}
 	catch (Error e)
 	{
+#ifdef _WINDOWS_
 		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
+#else
+		std::cout << e.what();
+#endif
+
 		return 1;
 	}
 	/*catch (...)
