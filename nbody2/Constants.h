@@ -1,5 +1,10 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+
+#ifdef _WIN32
+#define NBOS_WINDOWS
+#endif
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "Vector.h"

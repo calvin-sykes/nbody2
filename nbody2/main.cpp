@@ -10,8 +10,9 @@
 #include "Error.h"
 
 #include <sstream>
+#include <memory>
 
-#ifdef WINDOWS
+#ifdef NBOS_WINDOWS
 #include <Windows.h>
 #endif
 
@@ -403,7 +404,7 @@ int main()
 	}
 	catch (Error e)
 	{
-#ifdef _WINDOWS_
+#ifdef NBOS_WINDOWS
 		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
 #else
 		std::cout << e.what();

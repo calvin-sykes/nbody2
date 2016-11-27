@@ -57,5 +57,5 @@ namespace nbody
 	};
 }
 
-#endif BODY2D_H
+#endif // BODY2D_H
 
