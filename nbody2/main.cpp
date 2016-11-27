@@ -52,9 +52,9 @@ namespace nbody
 #else
 		sf::ContextSettings settings;
 		settings.antialiasingLevel = 8;
-		auto mode = sf::VideoMode().getFullscreenModes()[0];
-		sf::RenderWindow window(mode, "nbody2", sf::Style::Fullscreen, settings);
-		//sf::RenderWindow window(sf::VideoMode(1600, 900), "nbody2");
+		//auto mode = sf::VideoMode().getFullscreenModes()[0];
+		//sf::RenderWindow window(mode, "nbody2", sf::Style::Fullscreen, settings);
+		sf::RenderWindow window(sf::VideoMode(1600, 900), "nbody2");
 #endif
 		sf::Image icon;
 		if (!icon.loadFromFile(ICON_FNAME))
