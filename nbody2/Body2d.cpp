@@ -64,7 +64,7 @@ namespace nbody
 			gfx.setPosition(screen_x, screen_y);
 			if (show_trails)
 				trail.update(pos);
-			auto scale = max(-log2(screen_scale), 1.f);
+			auto scale = max(static_cast<float>(-std::log2(screen_scale)), 1.f);
 			gfx.setScale(scale, scale);
 			auto v_mag = vel.mag();
 			auto phase = min(PI / 2., (v_mag / 100000.) * (PI / 2.));
