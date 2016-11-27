@@ -26,3 +26,6 @@ build:
 debug:
 	cd nbody2; \
 	$(CC) -ggdb -O0 $(FLAGS) $(BUILD_CMD)
+	
+clean:
+	cd nbody2 && rm *.o
