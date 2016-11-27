@@ -4,7 +4,7 @@
 #include "AssetManager.h"
 
 #include "imgui.h"
-#include "imgui-sfml.h"
+#include "imgui_sfml.h"
 
 #include <stack>
 

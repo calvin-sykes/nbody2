@@ -1,4 +1,4 @@
-#include "imgui-sfml.h"
+#include "imgui_sfml.h"
 #include "imgui.h"
 
 #include <SFML/OpenGL.hpp>
