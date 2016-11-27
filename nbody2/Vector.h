@@ -6,11 +6,6 @@
 #include <SFML\System\Vector2.hpp>
 #include <SFML\System\Vector3.hpp>
 
-#include <algorithm>
-#include <initializer_list>
-#include <type_traits>
-#include <iostream>
-
 namespace nbody
 {
 	template <typename T, size_t N>
@@ -37,12 +32,12 @@ namespace nbody
 		// Construct from an SFML vector (2D)
 		template <typename Tin, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 2)>::type>
 		Vector(sf::Vector2<Tin> const& source) :
-			Components<T, 2>{ static_cast<T>(source.x), static_cast<T>(source.y) } {};
+			Components<T, 2>(static_cast<T>(source.x), static_cast<T>(source.y)) {};
 
 		// Construct from an SFML vector (3D)
 		template <typename Tin, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 3)>::type>
 		Vector(sf::Vector3<Tin> const& source) :
-			Components<T, 2>{ static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z) } {};
+			Components<T, 3>( static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z)) {};
 
 		// Copy-construct a vector
 		Vector(Vector const& source) noexcept = default;
@@ -57,14 +52,14 @@ namespace nbody
 		template <typename Tout, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 2)>::type>
 		operator sf::Vector2<Tout>()
 		{
-			return{ static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]) };
+			return { static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]) };
 		}
 
 		// Conversion to SFML vector (3D)
-		template <typename Tout, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 2)>::type>
+		template <typename Tout, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 3)>::type>
 		operator sf::Vector3<Tout>()
 		{
-			return{ static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]), static_cast<Tout>(a_[2]) };
+			return { static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]), static_cast<Tout>(a_[2]) };
 		}
 
 		///////////////////////////

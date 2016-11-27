@@ -24,8 +24,8 @@ struct Components<T, 2>
 	};
 
 	Components() = default;
-	Components(T const val) : a{ val } {};
-	Components(T const x, T const y) : x(x), y(y) {};
+	Components(T const val) : a_{ val } {};
+	Components(T const x, T const y) : a_{ x, y } {};
 };
 
 template <typename T>
@@ -42,8 +42,8 @@ struct Components<T, 3>
 	};
 
 	Components() = default;
-	Components(T const val) : a{ val } {};
-	Components(T const x, T const y, T const z) : x(x), y(y), z(z) {};
+	Components(T const val) : a_{ val } {};
+	Components(T const x, T const y, T const z) : a_{ x, y, z } {};
 };
 
 #endif // COMPONENTS_H
