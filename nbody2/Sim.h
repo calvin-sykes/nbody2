@@ -3,12 +3,12 @@
 
 #include "AssetManager.h"
 
+#include "imgui.h"
+#include "imgui-sfml.h"
+
 #include <stack>
 
 #include <SFML/Graphics.hpp>
-
-#include <imgui.h>
-#include <imgui-sfml.h>
 
 
 namespace nbody

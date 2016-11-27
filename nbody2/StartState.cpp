@@ -8,7 +8,7 @@
 
 namespace ImGui
 {
-	bool CentredButton(char * label, ImVec2 const& size)
+	bool CentredButton(char const* label, ImVec2 const& size)
 	{
 		// Count number of carriage returns //
 		size_t n_lines = 0;
