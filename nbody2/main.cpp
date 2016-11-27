@@ -24,10 +24,10 @@
 
 namespace nbody
 {
-	float extern screen_scale = 1;
-	float extern aspect_ratio = 0;
-	Vector2f extern screen_size = {};
-	Vector2f extern screen_offset = {};
+	float screen_scale = 1;
+	float aspect_ratio = 0;
+	Vector2f screen_size = {};
+	Vector2f screen_offset = {};
 
 	std::unique_ptr<std::array<Body2d, N_MAX>> generateBodies();
 	BHTree* buildTree(size_t const n, std::array<Body2d, N_MAX> const* bodies, Quad const& root);

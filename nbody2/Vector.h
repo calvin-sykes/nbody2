@@ -4,6 +4,7 @@
 #include "Components.h"
 
 #include <limits>
+#include <cmath>
 
 
 #include <SFML/System/Vector2.hpp>
