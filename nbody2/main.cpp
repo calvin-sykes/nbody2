@@ -10,18 +10,24 @@
 #include "Error.h"
 
 #include <sstream>
+#include <memory>
+
+#ifdef NBOS_WINDOWS
 #include <Windows.h>
+#endif
+
 #include <SFML/Graphics.hpp>
+#include <SFML/Main.hpp>
 
 #define ICON_FNAME "media/sfml.png"
 #define FONT_FNAME "media/segoeui.ttf"
 
 namespace nbody
 {
-	float extern screen_scale = 1;
-	float extern aspect_ratio = 0;
-	Vector2f extern screen_size = {};
-	Vector2f extern screen_offset = {};
+	float screen_scale = 1;
+	float aspect_ratio = 0;
+	Vector2f screen_size = {};
+	Vector2f screen_offset = {};
 
 	std::unique_ptr<std::array<Body2d, N_MAX>> generateBodies();
 	BHTree* buildTree(size_t const n, std::array<Body2d, N_MAX> const* bodies, Quad const& root);
@@ -193,6 +199,7 @@ namespace nbody
 					if (view_dragging)
 					{
 						view_dragging = false;
+#ifdef NBOS_WINDOWS
 						// reset mouse to screen centre
 						auto hwnd = window.getSystemHandle();
 						RECT wnd_area;
@@ -200,6 +207,7 @@ namespace nbody
 						ClientToScreen(hwnd, (LPPOINT)&wnd_area + 1);
 						POINT sz = *(LPPOINT(&wnd_area) + 1);
 						SetCursorPos(sz.x / 2, sz.y / 2);
+#endif
 					}
 					break;
 				}
@@ -385,10 +393,7 @@ int main2()
 	return 0;
 }
 
-//#include <imgui.h>
-//#include <imgui-sfml.h>
-
-int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
+int main(int argc, char** argv)
 {
 	//AllocConsole();
 	//AttachConsole(GetCurrentProcessId());
@@ -396,18 +401,23 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 
 	try
 	{
-		//mainBH();
-		main2();
+		mainBH();
+		//main2();
 	}
 	catch (Error e)
 	{
+#ifdef NBOS_WINDOWS
 		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
+#else
+		std::cout << e.what();
+#endif
+
 		return 1;
 	}
-	/*catch (...)
+	catch (...)
 	{
 		std::cout << "Something happened...";
 		return 1;
-	}*/
+	}
 	return 0;
 }

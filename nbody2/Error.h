@@ -17,7 +17,7 @@ namespace nbody
 		Error(const std::string& msgIn, const std::string& fileIn, const std::string& funcIn, const int lineIn) :
 			std::runtime_error(msgIn), file(fileIn), func(funcIn), line(lineIn) {};
 
-		virtual const char* what() const
+		virtual const char* what() const noexcept
 		{
 			std::ostringstream builder;
 			builder << "ERROR: " << std::runtime_error::what() << "\nFile: " << file << " at: " << func << ":" << line;
