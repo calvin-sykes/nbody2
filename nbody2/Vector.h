@@ -3,6 +3,9 @@
 
 #include "Components.h"
 
+#include <limits>
+
+
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
 
@@ -13,6 +16,7 @@ namespace nbody
 	{
 		// import constructors of underlying storage
 		using Components<T, N>::Components;
+		using Components<T, N>::a_;
 
 		// Prevent instantiation of vectors of non-numerical types, for which arithmetic operators are not defined
 		static_assert(std::is_arithmetic<T>::value, "Vector element type must be a numerical type.");
@@ -102,7 +106,7 @@ namespace nbody
 		// Magnitude
 		T mag() const
 		{
-			return sqrt(mag_sq());
+			return std::sqrt(mag_sq());
 		}
 
 		// Magnitude squared
@@ -138,8 +142,8 @@ namespace nbody
 			bool equal = true;
 			for (size_t i = 0; i < N; i++)
 			{
-				equal &= fabs(a_[i] - rhs.a_[i]) <
-					std::numeric_limits<T>().epsilon() * max(fabs(a_[i]), fabs(rhs.a_[i]));
+				equal &= std::abs(a_[i] - rhs.a_[i]) <
+					std::numeric_limits<T>().epsilon() * max(std::abs(a_[i]), std::abs(rhs.a_[i]));
 			}
 			return equal;
 		}
@@ -153,7 +157,7 @@ namespace nbody
 		// Element access
 		T const& operator[](size_t index)
 		{
-			return a_[i];
+			return a_[index];
 		}
 	};
 

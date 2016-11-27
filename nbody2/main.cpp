@@ -10,8 +10,9 @@
 #include "Error.h"
 
 #include <sstream>
+#include <memory>
 
-#ifdef WINDOWS
+#ifdef NBOS_WINDOWS
 #include <Windows.h>
 #endif
 
@@ -198,6 +199,7 @@ namespace nbody
 					if (view_dragging)
 					{
 						view_dragging = false;
+#ifdef NBOS_WINDOWS
 						// reset mouse to screen centre
 						auto hwnd = window.getSystemHandle();
 						RECT wnd_area;
@@ -205,6 +207,7 @@ namespace nbody
 						ClientToScreen(hwnd, (LPPOINT)&wnd_area + 1);
 						POINT sz = *(LPPOINT(&wnd_area) + 1);
 						SetCursorPos(sz.x / 2, sz.y / 2);
+#endif
 					}
 					break;
 				}
@@ -403,7 +406,7 @@ int main()
 	}
 	catch (Error e)
 	{
-#ifdef _WINDOWS_
+#ifdef NBOS_WINDOWS
 		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
 #else
 		std::cout << e.what();
