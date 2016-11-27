@@ -12,6 +12,7 @@
 #include <sstream>
 #include <Windows.h>
 #include <SFML/Graphics.hpp>
+#include <SFML/Main.hpp>
 
 #define ICON_FNAME "media/sfml.png"
 #define FONT_FNAME "media/segoeui.ttf"
@@ -385,10 +386,7 @@ int main2()
 	return 0;
 }
 
-//#include <imgui.h>
-//#include <imgui-sfml.h>
-
-int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
+int main()
 {
 	//AllocConsole();
 	//AttachConsole(GetCurrentProcessId());
