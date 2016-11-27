@@ -393,7 +393,7 @@ int main2()
 	return 0;
 }
 
-int main()
+int main(int argc, char** argv)
 {
 	//AllocConsole();
 	//AttachConsole(GetCurrentProcessId());
@@ -401,8 +401,8 @@ int main()
 
 	try
 	{
-		//mainBH();
-		main2();
+		mainBH();
+		//main2();
 	}
 	catch (Error e)
 	{
@@ -414,10 +414,10 @@ int main()
 
 		return 1;
 	}
-	/*catch (...)
+	catch (...)
 	{
 		std::cout << "Something happened...";
 		return 1;
-	}*/
+	}
 	return 0;
 }
