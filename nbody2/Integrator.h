@@ -11,9 +11,9 @@ namespace nbody
 
 		Integrator() = default;
 
-		~Integrator() = default;
+		virtual ~Integrator() = default;
 
-		inline virtual void step(const size_t id, Vector2d& pos, Vector2d& vel, const Vector2d& accel, const double dt) const = 0;
+		virtual void step(const size_t id, Vector2d& pos, Vector2d& vel, const Vector2d& accel, const double dt) const = 0;
 	};
 
 	class EulerIntegrator : public Integrator
