@@ -390,9 +390,9 @@ int main2()
 
 int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
 {
-	/*AllocConsole();
-	AttachConsole(GetCurrentProcessId());
-	freopen("CON", "w", stdout);*/
+	//AllocConsole();
+	//AttachConsole(GetCurrentProcessId());
+	//freopen("CON", "w", stdout);
 
 	try
 	{
@@ -404,46 +404,10 @@ int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszA
 		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
 		return 1;
 	}
-	catch (...)
+	/*catch (...)
 	{
 		std::cout << "Something happened...";
 		return 1;
-	}
+	}*/
 	return 0;
-
-	/*sf::RenderWindow window(sf::VideoMode(640, 480), "");
-	window.setVerticalSyncEnabled(true);
-	ImGui::SFML::Init(window);
-
-	sf::Color bgColor;
-
-	float color[3] = { 0.f, 0.f, 0.f };
-
-	// let's use char array as buffer, see next part
-	// for instructions on using std::string with ImGui
-	char windowTitle[255] = "ImGui + SFML = <3";
-
-	window.setTitle(windowTitle);
-	window.resetGLStates();
-	sf::Clock deltaClock;
-	while (window.isOpen()) {
-		sf::Event event;
-		while (window.pollEvent(event)) {
-			ImGui::SFML::ProcessEvent(event);
-
-			if (event.type == sf::Event::Closed) {
-				window.close();
-			}
-		}
-
-		ImGui::SFML::Update(window, deltaClock.restart());
-
-		ImGui::ShowTestWindow();
-
-		window.clear(bgColor); // fill background with color
-		ImGui::Render();
-		window.display();
-	}
-
-	ImGui::SFML::Shutdown();*/
 }

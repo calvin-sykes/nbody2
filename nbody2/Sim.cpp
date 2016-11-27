@@ -29,14 +29,23 @@ namespace nbody
 		// Set background texture
 		this->background.setTexture(this->asset_mgr.getTextureRef("background"));
 		this->background.setScale(
-			float(WINDOW_W) / float(this->background.getTexture()->getSize().x),
-			float(WINDOW_H) / float(this->background.getTexture()->getSize().y));
+			float(window.getSize().x) / float(this->background.getTexture()->getSize().x),
+			float(window.getSize().y) / float(this->background.getTexture()->getSize().y));
 		// Set window icon
 		auto icon_image = this->asset_mgr.getTextureRef("icon").copyToImage();
 		this->window.setIcon(icon_image.getSize().x, icon_image.getSize().y, icon_image.getPixelsPtr());
 		// Initialise GUI
 		ImGui::SFML::Init(window);
-		// Remove once SFML drawing functions have been added
+
+		// Load font
+/*		ImGuiIO & io = ImGui::GetIO();
+
+		io.Fonts->AddFontFromFileTTF("media/segoeui.ttf", 12);
+		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+		sf::Texture font_tex;
+		font_tex.loadFromMemory(pixels, width * height);
+		ImGui::SFML::setFontTexture(font_tex);
+*/
 	}
 
 	Sim::~Sim()
@@ -45,7 +54,7 @@ namespace nbody
 		// Clean up GUI
 		ImGui::SFML::Shutdown();
 	}
-	
+
 	void Sim::pushState(SimState* state)
 	{
 		this->states.push(state);
@@ -69,7 +78,7 @@ namespace nbody
 		if (this->states.empty()) return nullptr;
 		else return this->states.top();
 	}
-	
+
 	void Sim::loadTextures()
 	{
 		asset_mgr.loadTexture("background", "media/background.png");

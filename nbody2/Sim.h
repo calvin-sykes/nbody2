@@ -37,6 +37,9 @@ namespace nbody
 	private:
 		std::stack<SimState*> states;
 
+		unsigned char* pixels;
+		int width, height;
+
 		
 	};
 }
