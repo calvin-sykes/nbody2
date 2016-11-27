@@ -3,7 +3,7 @@
 
 namespace nbody
 {
-	StaticFont Quad::label_font("segoeui.ttf");
+	StaticFont Quad::label_font("media/segoeui.ttf");
 	
 	Quad::Quad(const double x_midIn, const double y_midIn, const double lengthIn) : mid_point{ x_midIn, y_midIn }, length(lengthIn)
 	{

@@ -13,8 +13,8 @@
 #include <Windows.h>
 #include <SFML/Graphics.hpp>
 
-#define ICON_FNAME "sfml.png"
-#define FONT_FNAME "segoeui.ttf"
+#define ICON_FNAME "media/sfml.png"
+#define FONT_FNAME "media/segoeui.ttf"
 
 namespace nbody
 {
@@ -172,7 +172,7 @@ namespace nbody
 					{
 						prev_mouse_pos = new_mouse_pos;
 						new_mouse_pos = sf::Vector2i(e.mouseMove.x, e.mouseMove.y);
-						screen_offset += new_mouse_pos - prev_mouse_pos;//{new_mouse_pos.x - prev_mouse_pos.x, new_mouse_pos.y - prev_mouse_pos.y};
+						screen_offset += new_mouse_pos - prev_mouse_pos;
 					}
 					break;
 				}
@@ -385,8 +385,8 @@ int main2()
 	return 0;
 }
 
-#include <imgui.h>
-#include <imgui-sfml.h>
+//#include <imgui.h>
+//#include <imgui-sfml.h>
 
 int WINAPI WinMain(HINSTANCE hThisInstance, HINSTANCE hPrevInstance, LPSTR lpszArgument, int nCmdShow)
 {

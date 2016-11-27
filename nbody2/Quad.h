@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector.h"
+#include "Error.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -11,7 +12,7 @@ namespace nbody
 		StaticFont(const char *fn)
 		{
 			if (!font.loadFromFile(fn))
-				throw "Font loading failed.";
+				throw MAKE_ERROR("Font loading failed.");
 		}
 
 		operator sf::Font()
