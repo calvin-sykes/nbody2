@@ -42,7 +42,7 @@ namespace ImGui
 			strcpy(lines[n_lines++], pch);
 			pch = strtok(nullptr, "\n");
 		}
-		
+
 		// figure out length of each line and find the maximum length
 		size_t* line_lens = new size_t[n_lines];
 		size_t max_len = 0;
@@ -116,12 +116,11 @@ namespace nbody
 
 	void StartState::draw(sf::Time const dt)
 	{
+		this->sim->window.resetGLStates();
 		this->sim->window.setView(this->view);
 		this->sim->window.clear(sf::Color::Black);
 		this->sim->window.draw(this->sim->background);
-
 		ImGui::Render();
-		this->sim->window.resetGLStates();
 	}
 
 	void StartState::update(sf::Time const dt)
@@ -130,45 +129,44 @@ namespace nbody
 
 		SFML::Update(this->sim->window, dt);
 
-		if (this->menu_state == MenuState::INITIAL)
+		SetNextWindowPosCenter();
+		SetNextWindowSize(ImVec2{ 500, 300 });
+		Begin("N-body Simulator", 0, this->window_flags);
+		Dummy({ GetContentRegionAvailWidth(), 50 });
+		BeginGroup();
+		if (CentredButton("Load existing\ninitial conditions", { GetContentRegionAvailWidth() * 0.5f, 50 }))
 		{
-			SetNextWindowPosCenter();
-			SetNextWindowSize(ImVec2{ 500, 300 });
-			Begin("N-body Simulator", 0, this->window_flags);
-			Dummy({ GetContentRegionAvailWidth(), 50 });
-			BeginGroup();
-			if (CentredButton("Load existing\ninitial conditions", { GetContentRegionAvailWidth() * 0.5f, 50 }))
-			{
-				this->menu_state = MenuState::LOAD_EXISTING;
-			}
-			SameLine();
-			if (CentredButton("Generate new\ninitial conditions", { GetContentRegionAvailWidth(), 50 }))
-			{
-				this->menu_state = MenuState::CREATE_NEW;
-			}
-			EndGroup();
-			Dummy({ GetContentRegionAvailWidth(), 50 });
-			Dummy({ GetContentRegionAvailWidth() / 3, 50 });
-			SameLine();
-			if (Button("Quit", { GetContentRegionAvailWidth() * 0.5f, 50 }))
-			{
-				this->sim->window.close();
-			}
-			End();
+			this->menu_state = MenuState::LOAD_EXISTING;
 		}
-		else if (this->menu_state == MenuState::CREATE_NEW)
+		SameLine();
+		if (CentredButton("Generate new\ninitial conditions", { GetContentRegionAvailWidth(), 50 }))
 		{
-			SetNextWindowPosCenter();
-			SetNextWindowSize(ImVec2{ 700, 500 });
-			
-			bool persist = true;
+			this->menu_state = MenuState::CREATE_NEW;
+		}
+		EndGroup();
+		Dummy({ GetContentRegionAvailWidth(), 50 });
+		Dummy({ GetContentRegionAvailWidth() / 3, 50 });
+		SameLine();
+		if (Button("Quit", { GetContentRegionAvailWidth() * 0.5f, 50 }))
+		{
+			this->sim->window.close();
+		}
+		End();
 
-			Begin("N-body Simulator | Generate initial conditions", &persist, this->window_flags);
-			Text("Do stuff here.");
-			End();
-
-			if (!persist)
-				this->menu_state = MenuState::INITIAL;
+		if (this->menu_state == MenuState::CREATE_NEW)
+		{
+			modal_is_open = true;
+			OpenPopup("Generate initial conditions");
+			if (BeginPopupModal("Generate initial conditions", &modal_is_open, window_flags))
+			{
+				Text("Do stuff here");
+				EndPopup();
+			}
+			if (!modal_is_open)
+			{
+				menu_state = MenuState::INITIAL;
+				CloseCurrentPopup();
+			}
 		}
 	}
 

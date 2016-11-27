@@ -401,8 +401,8 @@ int main(int argc, char** argv)
 
 	try
 	{
-		mainBH();
-		//main2();
+		//mainBH();
+		main2();
 	}
 	catch (Error e)
 	{

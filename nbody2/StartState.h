@@ -28,6 +28,7 @@ namespace nbody
 		sf::View view;
 
 		MenuState menu_state;
+		bool modal_is_open;
 		ImGuiWindowFlags window_flags;
 		ImGuiStyle& style;
 
