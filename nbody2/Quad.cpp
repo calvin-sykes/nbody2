@@ -3,7 +3,7 @@
 
 namespace nbody
 {
-	StaticFont Quad::label_font("segoeui.ttf");
+	StaticFont Quad::label_font("media/segoeui.ttf");
 	
 	Quad::Quad(const double x_midIn, const double y_midIn, const double lengthIn) : mid_point{ x_midIn, y_midIn }, length(lengthIn)
 	{
@@ -43,7 +43,7 @@ namespace nbody
 	{
 		auto x_direction = (which >> 0) & 1 ? 1 : -1;
 		auto y_direction = (which >> 1) & 1 ? 1 : -1;
-		return Quad(mid_point.x + x_direction * length / 4, mid_point.y + y_direction * length / 4, length / 2);
+		return Quad(mid_point.x + x_direction * length * 0.25, mid_point.y + y_direction * length * 0.25, length * 0.5);
 	}
 
 	void Quad::updateGfx(const size_t level)
