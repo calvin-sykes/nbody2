@@ -1,12 +1,15 @@
 #ifndef SIM_H
 #define SIM_H
 
-#include "AssetManager.h"
+#include "Body2d.h"
 
+#include "AssetManager.h"
 #include "imgui.h"
 #include "imgui_sfml.h"
 
 #include <stack>
+#include <map>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
@@ -29,6 +32,9 @@ namespace nbody
 		void loadTextures();
 
 		void simLoop();
+
+		double static constexpr SOLAR_MASS = 1.98892E30;
+		double static constexpr RADIUS = 1E18;
 		
 		sf::RenderWindow window;
 		AssetManager asset_mgr;
@@ -37,10 +43,7 @@ namespace nbody
 	private:
 		std::stack<SimState*> states;
 
-		unsigned char* pixels;
-		int width, height;
-
-		
+		std::vector<Body2d> bodies;
 	};
 }
 #endif // SIM_H

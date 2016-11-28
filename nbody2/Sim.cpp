@@ -36,16 +36,6 @@ namespace nbody
 		this->window.setIcon(icon_image.getSize().x, icon_image.getSize().y, icon_image.getPixelsPtr());
 		// Initialise GUI
 		ImGui::SFML::Init(window);
-
-		// Load font
-/*		ImGuiIO & io = ImGui::GetIO();
-
-		io.Fonts->AddFontFromFileTTF("media/segoeui.ttf", 12);
-		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
-		sf::Texture font_tex;
-		font_tex.loadFromMemory(pixels, width * height);
-		ImGui::SFML::setFontTexture(font_tex);
-*/
 	}
 
 	Sim::~Sim()
