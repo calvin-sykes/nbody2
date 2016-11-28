@@ -308,8 +308,8 @@ namespace nbody
 		auto dist2 = ExponentialDistributor(r2, cm2, -1.8, pos2, vel2);
 		//auto dist1 = PlummerDistributor(r1, cm1, n1, pos1, vel1);
 		//auto dist2 = PlummerDistributor(r2, cm2, n2, pos2, vel2);
-		//auto dist1 = UniformDistributor(r1, cm1, pos1, vel1);
-		//auto dist2 = UniformDistributor(r2, cm2, pos2, vel2);
+		//auto dist1 = IsothermalDistributor(r1, cm1, pos1, vel1);
+		//auto dist2 = IsothermalDistributor(r2, cm2, pos2, vel2);
 		for (size_t i = 0; i < n1; i++)
 			(*bodies)[i] = dist1.sample();
 		// central mass

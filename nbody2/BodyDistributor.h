@@ -13,13 +13,14 @@ namespace nbody
 	{
 		// Calculate the sign of a value
 		// Returns -1 if val < 0, +1 if val > 0, and 0 if val == 0 
-		template <typename T> int sgn(T val)
+		template <typename T>
+		static int sgn(T val)
 		{
 			return (T(0) < val) - (val < T(0));
 		}
 
 		// Calculate the circular velocity at radius r around a mass central_mass
-		Vector2d vCirc(const Vector2d& r_, const double central_mass)
+		static Vector2d vCirc(const Vector2d& r_, const double central_mass)
 		{
 			auto mag_v = sqrt(G * central_mass / r_.mag());
 			auto angle_v = atan(abs(r_.y / r_.x));
@@ -30,6 +31,15 @@ namespace nbody
 	}
 
 	using namespace detail;
+
+	enum class DistributorType
+	{
+		EXPONENTIAL,
+		ISOTHERMAL,
+		PLUMMER,
+		N_DISTRIBUTIONS,
+		INVALID = -1
+	};
 
 	class BodyDistributor
 	{
@@ -80,10 +90,10 @@ namespace nbody
 		double lambda;
 	};
 
-	class UniformDistributor : public BodyDistributor
+	class IsothermalDistributor : public BodyDistributor
 	{
 	public:
-		UniformDistributor(const double radiusIn, const double central_massIn, const Vector2d& pos_offIn = Vector2d(), const Vector2d& vel_offIn = Vector2d())
+		IsothermalDistributor(const double radiusIn, const double central_massIn, const Vector2d& pos_offIn = Vector2d(), const Vector2d& vel_offIn = Vector2d())
 			: BodyDistributor(radiusIn, central_massIn, pos_offIn, vel_offIn) {}
 
 		virtual Body2d sample() const
