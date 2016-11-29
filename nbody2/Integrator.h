@@ -5,6 +5,19 @@
 
 namespace nbody
 {
+	enum class IntegratorType
+	{
+		EULER,
+		N_INTEGRATORS,
+		INVALID = -1
+	};
+
+	struct IntegratorProperties
+	{
+		IntegratorType const type;
+		char const* name;
+	};
+	
 	class Integrator
 	{
 	public:

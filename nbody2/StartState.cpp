@@ -115,8 +115,11 @@ namespace nbody
 		// Centre-align the GUI window titles
 		this->style.WindowTitleAlign = { 0.5f, 0.5f };
 
-		// Initialise empty container for BodyGroupProperties
+		// Initialise empty container for properties associated with a group of bodies
 		this->bg_props = {};
+
+		// Initialise 'global' (sim-wide) properties
+		this->sim_props = {};
 
 		// Start at the initial menu, which prompts to load or create
 		// a set of initial conditions
@@ -231,6 +234,7 @@ namespace nbody
 	{
 
 	}
+
 	void StartState::GenerateWindow()
 	{
 		using namespace ImGui;
@@ -266,12 +270,11 @@ namespace nbody
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
 				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, this->sim->MAX_N);
 				PopItemWidth();
-				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, [](int sum, BodyGroupProperties const& b) -> int { return sum + b.N; });
+				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, [](/*int*/ auto sum, auto const& b) -> int { return sum + b.N; });
 				// too many bodies, need to redistribute them
 				if (n_total > this->sim->MAX_N)
 				{
-					// if too many, steal from previous
-					// except if first, then steal from last
+					// if too many, steal from previous, except if first, then steal from last
 					// if more need to be stolen than are available, move to next
 					auto n_excess = n_total - static_cast<int>(this->sim->MAX_N);
 					size_t j = 1;
@@ -296,7 +299,6 @@ namespace nbody
 							j++;
 						}
 					}
-
 				}
 				// Distributor combobox
 				SameLine();
@@ -351,7 +353,7 @@ namespace nbody
 				if (Button("Position/velocity...", { 0.5f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					SetNextWindowPos({ 400, 400 });
+					SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Position/velocity settings");
 				}
@@ -366,7 +368,7 @@ namespace nbody
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
-					SetNextWindowSize({ 250, 150 });
+					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Colour settings");
 				}
 				if (BeginPopupModal("Colour settings", &l2_modal_is_open, window_flags))
@@ -381,12 +383,31 @@ namespace nbody
 			EndChild(); // groups
 
 			Separator();
+			
+			BeginGroup();
+			// Integrator combobox
+			auto sel_int = (int*)(&this->sim_props.int_type);
+			Combo("Integrator", sel_int, getIntegratorName,
+				(void*)(this->integrator_infos.data()), static_cast<int>(this->integrator_infos.size()));
+			// Evolution method combobox
+			auto sel_ev = (int*)(&this->sim_props.ev_type);
+			Combo("Algorithm", sel_ev, getEvolveName,
+				(void*)(this->evolve_infos.data()), static_cast<int>(this->evolve_infos.size()));
+			if (IsItemHovered() && *sel_ev != -1)
+			{
+				BeginTooltip();
+				PushTextWrapPos(200);
+				TextWrapped(this->evolve_infos[*sel_ev].tooltip);
+				PopTextWrapPos();
+				EndTooltip();
+			}
+			EndGroup();
+			SameLine();
 			Dummy({ GetContentRegionAvailWidth() - 30, 0 });
 			SameLine();
-
 			// Add/remove buttons
 			BeginGroup();
-			PushItemWidth(-1);
+			//PushItemWidth(-1);
 			if (Button("+"))
 			{
 				this->bg_props.emplace_back(BodyGroupProperties());
@@ -399,10 +420,10 @@ namespace nbody
 				this->tmp_use_relative_coords.pop_back();
 				this->tmp_cols.pop_back();
 			}
-			PopItemWidth();
+			//PopItemWidth();
 			EndGroup(); // Add/remove buttons
 
-			EndPopup();
+			EndPopup(); // Generate initial conditions
 		}
 	}
 
@@ -456,7 +477,7 @@ namespace nbody
 		Vector2d static input_vel;
 		Checkbox("Use relative coordinates", (bool*)&this->tmp_use_relative_coords[idx]);
 		SameLine();
-		ShowHelpMarker("If checked, positions and velocities entered will be scaled by the universe radius %.0e",
+		ShowHelpMarker("If checked, positions and velocities entered will be scaled by the universe radius %.0em",
 			this->sim->RADIUS);
 		PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize("        ").x);
 		InputDouble2("Position", &input_pos.x);
@@ -483,42 +504,42 @@ namespace nbody
 	{
 		using namespace ImGui;
 
-		PushItemWidth(200 - CalcTextSize("Colours").x);
-		auto sel_dist = (int*)(&bg_props[idx].colour);
-		if (Combo("Colours", sel_dist, getColourerName,
+		auto sel_col = (int*)(&bg_props[idx].colour);
+		if (Combo("Colour method", sel_col, getColourerName,
 			(void*)(this->colour_infos.data()), static_cast<int>(this->colour_infos.size())))
 		{
-			this->bg_props[idx].ncols = this->colour_infos[*sel_dist].cols_used;
+			this->bg_props[idx].ncols = this->colour_infos[*sel_col].cols_used;
+			SetWindowSize({ 0, 0 });
 		}
-		PopItemWidth();
-		if (IsItemHovered() && *sel_dist != -1)
+		if (IsItemHovered() && *sel_col != -1)
 		{
 			BeginTooltip();
 			PushTextWrapPos(200);
-			TextWrapped(this->colour_infos[*sel_dist].tooltip);
+			TextWrapped(this->colour_infos[*sel_col].tooltip);
 			PopTextWrapPos();
 			EndTooltip();
 		}
-		PushItemWidth(GetContentRegionAvailWidth());
-		if (*sel_dist != -1)
+		if (*sel_col != -1)
 		{
-			for (size_t i = 0; i < this->colour_infos[*sel_dist].cols_used; i++)
+			for (size_t i = 0; i < this->colour_infos[*sel_col].cols_used; i++)
 			{
 				char label[16];
-				sprintf_s<16>(label, "Colour %zu", i);
+				sprintf_s<16>(label, "Colour %zu", i + 1);
 
-				auto& this_col = this->tmp_cols[idx].cols[*sel_dist][i];
+				auto& this_col = this->tmp_cols[idx].cols[*sel_col][i];
 				if (ColorEdit3(label, this_col))
 				{
 					this->bg_props[idx].cols[i] = { static_cast<sf::Uint8>(this_col[0] * 255), static_cast<sf::Uint8>(this_col[1] * 255), static_cast<sf::Uint8>(this_col[2] * 255), 255 };
 				}
 			}
 		}
-		PopItemWidth();
-
+		Dummy({ 150,0 });
+		SameLine();
 		if (Button("OK"))
 		{
 			CloseCurrentPopup();
 		}
+		SameLine();
+		Dummy({ 150,0 });
 	}
 }

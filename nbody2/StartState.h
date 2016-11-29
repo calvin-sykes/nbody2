@@ -3,6 +3,7 @@
 
 #include "SimState.h"
 #include "BodyDistributor.h"
+#include "BodyGroupProperties.h"
 
 #include <vector>
 
@@ -17,59 +18,10 @@ namespace nbody
 		CREATE_NEW
 	};
 
-	struct DistributorProperties
-	{
-		DistributorType const type;
-		char const* name;
-		char const* tooltip;
-		bool const has_central_mass;
-	};
-
-	enum class ColourerType
-	{
-		SOLID,
-		VELOCITY,
-		N_TYPES,
-		INVALID = -1
-	};
-
-	struct ColourerProperties
-	{
-		ColourerType const type;
-		char const* name;
-		char const* tooltip;
-		char cols_used;
-	};
-
-	size_t constexpr MAX_COLS_PER_COLOURER = 2;
-
-	struct TempColArray
-	{
-		float cols[static_cast<size_t>(ColourerType::N_TYPES)][MAX_COLS_PER_COLOURER][3];
-	};
-
 	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
 	using CPArray = std::array<ColourerProperties, static_cast<size_t>(ColourerType::N_TYPES)>;
-
-	struct BodyGroupProperties
-	{
-		BodyGroupProperties() :
-			dist(DistributorType::INVALID), N(0), pos(), vel(),
-			min_mass(0), max_mass(0), has_central_mass(false), central_mass(0),
-			colour(ColourerType::INVALID), cols{}, ncols(0) {}
-
-		int N;
-		DistributorType dist;
-		double min_mass;
-		double max_mass;
-		bool has_central_mass;
-		double central_mass;
-		Vector2d pos, vel;
-		ColourerType colour;
-		sf::Color cols[4];
-		size_t ncols;
-	};
-
+	using IntArray = std::array<IntegratorProperties, static_cast<size_t>(IntegratorType::N_INTEGRATORS)>;
+	using EvlArray = std::array<EvolveProperties, static_cast<size_t>(EvolveType::N_METHODS)>;
 	using ComboCallback = bool(*)(void*, int, char const**);
 
 	class StartState : public SimState
@@ -97,8 +49,11 @@ namespace nbody
 		bool l1_modal_is_open, l2_modal_is_open;
 		ImGuiWindowFlags window_flags;
 		ImGuiStyle& style;
+
 		// Sets of parameters for BodyGroups 
 		std::vector<BodyGroupProperties> bg_props;
+		// SImulation-wide parameters
+		SimProperties sim_props;
 		// Temporary storage variables
 		std::vector<char> tmp_use_relative_coords;
 		std::vector<TempColArray> tmp_cols;
@@ -125,8 +80,6 @@ namespace nbody
 			}
 		} };
 
-		// Get the .name field of a DistributorProperties object
-		// for displaying in a ComboBox
 		ComboCallback getDistributorName{ [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<DPArray*>(data);
@@ -144,7 +97,7 @@ namespace nbody
 		CPArray static constexpr colour_infos = { {
 			{
 				ColourerType::SOLID,
-				"Solid",
+				"Single",
 				"All bodies in this group are coloured the same",
 				1
 			},
@@ -156,8 +109,6 @@ namespace nbody
 			}
 		} };
 
-		// Get the .name field of a ColourerProperties object
-		// for displaying in a ComboBox
 		ComboCallback getColourerName{ [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<CPArray*>(data);
@@ -171,6 +122,56 @@ namespace nbody
 				return true;
 			}
 		} };
+
+		IntArray integrator_infos = { {
+			{
+				IntegratorType::EULER,
+				"Euler"
+			}
+		} };
+
+		ComboCallback getIntegratorName{ [](void * data, int idx, const char ** out_text)
+		{
+			auto& array = *static_cast<IntArray*>(data);
+			if (idx < 0 || idx >= static_cast<int>(array.size()))
+			{
+				return false;
+			}
+			else
+			{
+				*out_text = array[idx].name;
+				return true;
+			}
+		} };
+
+		EvlArray evolve_infos = { {
+			{
+				EvolveType::BRUTE_FORCE,
+				"Brute-force",
+				"Forces between every pair of bodies are calculated directly"
+			},
+			{
+				EvolveType::BARNES_HUT,
+				"Barnes-Hut",
+				"Long-range forces are approximated using a Barnes-Hut tree"
+			}
+		} };
+
+		ComboCallback getEvolveName{ [](void * data, int idx, const char ** out_text)
+		{
+			auto& array = *static_cast<EvlArray*>(data);
+			if (idx < 0 || idx >= static_cast<int>(array.size()))
+			{
+				return false;
+			}
+			else
+			{
+				*out_text = array[idx].name;
+				return true;
+			}
+		} };
+
+
 	};
 }
 
