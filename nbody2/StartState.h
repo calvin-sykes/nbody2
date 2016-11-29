@@ -5,6 +5,8 @@
 #include "BodyDistributor.h"
 #include "BodyGroupProperties.h"
 
+#include <fstream>
+#include <string>
 #include <vector>
 
 #include <SFML/Graphics.hpp>
@@ -35,13 +37,16 @@ namespace nbody
 	private:
 		void run();
 
-		void InitialWindow();
-		void LoadWindow();
-		void GenerateWindow();
-		void MassPopup(size_t const idx);
-		void CentralMassPopup(size_t const idx);
-		void PosVelPopup(size_t const idx);
-		void ColourPopup(size_t const idx);
+		void makeInitialWindow();
+		void makeLoadWindow();
+		void makeGenerateWindow();
+		void makeMassPopup(size_t const idx);
+		void makeCentralMassPopup(size_t const idx);
+		void makePosVelPopup(size_t const idx);
+		void makeColourPopup(size_t const idx);
+		void makeSavePopup();
+
+		void saveSettings(char const* filename);
 
 		sf::View view;
 
@@ -55,7 +60,6 @@ namespace nbody
 		// SImulation-wide parameters
 		SimProperties sim_props;
 		// Temporary storage variables
-		std::vector<char> tmp_use_relative_coords;
 		std::vector<TempColArray> tmp_cols;
 
 		// Info on BodyDistributors

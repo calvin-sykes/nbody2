@@ -161,8 +161,8 @@ namespace nbody
 			return !operator==(rhs);
 		}
 
-		// Element access
-		T const& operator[](size_t index)
+		// Element access (read only)
+		T operator[](size_t index) const
 		{
 			return a_[index];
 		}

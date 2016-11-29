@@ -33,9 +33,9 @@ namespace nbody
 	struct BodyGroupProperties
 	{
 		BodyGroupProperties() :
-			dist(DistributorType::INVALID), N(0), pos(), vel(),
+			dist(DistributorType::INVALID), N(0), pos(), vel(), use_relative_coords(true),
 			min_mass(0), max_mass(0), has_central_mass(false), central_mass(0),
-			colour(ColourerType::INVALID), cols{}, ncols(0) {}
+			colour(ColourerType::INVALID), cols{} {}
 
 		int N;
 		DistributorType dist;
@@ -43,10 +43,10 @@ namespace nbody
 		double max_mass;
 		bool has_central_mass;
 		double central_mass;
+		bool use_relative_coords;
 		Vector2d pos, vel;
 		ColourerType colour;
 		sf::Color cols[MAX_COLS_PER_COLOURER];
-		size_t ncols;
 	};
 }
 

@@ -139,17 +139,17 @@ namespace nbody
 	{
 		ImGui::SFML::Update(this->sim->window, dt);
 
-		InitialWindow();
+		makeInitialWindow();
 
 		if (this->menu_state == MenuState::CREATE_NEW)
 		{
 			l1_modal_is_open = true;
-			GenerateWindow();
+			makeGenerateWindow();
 		}
 		else if (this->menu_state == MenuState::LOAD_EXISTING)
 		{
 			l1_modal_is_open = true;
-			LoadWindow();
+			makeLoadWindow();
 		}
 
 		if (!l1_modal_is_open)
@@ -201,7 +201,7 @@ namespace nbody
 		this->sim->pushState(new RunState(this->sim));
 	}
 
-	void StartState::InitialWindow()
+	void StartState::makeInitialWindow()
 	{
 		using namespace ImGui;
 
@@ -230,12 +230,12 @@ namespace nbody
 		End();
 	}
 
-	void StartState::LoadWindow()
+	void StartState::makeLoadWindow()
 	{
 
 	}
 
-	void StartState::GenerateWindow()
+	void StartState::makeGenerateWindow()
 	{
 		using namespace ImGui;
 
@@ -251,9 +251,9 @@ namespace nbody
 			{
 				Text("Click \"+\" to add a group of bodies.");
 			}
-			float sz;
-			if(this->bg_props.size() > 0)
-				sz = max(static_cast<float>((400 - 2 * style.FramePadding.y - (this->bg_props.size() - 1) * style.ItemSpacing.y)/ this->bg_props.size()), 70.f);
+			float bg_size;
+			if (this->bg_props.size() > 0)
+				bg_size = max(static_cast<float>((400 - 2 * style.FramePadding.y - (this->bg_props.size() - 1) * style.ItemSpacing.y) / this->bg_props.size()), 70.f);
 			// Groups are bounded by square-cornered rectangles
 			PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 0.f);
 			for (size_t i = 0; i < this->bg_props.size(); i++)
@@ -262,7 +262,7 @@ namespace nbody
 				char entry_id[16] = {};
 				sprintf_s<16>(entry_id, "group##%zu", i);
 				// Single set of BodyGroup properties //
-				BeginChild(entry_id, { 0, sz }, true);
+				BeginChild(entry_id, { 0, bg_size }, true);
 				// Number label
 				Text("Group %zu", i + 1);
 				// Number of bodies slider
@@ -331,7 +331,7 @@ namespace nbody
 				}
 				if (BeginPopupModal("Mass settings", &l2_modal_is_open, window_flags))
 				{
-					MassPopup(i);
+					makeMassPopup(i);
 					EndPopup();
 				}
 				// Central mass
@@ -345,7 +345,7 @@ namespace nbody
 				}
 				if (BeginPopupModal("Central mass setting", &l2_modal_is_open, window_flags))
 				{
-					CentralMassPopup(i);
+					makeCentralMassPopup(i);
 					EndPopup();
 				}
 				// Position and velocity popup
@@ -359,7 +359,7 @@ namespace nbody
 				}
 				if (BeginPopupModal("Position/velocity settings", &l2_modal_is_open, window_flags))
 				{
-					PosVelPopup(i);
+					makePosVelPopup(i);
 					EndPopup();
 				}
 				// Colour settings popup
@@ -373,7 +373,7 @@ namespace nbody
 				}
 				if (BeginPopupModal("Colour settings", &l2_modal_is_open, window_flags))
 				{
-					ColourPopup(i);
+					makeColourPopup(i);
 					EndPopup();
 				}
 
@@ -383,9 +383,10 @@ namespace nbody
 			EndChild(); // groups
 
 			Separator();
-			
+
 			BeginGroup();
 			// Integrator combobox
+			PushItemWidth(150);
 			auto sel_int = (int*)(&this->sim_props.int_type);
 			Combo("Integrator", sel_int, getIntegratorName,
 				(void*)(this->integrator_infos.data()), static_cast<int>(this->integrator_infos.size()));
@@ -401,33 +402,47 @@ namespace nbody
 				PopTextWrapPos();
 				EndTooltip();
 			}
+			PopItemWidth();
 			EndGroup();
+			auto sz = GetItemRectSize();
+			SameLine();
+			Dummy({ 50, 0 });
+			SameLine();
+			// Save button
+			if (Button("Save", { 50, sz.y }))
+			{
+				l2_modal_is_open = true;
+				SetNextWindowPosCenter();
+				SetNextWindowSize({ 0, 0 });
+				OpenPopup("Save settings");
+			}
+			if (BeginPopupModal("Save settings", &l2_modal_is_open, window_flags))
+			{
+				makeSavePopup();
+				EndPopup();
+			}
 			SameLine();
 			Dummy({ GetContentRegionAvailWidth() - 30, 0 });
-			SameLine();
 			// Add/remove buttons
+			SameLine();
 			BeginGroup();
-			//PushItemWidth(-1);
 			if (Button("+"))
 			{
 				this->bg_props.emplace_back(BodyGroupProperties());
-				this->tmp_use_relative_coords.push_back(1);
 				this->tmp_cols.emplace_back(TempColArray());
 			}
 			if (Button("-") && bg_props.size() != 0)
 			{
 				this->bg_props.pop_back();
-				this->tmp_use_relative_coords.pop_back();
 				this->tmp_cols.pop_back();
 			}
-			//PopItemWidth();
 			EndGroup(); // Add/remove buttons
 
 			EndPopup(); // Generate initial conditions
 		}
 	}
 
-	void StartState::MassPopup(size_t const idx)
+	void StartState::makeMassPopup(size_t const idx)
 	{
 		using namespace ImGui;
 
@@ -451,56 +466,44 @@ namespace nbody
 		Dummy({ 100, 0 });
 	}
 
-	void StartState::CentralMassPopup(size_t const idx)
+	void StartState::makeCentralMassPopup(size_t const idx)
 	{
 		using namespace ImGui;
-
-		auto static input_value = this->bg_props[idx].central_mass / this->sim->SOLAR_MASS * 1E6;
 		auto static label = "1E6 solar masses";
 		PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize(label).x);
-		InputDouble(label, &input_value);
+		InputDouble(label, &this->bg_props[idx].central_mass);
 		Dummy({ 100, 0 });
 		SameLine();
 		if (Button("OK"))
 		{
-			this->bg_props[idx].central_mass = input_value * this->sim->SOLAR_MASS * 1E6;
 			CloseCurrentPopup();
 		}
 		SameLine();
 		Dummy({ 100, 0 });
 	}
 
-	void StartState::PosVelPopup(size_t const idx)
+	void StartState::makePosVelPopup(size_t const idx)
 	{
 		using namespace ImGui;
-		Vector2d static input_pos;
-		Vector2d static input_vel;
-		Checkbox("Use relative coordinates", (bool*)&this->tmp_use_relative_coords[idx]);
+		Checkbox("Use relative coordinates", &this->bg_props[idx].use_relative_coords);
 		SameLine();
 		ShowHelpMarker("If checked, positions and velocities entered will be scaled by the universe radius %.0em",
 			this->sim->RADIUS);
 		PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize("        ").x);
-		InputDouble2("Position", &input_pos.x);
-		InputDouble2("Velocity", &input_vel.x);
+		InputDouble2("Position", &this->bg_props[idx].pos.x);
+		InputDouble2("Velocity", &this->bg_props[idx].vel.x);
 		PopItemWidth();
 		Dummy({ 100,0 });
 		SameLine();
 		if (Button("OK"))
 		{
-			this->bg_props[idx].pos = input_pos;
-			this->bg_props[idx].vel = input_vel;
-			if (this->tmp_use_relative_coords[idx])
-			{
-				this->bg_props[idx].pos *= this->sim->RADIUS;
-				this->bg_props[idx].vel *= this->sim->RADIUS;
-			}
 			CloseCurrentPopup();
 		}
 		SameLine();
 		Dummy({ 100,0 });
 	}
 
-	void StartState::ColourPopup(size_t const idx)
+	void StartState::makeColourPopup(size_t const idx)
 	{
 		using namespace ImGui;
 
@@ -508,7 +511,6 @@ namespace nbody
 		if (Combo("Colour method", sel_col, getColourerName,
 			(void*)(this->colour_infos.data()), static_cast<int>(this->colour_infos.size())))
 		{
-			this->bg_props[idx].ncols = this->colour_infos[*sel_col].cols_used;
 			SetWindowSize({ 0, 0 });
 		}
 		if (IsItemHovered() && *sel_col != -1)
@@ -541,5 +543,61 @@ namespace nbody
 		}
 		SameLine();
 		Dummy({ 150,0 });
+	}
+
+	void StartState::makeSavePopup()
+	{
+		using namespace ImGui;
+
+		char static filename[256] = {};
+		InputText("Filename", filename, 256);
+		Dummy({ 100, 0 });
+		SameLine();
+		if (Button("OK"))
+		{
+			saveSettings(filename);
+			CloseCurrentPopup();
+		}
+		SameLine();
+		Dummy({ 100, 0 });
+	}
+
+	void StartState::saveSettings(char const * filename)
+	{
+		std::string fn_str(filename);
+		// if a file extension was supplied, trim it and append '.dat. instead
+		auto pos = fn_str.find_last_of('.');
+		if (pos != std::string::npos)
+		{
+			fn_str.erase(pos);
+		}
+		fn_str.append(".dat");
+
+		std::ofstream write;
+		write.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+		try
+		{
+			write.open(fn_str/*, std::ios::binary*/);
+			write << "nb_settings_v1__" << "__global__" << static_cast<int>(this->sim_props.int_type) << static_cast<int>(this->sim_props.ev_type);
+			write << "__bgprop__" << this->bg_props.size();
+			size_t i = 0;
+			for (auto bgp : bg_props)
+			{
+				write << "__##" << i++ << "__";
+				write << static_cast<int>(bgp.dist) << bgp.N << bgp.pos << bgp.vel;
+				write << bgp.min_mass << bgp.max_mass << bgp.has_central_mass << bgp.central_mass;
+				write << static_cast<int>(bgp.colour);
+				for (auto c : bgp.cols)
+				{
+					write << c.r << c.g << c.b << c.a;
+				}
+			}
+			write.close();
+		}
+		catch (std::ofstream::failure const& fail)
+		{
+			MAKE_ERROR(fail.what());
+		}
+
 	}
 }
