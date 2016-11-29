@@ -36,7 +36,16 @@ namespace nbody
 	struct ColourerProperties
 	{
 		ColourerType const type;
+		char const* name;
+		char const* tooltip;
+		char cols_used;
+	};
 
+	size_t constexpr MAX_COLS_PER_COLOURER = 2;
+
+	struct TempColArray
+	{
+		float cols[static_cast<size_t>(ColourerType::N_TYPES)][MAX_COLS_PER_COLOURER][3];
 	};
 
 	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
@@ -45,8 +54,9 @@ namespace nbody
 	struct BodyGroupProperties
 	{
 		BodyGroupProperties() :
-			dist(DistributorType::INVALID), N(0), min_mass(0), max_mass(0),
-			has_central_mass(false), central_mass(0), pos(), vel() {}
+			dist(DistributorType::INVALID), N(0), pos(), vel(),
+			min_mass(0), max_mass(0), has_central_mass(false), central_mass(0),
+			colour(ColourerType::INVALID), cols{}, ncols(0) {}
 
 		int N;
 		DistributorType dist;
@@ -55,6 +65,9 @@ namespace nbody
 		bool has_central_mass;
 		double central_mass;
 		Vector2d pos, vel;
+		ColourerType colour;
+		sf::Color cols[4];
+		size_t ncols;
 	};
 
 	using ComboCallback = bool(*)(void*, int, char const**);
@@ -88,6 +101,7 @@ namespace nbody
 		std::vector<BodyGroupProperties> bg_props;
 		// Temporary storage variables
 		std::vector<char> tmp_use_relative_coords;
+		std::vector<TempColArray> tmp_cols;
 
 		// Info on BodyDistributors
 		DPArray static constexpr dist_infos = { {
@@ -110,11 +124,43 @@ namespace nbody
 				false
 			}
 		} };
+
 		// Get the .name field of a DistributorProperties object
 		// for displaying in a ComboBox
 		ComboCallback getDistributorName{ [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<DPArray*>(data);
+			if (idx < 0 || idx >= static_cast<int>(array.size()))
+			{
+				return false;
+			}
+			else
+			{
+				*out_text = array[idx].name;
+				return true;
+			}
+		} };
+
+		CPArray static constexpr colour_infos = { {
+			{
+				ColourerType::SOLID,
+				"Solid",
+				"All bodies in this group are coloured the same",
+				1
+			},
+			{
+				ColourerType::VELOCITY,
+				"Velocity",
+				"Bodies in this group are coloured according to their velocity",
+				2
+			}
+		} };
+
+		// Get the .name field of a ColourerProperties object
+		// for displaying in a ComboBox
+		ComboCallback getColourerName{ [](void * data, int idx, const char ** out_text)
+		{
+			auto& array = *static_cast<CPArray*>(data);
 			if (idx < 0 || idx >= static_cast<int>(array.size()))
 			{
 				return false;

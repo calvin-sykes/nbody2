@@ -252,12 +252,12 @@ namespace nbody
 			for (size_t i = 0; i < this->bg_props.size(); i++)
 			{
 				// Create unique ID for group
-				char entry_id[12] = {}; // allows up to 99 groups
-				sprintf_s<12>(entry_id, "group##%zu", i);
+				char entry_id[16] = {};
+				sprintf_s<16>(entry_id, "group##%zu", i);
 				// Single set of BodyGroup properties //
 				BeginChild(entry_id, { 0, 70 }, true);
 				// Number label
-				Text("Group %u", i + 1);
+				Text("Group %zu", i + 1);
 				// Number of bodies slider
 				SameLine();
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
@@ -270,7 +270,7 @@ namespace nbody
 					// if too many, steal from previous
 					// except if first, then steal from last
 					// if more need to be stolen than are available, move to next
-					auto n_excess = n_total - this->sim->MAX_N;
+					auto n_excess = n_total - static_cast<int>(this->sim->MAX_N);
 					size_t j = 1;
 					while (n_excess > 0)
 					{
@@ -302,7 +302,7 @@ namespace nbody
 				if (Combo("Distribution", sel_dist, getDistributorName,
 					(void*)(this->dist_infos.data()), static_cast<int>(this->dist_infos.size())))
 				{
-					this->bg_props[i].dist = this->dist_infos[*sel_dist].type;
+					//this->bg_props[i].dist = this->dist_infos[*sel_dist].type;
 					this->bg_props[i].has_central_mass =
 						this->dist_infos[*sel_dist].has_central_mass;
 				}
@@ -310,7 +310,9 @@ namespace nbody
 				if (IsItemHovered() && *sel_dist != -1)
 				{
 					BeginTooltip();
-					Text(this->dist_infos[*sel_dist].tooltip);
+					PushTextWrapPos(200);
+					TextWrapped(this->dist_infos[*sel_dist].tooltip);
+					PopTextWrapPos();
 					EndTooltip();
 				}
 				Dummy({ 0, 5 });
@@ -318,7 +320,7 @@ namespace nbody
 				if (Button("Mass...", { 0.25f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					//SetNextWindowPosCenter();
+					SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Mass settings");
 				}
@@ -332,7 +334,7 @@ namespace nbody
 				if (Button("Central mass...", { 0.33f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					//SetNextWindowPosCenter();
+					SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Central mass setting");
 				}
@@ -346,8 +348,7 @@ namespace nbody
 				if (Button("Position/velocity...", { 0.5f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					SetNextWindowPos(GetCursorScreenPos());
-					//SetNextWindowPosCenter();
+					SetNextWindowPos({ 400, 400 });
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Position/velocity settings");
 				}
@@ -361,8 +362,8 @@ namespace nbody
 				if (Button("Colour...", { GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					//SetNextWindowPosCenter();
-					SetNextWindowSize({ 0, 0 });
+					SetNextWindowPosCenter();
+					SetNextWindowSize({ 250, 150 });
 					OpenPopup("Colour settings");
 				}
 				if (BeginPopupModal("Colour settings", &l2_modal_is_open, window_flags))
@@ -388,11 +389,13 @@ namespace nbody
 			{
 				this->bg_props.emplace_back(BodyGroupProperties());
 				this->tmp_use_relative_coords.push_back(1);
+				this->tmp_cols.emplace_back(TempColArray());
 			}
 			if (Button("-") && bg_props.size() != 0)
 			{
 				this->bg_props.pop_back();
 				this->tmp_use_relative_coords.pop_back();
+				this->tmp_cols.pop_back();
 			}
 			PopItemWidth();
 			EndGroup(); // Add/remove buttons
@@ -461,15 +464,12 @@ namespace nbody
 		SameLine();
 		if (Button("OK"))
 		{
+			this->bg_props[idx].pos = input_pos;
+			this->bg_props[idx].vel = input_vel;
 			if (this->tmp_use_relative_coords[idx])
 			{
-				this->bg_props[idx].pos = input_pos * this->sim->RADIUS;
-				this->bg_props[idx].vel = input_vel * this->sim->RADIUS;
-			}
-			else
-			{
-				this->bg_props[idx].pos = input_pos;
-				this->bg_props[idx].vel = input_vel;
+				this->bg_props[idx].pos *= this->sim->RADIUS;
+				this->bg_props[idx].vel *= this->sim->RADIUS;
 			}
 			CloseCurrentPopup();
 		}
@@ -480,5 +480,43 @@ namespace nbody
 	void StartState::ColourPopup(size_t const idx)
 	{
 		using namespace ImGui;
+
+		PushItemWidth(200 - CalcTextSize("Colours").x);
+		auto sel_dist = (int*)(&bg_props[idx].colour);
+		if (Combo("Colours", sel_dist, getColourerName,
+			(void*)(this->colour_infos.data()), static_cast<int>(this->colour_infos.size())))
+		{
+			this->bg_props[idx].ncols = this->colour_infos[*sel_dist].cols_used;
+		}
+		PopItemWidth();
+		if (IsItemHovered() && *sel_dist != -1)
+		{
+			BeginTooltip();
+			PushTextWrapPos(200);
+			TextWrapped(this->colour_infos[*sel_dist].tooltip);
+			PopTextWrapPos();
+			EndTooltip();
+		}
+		PushItemWidth(GetContentRegionAvailWidth());
+		if (*sel_dist != -1)
+		{
+			for (size_t i = 0; i < this->colour_infos[*sel_dist].cols_used; i++)
+			{
+				char label[16];
+				sprintf_s<16>(label, "Colour %zu", i);
+
+				auto& this_col = this->tmp_cols[idx].cols[*sel_dist][i];
+				if (ColorEdit3(label, this_col))
+				{
+					this->bg_props[idx].cols[i] = { static_cast<sf::Uint8>(this_col[0] * 255), static_cast<sf::Uint8>(this_col[1] * 255), static_cast<sf::Uint8>(this_col[2] * 255), 255 };
+				}
+			}
+		}
+		PopItemWidth();
+
+		if (Button("OK"))
+		{
+			CloseCurrentPopup();
+		}
 	}
 }
