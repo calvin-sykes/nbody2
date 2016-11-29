@@ -6256,10 +6256,12 @@ void ImGui::BulletText(const char* fmt, ...)
 
 static inline void DataTypeFormatString(ImGuiDataType data_type, void* data_ptr, const char* display_format, char* buf, int buf_size)
 {
-    if (data_type == ImGuiDataType_Int)
-        ImFormatString(buf, buf_size, display_format, *(int*)data_ptr);
-    else if (data_type == ImGuiDataType_Float)
-        ImFormatString(buf, buf_size, display_format, *(float*)data_ptr);
+	if (data_type == ImGuiDataType_Int)
+		ImFormatString(buf, buf_size, display_format, *(int*)data_ptr);
+	else if (data_type == ImGuiDataType_Float)
+		ImFormatString(buf, buf_size, display_format, *(float*)data_ptr);
+	else if (data_type == ImGuiDataType_Double)
+		ImFormatString(buf, buf_size, display_format, *(double*)data_ptr);
 }
 
 static inline void DataTypeFormatString(ImGuiDataType data_type, void* data_ptr, int decimal_precision, char* buf, int buf_size)
@@ -6296,6 +6298,13 @@ static void DataTypeApplyOp(ImGuiDataType data_type, int op, void* value1, const
         else if (op == '-')
             *(float*)value1 = *(float*)value1 - *(const float*)value2;
     }
+	else if (data_type == ImGuiDataType_Double)
+	{
+		if (op == '+')
+			*(double*)value1 = *(double*)value1 + *(const double*)value2;
+		else if (op == '-')
+			*(double*)value1 = *(double*)value1 - *(const double*)value2;
+	}
 }
 
 // User can input math operators (e.g. +100) to edit a numerical values.
@@ -6357,6 +6366,24 @@ static bool DataTypeApplyOpFromText(const char* buf, const char* initial_value_b
         else                { *v = arg1; }                           // Assign constant
         return (old_v != *v);
     }
+	else if (data_type == ImGuiDataType_Double)
+	{
+		scalar_format = "%lf";
+		double* v = (double*)data_ptr;
+		const double old_v = *v;
+		double arg0 = *v;
+		if (op && sscanf(initial_value_buf, scalar_format, &arg0) < 1)
+			return false;
+
+		double arg1 = 0.0;
+		if (sscanf(buf, scalar_format, &arg1) < 1)
+			return false;
+		if (op == '+')		{ *v = arg0 + arg1; }                    // Add (use "+-" to subtract)
+		else if (op == '*') { *v = arg0 * arg1; }                    // Multiply
+		else if (op == '/') { if (arg1 != 0.0) *v = arg0 / arg1; }	 // Divide
+		else				{ *v = arg1; }							 // Assign constant
+		return (old_v != *v);
+	}
 
     return false;
 }
@@ -8273,6 +8300,16 @@ bool ImGui::InputScalarEx(const char* label, ImGuiDataType data_type, void* data
     return value_changed;
 }
 
+bool ImGui::InputDouble(const char* label, double* v, double step, double step_fast, int decimal_precision, ImGuiInputTextFlags extra_flags)
+{
+	char display_format[16];
+	if (decimal_precision < 0)
+		strcpy(display_format, "%f");      // Ideally we'd have a minimum decimal precision of 1 to visually denote that this is a float, while hiding non-significant digits? %f doesn't have a minimum of 1
+	else
+		ImFormatString(display_format, IM_ARRAYSIZE(display_format), "%%.%df", decimal_precision);
+	return InputScalarEx(label, ImGuiDataType_Double, (void*)v, (void*)(step>0.0 ? &step : NULL), (void*)(step_fast>0.0 ? &step_fast : NULL), display_format, extra_flags);
+}
+
 bool ImGui::InputFloat(const char* label, float* v, float step, float step_fast, int decimal_precision, ImGuiInputTextFlags extra_flags)
 {
     char display_format[16];
@@ -8288,6 +8325,49 @@ bool ImGui::InputInt(const char* label, int* v, int step, int step_fast, ImGuiIn
     // Hexadecimal input provided as a convenience but the flag name is awkward. Typically you'd use InputText() to parse your own data, if you want to handle prefixes.
     const char* scalar_format = (extra_flags & ImGuiInputTextFlags_CharsHexadecimal) ? "%08X" : "%d";
     return InputScalarEx(label, ImGuiDataType_Int, (void*)v, (void*)(step>0.0f ? &step : NULL), (void*)(step_fast>0.0f ? &step_fast : NULL), scalar_format, extra_flags);
+}
+
+bool ImGui::InputDoubleN(const char* label, double* v, int components, int decimal_precision, ImGuiInputTextFlags extra_flags)
+{
+	ImGuiWindow* window = GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGuiContext& g = *GImGui;
+	bool value_changed = false;
+	BeginGroup();
+	PushID(label);
+	PushMultiItemsWidths(components);
+	for (int i = 0; i < components; i++)
+	{
+		PushID(i);
+		value_changed |= InputDouble("##v", &v[i], 0, 0, decimal_precision, extra_flags);
+		SameLine(0, g.Style.ItemInnerSpacing.x);
+		PopID();
+		PopItemWidth();
+	}
+	PopID();
+
+	window->DC.CurrentLineTextBaseOffset = ImMax(window->DC.CurrentLineTextBaseOffset, g.Style.FramePadding.y);
+	TextUnformatted(label, FindRenderedTextEnd(label));
+	EndGroup();
+
+	return value_changed;
+}
+
+bool ImGui::InputDouble2(const char* label, double v[2], int decimal_precision, ImGuiInputTextFlags extra_flags)
+{
+	return InputDoubleN(label, v, 2, decimal_precision, extra_flags);
+}
+
+bool ImGui::InputDouble3(const char* label, double v[3], int decimal_precision, ImGuiInputTextFlags extra_flags)
+{
+	return InputDoubleN(label, v, 3, decimal_precision, extra_flags);
+}
+
+bool ImGui::InputDouble4(const char* label, double v[4], int decimal_precision, ImGuiInputTextFlags extra_flags)
+{
+	return InputDoubleN(label, v, 4, decimal_precision, extra_flags);
 }
 
 bool ImGui::InputFloatN(const char* label, float* v, int components, int decimal_precision, ImGuiInputTextFlags extra_flags)

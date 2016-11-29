@@ -35,6 +35,7 @@ namespace nbody
 
 		double static constexpr SOLAR_MASS = 1.98892E30;
 		double static constexpr RADIUS = 1E18;
+		size_t static constexpr MAX_N = 10000;
 		
 		sf::RenderWindow window;
 		AssetManager asset_mgr;
