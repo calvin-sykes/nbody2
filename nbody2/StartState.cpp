@@ -243,10 +243,13 @@ namespace nbody
 			// Main display of BodyGroup properties
 			BeginChild("groups", { 0, 400 });
 			// Show prompt if no BodyGroups have been added
-			if (bg_props.size() == 0)
+			if (this->bg_props.size() == 0)
 			{
 				Text("Click \"+\" to add a group of bodies.");
 			}
+			float sz;
+			if(this->bg_props.size() > 0)
+				sz = max(static_cast<float>((400 - 2 * style.FramePadding.y - (this->bg_props.size() - 1) * style.ItemSpacing.y)/ this->bg_props.size()), 70.f);
 			// Groups are bounded by square-cornered rectangles
 			PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 0.f);
 			for (size_t i = 0; i < this->bg_props.size(); i++)
@@ -255,7 +258,7 @@ namespace nbody
 				char entry_id[16] = {};
 				sprintf_s<16>(entry_id, "group##%zu", i);
 				// Single set of BodyGroup properties //
-				BeginChild(entry_id, { 0, 70 }, true);
+				BeginChild(entry_id, { 0, sz }, true);
 				// Number label
 				Text("Group %zu", i + 1);
 				// Number of bodies slider
