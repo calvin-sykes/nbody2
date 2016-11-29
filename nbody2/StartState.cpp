@@ -3,8 +3,7 @@
 #include "SimState.h"
 
 #include <stdarg.h>
-
-#include <iostream>
+#include <numeric>
 
 #include <SFML/Graphics.hpp>
 
@@ -256,20 +255,52 @@ namespace nbody
 				char entry_id[12] = {}; // allows up to 99 groups
 				sprintf_s<12>(entry_id, "group##%zu", i);
 				// Single set of BodyGroup properties //
-				BeginChild(entry_id, { 0, 100 }, true);
+				BeginChild(entry_id, { 0, 70 }, true);
 				// Number label
 				Text("Group %u", i + 1);
 				// Number of bodies slider
 				SameLine();
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
-				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, N_MAX);
+				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, this->sim->MAX_N);
 				PopItemWidth();
+				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, [](int sum, BodyGroupProperties const& b) -> int { return sum + b.N; });
+				// too many bodies, need to redistribute them
+				if (n_total > this->sim->MAX_N)
+				{
+					// if too many, steal from previous
+					// except if first, then steal from last
+					// if more need to be stolen than are available, move to next
+					auto n_excess = n_total - this->sim->MAX_N;
+					size_t j = 1;
+					while (n_excess > 0)
+					{
+						// how many are available to steal?
+						// take as reference so we can modify it
+						auto& subtractable = this->bg_props[(i + j) % (this->bg_props.size())].N;
+						if (n_excess < subtractable)
+						{
+							// can steal required from this
+							subtractable -= n_excess;
+							// done
+							n_excess = 0;
+						}
+						else
+						{
+							// take what we can
+							n_excess -= subtractable;
+							subtractable = 0;
+							// move on
+							j++;
+						}
+					}
+
+				}
 				// Distributor combobox
 				SameLine();
 				PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize("Distribution").x);
 				auto sel_dist = (int*)(&bg_props[i].dist);
 				if (Combo("Distribution", sel_dist, getDistributorName,
-					(void*)(this->dist_infos.data()), this->dist_infos.size()))
+					(void*)(this->dist_infos.data()), static_cast<int>(this->dist_infos.size())))
 				{
 					this->bg_props[i].dist = this->dist_infos[*sel_dist].type;
 					this->bg_props[i].has_central_mass =
@@ -287,52 +318,57 @@ namespace nbody
 				if (Button("Mass...", { 0.25f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					SetNextWindowPosCenter();
+					//SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Mass settings");
 				}
 				if (BeginPopupModal("Mass settings", &l2_modal_is_open, window_flags))
 				{
 					MassPopup(i);
+					EndPopup();
 				}
 				// Central mass
 				SameLine();
 				if (Button("Central mass...", { 0.33f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					SetNextWindowPosCenter();
+					//SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Central mass setting");
 				}
 				if (BeginPopupModal("Central mass setting", &l2_modal_is_open, window_flags))
 				{
 					CentralMassPopup(i);
+					EndPopup();
 				}
 				// Position and velocity popup
 				SameLine();
 				if (Button("Position/velocity...", { 0.5f * GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					SetNextWindowPosCenter();
+					SetNextWindowPos(GetCursorScreenPos());
+					//SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Position/velocity settings");
 				}
 				if (BeginPopupModal("Position/velocity settings", &l2_modal_is_open, window_flags))
 				{
 					PosVelPopup(i);
+					EndPopup();
 				}
 				// Colour settings popup
 				SameLine();
 				if (Button("Colour...", { GetContentRegionAvailWidth(), 0 }))
 				{
 					l2_modal_is_open = true;
-					SetNextWindowPosCenter();
+					//SetNextWindowPosCenter();
 					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Colour settings");
 				}
 				if (BeginPopupModal("Colour settings", &l2_modal_is_open, window_flags))
 				{
 					ColourPopup(i);
+					EndPopup();
 				}
 
 				EndChild();
@@ -387,7 +423,6 @@ namespace nbody
 			CloseCurrentPopup();
 		SameLine();
 		Dummy({ 100, 0 });
-		EndPopup();
 	}
 
 	void StartState::CentralMassPopup(size_t const idx)
@@ -407,7 +442,6 @@ namespace nbody
 		}
 		SameLine();
 		Dummy({ 100, 0 });
-		EndPopup();
 	}
 
 	void StartState::PosVelPopup(size_t const idx)
@@ -441,7 +475,6 @@ namespace nbody
 		}
 		SameLine();
 		Dummy({ 100,0 });
-		EndPopup();
 	}
 
 	void StartState::ColourPopup(size_t const idx)

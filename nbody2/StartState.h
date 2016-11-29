@@ -19,10 +19,10 @@ namespace nbody
 
 	struct DistributorProperties
 	{
-		DistributorType type;
-		const char * name;
-		const char * tooltip;
-		bool has_central_mass;
+		DistributorType const type;
+		char const* name;
+		char const* tooltip;
+		bool const has_central_mass;
 	};
 
 	enum class ColourerType
@@ -35,6 +35,7 @@ namespace nbody
 
 	struct ColourerProperties
 	{
+		ColourerType const type;
 
 	};
 
