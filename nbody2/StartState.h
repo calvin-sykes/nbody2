@@ -25,7 +25,21 @@ namespace nbody
 		bool has_central_mass;
 	};
 
+	enum class ColourerType
+	{
+		SOLID,
+		VELOCITY,
+		N_TYPES,
+		INVALID = -1
+	};
+
+	struct ColourerProperties
+	{
+
+	};
+
 	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
+	using CPArray = std::array<ColourerProperties, static_cast<size_t>(ColourerType::N_TYPES)>;
 
 	struct BodyGroupProperties
 	{
@@ -55,6 +69,14 @@ namespace nbody
 	private:
 		void run();
 
+		void InitialWindow();
+		void LoadWindow();
+		void GenerateWindow();
+		void MassPopup(size_t const idx);
+		void CentralMassPopup(size_t const idx);
+		void PosVelPopup(size_t const idx);
+		void ColourPopup(size_t const idx);
+
 		sf::View view;
 
 		MenuState menu_state;
@@ -64,12 +86,6 @@ namespace nbody
 		// Sets of parameters for BodyGroups 
 		std::vector<BodyGroupProperties> bg_props;
 		// Temporary storage variables
-		std::vector<float> tmp_min_mass;
-		std::vector<float> tmp_max_mass;
-		std::vector<float> tmp_central_mass;
-		std::vector<DistributorType> tmp_dist_type;
-		std::vector<Vector2d> tmp_pos;
-		std::vector<Vector2d> tmp_vel;
 		std::vector<char> tmp_use_relative_coords;
 
 		// Info on BodyDistributors
