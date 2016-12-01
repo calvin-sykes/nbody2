@@ -111,6 +111,8 @@ namespace nbody
 		this->window_flags |= ImGuiWindowFlags_NoResize;
 		this->window_flags |= ImGuiWindowFlags_NoMove;
 		this->window_flags |= ImGuiWindowFlags_NoScrollbar;
+		this->window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+		this->window_flags |= ImGuiWindowFlags_NoSavedSettings;
 
 		// Centre-align the GUI window titles
 		this->style.WindowTitleAlign = { 0.5f, 0.5f };
@@ -232,7 +234,53 @@ namespace nbody
 
 	void StartState::makeLoadWindow()
 	{
+		using namespace ImGui;
 
+		SetNextWindowPosCenter();
+		OpenPopup("Load initial conditions");
+		if (BeginPopupModal("Load initial conditions", &l1_modal_is_open, window_flags))
+		{
+			char static filename[256];
+			InputText("Filename", filename, 256);
+			SetCursorPosX(0.5f * GetWindowContentRegionWidth());
+			if (Button("OK"))
+			{
+				if (loadSettings(filename) == true)
+				{
+					l2_modal_is_open = true;
+					SetNextWindowPosCenter();
+					OpenPopup("Loaded");
+				}
+				else
+				{
+					l2_modal_is_open = true;
+					SetNextWindowPosCenter();
+					OpenPopup("Error");
+				}
+			}
+			if (BeginPopupModal("Error", &l2_modal_is_open, window_flags))
+			{
+				Text("The file could not be opened.");
+				SetCursorPosX(0.5f * GetWindowContentRegionWidth());
+				if (Button("OK"))
+				{
+					CloseCurrentPopup();
+				}
+				EndPopup();
+			}
+			if (BeginPopupModal("Loaded", &l2_modal_is_open, window_flags))
+			{
+				Text("File successfully loaded.");
+				SetCursorPosX(0.5f * GetWindowContentRegionWidth());
+				if (Button("OK"))
+				{
+					this->menu_state = MenuState::CREATE_NEW;
+					CloseCurrentPopup();
+				}
+				EndPopup();
+			}
+			EndPopup();
+		}
 	}
 
 	void StartState::makeGenerateWindow()
@@ -270,7 +318,7 @@ namespace nbody
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
 				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, this->sim->MAX_N);
 				PopItemWidth();
-				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, [](/*int*/ auto sum, auto const& b) -> int { return sum + b.N; });
+				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, []( auto sum, auto const& b) -> int { return sum + b.N; });
 				// too many bodies, need to redistribute them
 				if (n_total > this->sim->MAX_N)
 				{
@@ -326,7 +374,6 @@ namespace nbody
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
-					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Mass settings");
 				}
 				if (BeginPopupModal("Mass settings", &l2_modal_is_open, window_flags))
@@ -340,7 +387,6 @@ namespace nbody
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
-					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Central mass setting");
 				}
 				if (BeginPopupModal("Central mass setting", &l2_modal_is_open, window_flags))
@@ -354,7 +400,6 @@ namespace nbody
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
-					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Position/velocity settings");
 				}
 				if (BeginPopupModal("Position/velocity settings", &l2_modal_is_open, window_flags))
@@ -368,7 +413,6 @@ namespace nbody
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
-					SetNextWindowSize({ 0, 0 });
 					OpenPopup("Colour settings");
 				}
 				if (BeginPopupModal("Colour settings", &l2_modal_is_open, window_flags))
@@ -381,9 +425,7 @@ namespace nbody
 			}
 			PopStyleVar(); // ImGuiStyleVar_ChildWindowRounding, 0.f
 			EndChild(); // groups
-
 			Separator();
-
 			BeginGroup();
 			// Integrator combobox
 			PushItemWidth(150);
@@ -413,7 +455,6 @@ namespace nbody
 			{
 				l2_modal_is_open = true;
 				SetNextWindowPosCenter();
-				SetNextWindowSize({ 0, 0 });
 				OpenPopup("Save settings");
 			}
 			if (BeginPopupModal("Save settings", &l2_modal_is_open, window_flags))
@@ -449,37 +490,32 @@ namespace nbody
 		AlignFirstTextHeightToWidgets();
 		Text("Minimum");
 		SameLine();
-		PushItemWidth(0.5f * GetContentRegionAvailWidth());
+		PushItemWidth(80.f);
 		InputDouble("solar masses##1", &this->bg_props[idx].min_mass);
 		PopItemWidth();
 		AlignFirstTextHeightToWidgets();
 		Text("Maximum");
 		SameLine();
-		PushItemWidth(0.5f * GetContentRegionAvailWidth());
+		PushItemWidth(80.f);
 		InputDouble("solar masses##2", &this->bg_props[idx].max_mass);
 		PopItemWidth();
-		Dummy({ 100, 0 });
-		SameLine();
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 			CloseCurrentPopup();
-		SameLine();
-		Dummy({ 100, 0 });
 	}
 
 	void StartState::makeCentralMassPopup(size_t const idx)
 	{
 		using namespace ImGui;
 		auto static label = "1E6 solar masses";
-		PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize(label).x);
+		PushItemWidth(80.0f);
 		InputDouble(label, &this->bg_props[idx].central_mass);
-		Dummy({ 100, 0 });
-		SameLine();
+		PopItemWidth();
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
 			CloseCurrentPopup();
 		}
-		SameLine();
-		Dummy({ 100, 0 });
 	}
 
 	void StartState::makePosVelPopup(size_t const idx)
@@ -487,20 +523,17 @@ namespace nbody
 		using namespace ImGui;
 		Checkbox("Use relative coordinates", &this->bg_props[idx].use_relative_coords);
 		SameLine();
-		ShowHelpMarker("If checked, positions and velocities entered will be scaled by the universe radius %.0em",
+		ShowHelpMarker("If checked, positions and velocities entered will be interpreted as a fraction of the universe radius %.0em",
 			this->sim->RADIUS);
-		PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize("        ").x);
+		PushItemWidth(2 * (80.f + this->style.ItemInnerSpacing.x));
 		InputDouble2("Position", &this->bg_props[idx].pos.x);
 		InputDouble2("Velocity", &this->bg_props[idx].vel.x);
 		PopItemWidth();
-		Dummy({ 100,0 });
-		SameLine();
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
 			CloseCurrentPopup();
 		}
-		SameLine();
-		Dummy({ 100,0 });
 	}
 
 	void StartState::makeColourPopup(size_t const idx)
@@ -535,14 +568,11 @@ namespace nbody
 				}
 			}
 		}
-		Dummy({ 150,0 });
-		SameLine();
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
 			CloseCurrentPopup();
 		}
-		SameLine();
-		Dummy({ 150,0 });
 	}
 
 	void StartState::makeSavePopup()
@@ -551,19 +581,105 @@ namespace nbody
 
 		char static filename[256] = {};
 		InputText("Filename", filename, 256);
-		Dummy({ 100, 0 });
-		SameLine();
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
 			saveSettings(filename);
 			CloseCurrentPopup();
 		}
-		SameLine();
-		Dummy({ 100, 0 });
 	}
 
-	void StartState::saveSettings(char const * filename)
+	void StartState::saveSettings(char const* filename)
 	{
+		using namespace fileio;
+		std::ofstream file;
+		auto writeString = [&file](char const data[], size_t len) -> void
+		{
+			file.write(data, len);
+			file.write(SEP, sizeof(SEP));
+		};
+
+		auto writeValue = [&file](auto data) -> void
+		{
+			file.write(reinterpret_cast<char*>(&data), sizeof(decltype(data)));
+			file.write(SEP, sizeof(SEP));
+		};
+		
+		// if a file extension was supplied, trim it and append '.dat. instead
+		std::string fn_str(filename);
+		auto pos = fn_str.find_last_of('.');
+		if (pos != std::string::npos)
+		{
+			fn_str.erase(pos);
+		}
+		fn_str.append(".dat");
+
+		file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+	
+		
+		try
+		{
+			file.open(fn_str, std::ios::binary);
+			writeString(FILE_HEADER, SIZE_FH);
+			writeString(VERSION, SIZE_VER);
+			writeString(GLOBAL_HEADER, SIZE_GH);
+			writeValue(this->sim_props.int_type);
+			writeValue(this->sim_props.ev_type);
+			writeValue(this->bg_props.size());
+			for (auto bgp : bg_props)
+			{
+				writeString(ITEM_HEADER, SIZE_IH);
+				writeValue(bgp.dist);
+				writeValue(bgp.N);
+				writeValue(bgp.pos);
+				writeValue(bgp.vel);
+				writeValue(bgp.use_relative_coords);
+				writeValue(bgp.min_mass);
+				writeValue(bgp.max_mass);
+				writeValue(bgp.has_central_mass);
+				writeValue(bgp.central_mass);
+				writeValue(bgp.colour);
+				for (auto c : bgp.cols)
+				{
+					writeValue(c);
+				}				
+			}
+			file.close();
+		}
+		catch (std::ofstream::failure const& fail)
+		{
+			throw MAKE_ERROR(fail.what());
+		}
+
+	}
+
+	bool StartState::loadSettings(char const * filename)
+	{
+		using namespace fileio;
+		std::ifstream file;
+		auto readString = [&file](char const data[], size_t len) -> bool
+		{
+			auto buf = new char[len + 1];
+			file.read(buf, len);
+			auto str_read = !strcmp(data, buf);
+			delete[] buf;
+			char buf2[sizeof(SEP) + 1];
+			file.read(buf2, sizeof(SEP));
+			return str_read & !strcmp(buf2, SEP);
+		};
+		auto readValue = [&file](auto&& dest) -> bool
+		{
+			auto len = sizeof(dest);
+			auto buf = new char[len];
+			file.read(buf, len);
+			dest = reinterpret_cast<decltype(dest)>(*buf);
+			delete[] buf;
+			char buf2[sizeof(SEP) + 1];
+			file.read(buf2, sizeof(SEP));
+			return !strcmp(buf2, SEP);
+
+		};
+
 		std::string fn_str(filename);
 		// if a file extension was supplied, trim it and append '.dat. instead
 		auto pos = fn_str.find_last_of('.');
@@ -573,31 +689,50 @@ namespace nbody
 		}
 		fn_str.append(".dat");
 
-		std::ofstream write;
-		write.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 		try
-		{
-			write.open(fn_str/*, std::ios::binary*/);
-			write << "nb_settings_v1__" << "__global__" << static_cast<int>(this->sim_props.int_type) << static_cast<int>(this->sim_props.ev_type);
-			write << "__bgprop__" << this->bg_props.size();
-			size_t i = 0;
-			for (auto bgp : bg_props)
+		{	
+			file.open(fn_str, std::ios::binary);
+			if (!file.is_open())
+				throw MAKE_ERROR(std::string("Could not open file ") + fn_str);
+
+			auto good = readString(FILE_HEADER, SIZE_FH);
+			good &= readString(VERSION, SIZE_VER);
+			good &= readString(GLOBAL_HEADER, SIZE_GH);
+			if (!good)
+				throw MAKE_ERROR(std::string("Error reading header of file ") + fn_str);
+			good &= readValue(this->sim_props.int_type);
+			good &= readValue(this->sim_props.ev_type);
+			if (!good)
+				throw MAKE_ERROR(std::string("Error reading global properties in file ") + fn_str);
+			size_t n_groups;
+			readValue(n_groups);
+			this->bg_props.assign(n_groups, BodyGroupProperties());
+			for (auto& bgp : bg_props)
 			{
-				write << "__##" << i++ << "__";
-				write << static_cast<int>(bgp.dist) << bgp.N << bgp.pos << bgp.vel;
-				write << bgp.min_mass << bgp.max_mass << bgp.has_central_mass << bgp.central_mass;
-				write << static_cast<int>(bgp.colour);
+				good &= readString(ITEM_HEADER, SIZE_IH);
+				good &= readValue(bgp.dist);
+				good &= readValue(bgp.N);
+				good &= readValue(bgp.pos);
+				good &= readValue(bgp.vel);
+				good &= readValue(bgp.use_relative_coords);
+				good &= readValue(bgp.min_mass);
+				good &= readValue(bgp.max_mass);
+				good &= readValue(bgp.has_central_mass);
+				good &= readValue(bgp.central_mass);
+				good &= readValue(bgp.colour);
 				for (auto c : bgp.cols)
 				{
-					write << c.r << c.g << c.b << c.a;
+					good &= readValue(c);
 				}
+				if (!good)
+					throw MAKE_ERROR(std::string("Error reading BodyGroup properties in file ") + fn_str);
 			}
-			write.close();
-		}
-		catch (std::ofstream::failure const& fail)
-		{
-			MAKE_ERROR(fail.what());
-		}
+			return good;
 
+		}
+		catch (Error e)
+		{
+			return false;
+		}
 	}
 }

@@ -47,6 +47,7 @@ namespace nbody
 		void makeSavePopup();
 
 		void saveSettings(char const* filename);
+		bool loadSettings(char const* filename);
 
 		sf::View view;
 
@@ -174,9 +175,20 @@ namespace nbody
 				return true;
 			}
 		} };
-
-
 	};
+
+	namespace fileio
+	{
+		char constexpr FILE_HEADER[] = "nb_settings";
+		char constexpr VERSION[] = "v1";
+		char constexpr GLOBAL_HEADER[] = "global";
+		char constexpr ITEM_HEADER[] = "bgprop";
+		char constexpr SEP[] = "__";
+		size_t constexpr SIZE_FH = sizeof(FILE_HEADER);
+		size_t constexpr SIZE_VER = sizeof(VERSION);
+		size_t constexpr SIZE_GH = sizeof(GLOBAL_HEADER);
+		size_t constexpr SIZE_IH = sizeof(ITEM_HEADER);
+	}
 }
 
 #endif // START_STATE_H
