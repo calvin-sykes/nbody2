@@ -3,7 +3,10 @@
 
 #include "SimState.h"
 #include "BodyDistributor.h"
+#include "BodyGroupProperties.h"
 
+#include <fstream>
+#include <string>
 #include <vector>
 
 #include <SFML/Graphics.hpp>
@@ -17,31 +20,10 @@ namespace nbody
 		CREATE_NEW
 	};
 
-	struct DistributorProperties
-	{
-		DistributorType type;
-		const char * name;
-		const char * tooltip;
-		bool has_central_mass;
-	};
-
 	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
-
-	struct BodyGroupProperties
-	{
-		BodyGroupProperties() :
-			dist(DistributorType::INVALID), N(0), min_mass(0), max_mass(0),
-			has_central_mass(false), central_mass(0), pos(), vel() {}
-
-		int N;
-		DistributorType dist;
-		double min_mass;
-		double max_mass;
-		bool has_central_mass;
-		double central_mass;
-		Vector2d pos, vel;
-	};
-
+	using CPArray = std::array<ColourerProperties, static_cast<size_t>(ColourerType::N_TYPES)>;
+	using IntArray = std::array<IntegratorProperties, static_cast<size_t>(IntegratorType::N_INTEGRATORS)>;
+	using EvlArray = std::array<EvolveProperties, static_cast<size_t>(EvolveType::N_METHODS)>;
 	using ComboCallback = bool(*)(void*, int, char const**);
 
 	class StartState : public SimState
@@ -55,22 +37,31 @@ namespace nbody
 	private:
 		void run();
 
+		void makeInitialWindow();
+		void makeLoadWindow();
+		void makeGenerateWindow();
+		void makeMassPopup(size_t const idx);
+		void makeCentralMassPopup(size_t const idx);
+		void makePosVelPopup(size_t const idx);
+		void makeColourPopup(size_t const idx);
+		void makeSavePopup();
+
+		void saveSettings(char const* filename);
+		bool loadSettings(char const* filename);
+
 		sf::View view;
 
 		MenuState menu_state;
 		bool l1_modal_is_open, l2_modal_is_open;
 		ImGuiWindowFlags window_flags;
 		ImGuiStyle& style;
+
 		// Sets of parameters for BodyGroups 
 		std::vector<BodyGroupProperties> bg_props;
+		// SImulation-wide parameters
+		SimProperties sim_props;
 		// Temporary storage variables
-		std::vector<float> tmp_min_mass;
-		std::vector<float> tmp_max_mass;
-		std::vector<float> tmp_central_mass;
-		std::vector<DistributorType> tmp_dist_type;
-		std::vector<Vector2d> tmp_pos;
-		std::vector<Vector2d> tmp_vel;
-		std::vector<char> tmp_use_relative_coords;
+		std::vector<TempColArray> tmp_cols;
 
 		// Info on BodyDistributors
 		DPArray static constexpr dist_infos = { {
@@ -93,8 +84,7 @@ namespace nbody
 				false
 			}
 		} };
-		// Get the .name field of a DistributorProperties object
-		// for displaying in a ComboBox
+
 		ComboCallback getDistributorName{ [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<DPArray*>(data);
@@ -108,7 +98,97 @@ namespace nbody
 				return true;
 			}
 		} };
+
+		CPArray static constexpr colour_infos = { {
+			{
+				ColourerType::SOLID,
+				"Single",
+				"All bodies in this group are coloured the same",
+				1
+			},
+			{
+				ColourerType::VELOCITY,
+				"Velocity",
+				"Bodies in this group are coloured according to their velocity",
+				2
+			}
+		} };
+
+		ComboCallback getColourerName{ [](void * data, int idx, const char ** out_text)
+		{
+			auto& array = *static_cast<CPArray*>(data);
+			if (idx < 0 || idx >= static_cast<int>(array.size()))
+			{
+				return false;
+			}
+			else
+			{
+				*out_text = array[idx].name;
+				return true;
+			}
+		} };
+
+		IntArray integrator_infos = { {
+			{
+				IntegratorType::EULER,
+				"Euler"
+			}
+		} };
+
+		ComboCallback getIntegratorName{ [](void * data, int idx, const char ** out_text)
+		{
+			auto& array = *static_cast<IntArray*>(data);
+			if (idx < 0 || idx >= static_cast<int>(array.size()))
+			{
+				return false;
+			}
+			else
+			{
+				*out_text = array[idx].name;
+				return true;
+			}
+		} };
+
+		EvlArray evolve_infos = { {
+			{
+				EvolveType::BRUTE_FORCE,
+				"Brute-force",
+				"Forces between every pair of bodies are calculated directly"
+			},
+			{
+				EvolveType::BARNES_HUT,
+				"Barnes-Hut",
+				"Long-range forces are approximated using a Barnes-Hut tree"
+			}
+		} };
+
+		ComboCallback getEvolveName{ [](void * data, int idx, const char ** out_text)
+		{
+			auto& array = *static_cast<EvlArray*>(data);
+			if (idx < 0 || idx >= static_cast<int>(array.size()))
+			{
+				return false;
+			}
+			else
+			{
+				*out_text = array[idx].name;
+				return true;
+			}
+		} };
 	};
+
+	namespace fileio
+	{
+		char constexpr FILE_HEADER[] = "nb_settings";
+		char constexpr VERSION[] = "v1";
+		char constexpr GLOBAL_HEADER[] = "global";
+		char constexpr ITEM_HEADER[] = "bgprop";
+		char constexpr SEP[] = "__";
+		size_t constexpr SIZE_FH = sizeof(FILE_HEADER);
+		size_t constexpr SIZE_VER = sizeof(VERSION);
+		size_t constexpr SIZE_GH = sizeof(GLOBAL_HEADER);
+		size_t constexpr SIZE_IH = sizeof(ITEM_HEADER);
+	}
 }
 
 #endif // START_STATE_H

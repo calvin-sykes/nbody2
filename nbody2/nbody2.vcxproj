@@ -330,6 +330,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="Components.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="BodyGroupProperties.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui_sfml.h" />
     <ClInclude Include="imgui.h" />

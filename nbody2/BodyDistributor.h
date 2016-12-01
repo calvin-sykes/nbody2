@@ -41,6 +41,14 @@ namespace nbody
 		INVALID = -1
 	};
 
+	struct DistributorProperties
+	{
+		DistributorType const type;
+		char const* name;
+		char const* tooltip;
+		bool const has_central_mass;
+	};
+
 	class BodyDistributor
 	{
 	public:

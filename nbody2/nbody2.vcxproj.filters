@@ -138,7 +138,10 @@
       <Filter>Header Files\gui</Filter>
     </ClInclude>
     <ClInclude Include="stb_truetype.h">
-      <Filter>Header Files\gui</Filter>
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyGroupProperties.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

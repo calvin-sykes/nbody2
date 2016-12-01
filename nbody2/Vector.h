@@ -72,7 +72,7 @@ namespace nbody
 		///////////////////////////
 
 		// Addition
-		Vector& operator+=(const Vector& rhs)
+		Vector& operator+=(Vector const& rhs)
 		{
 			for (size_t i = 0; i < N; i++)
 				a_[i] += rhs.a_[i];
@@ -80,7 +80,7 @@ namespace nbody
 		}
 
 		// Subtraction
-		Vector& operator-=(const Vector& rhs)
+		Vector& operator-=(Vector const& rhs)
 		{
 			for (size_t i = 0; i < N; i++)
 				a_[i] -= rhs.a_[i];
@@ -88,15 +88,21 @@ namespace nbody
 		}
 
 		// Scalar multiplication
-		Vector& operator*=(const T factor)
+		Vector& operator*=(T const factor)
 		{
 			for (size_t i = 0; i < N; i++)
 				a_[i] *= factor;
 			return *this;
 		}
 
+		//Scalar division
+		Vector& operator/=(T const factor)
+		{
+			return operator*=(1 / factor);
+		}
+
 		// Dot product
-		T dot_prod(const Vector& rhs) const
+		T dot_prod(Vector const& rhs) const
 		{
 			T dp = 0;
 			for (size_t i = 0; i < N; i++)
@@ -138,7 +144,7 @@ namespace nbody
 		}
 
 		// Test for equality
-		bool operator==(const Vector& rhs) const
+		bool operator==(Vector const& rhs) const
 		{
 			bool equal = true;
 			for (size_t i = 0; i < N; i++)
@@ -150,20 +156,20 @@ namespace nbody
 		}
 
 		// Test for inequality 
-		bool operator!=(const Vector& rhs) const
+		bool operator!=(Vector const& rhs) const
 		{
 			return !operator==(rhs);
 		}
 
-		// Element access
-		T const& operator[](size_t index)
+		// Element access (read only)
+		T operator[](size_t index) const
 		{
 			return a_[index];
 		}
 	};
 
 	template <typename T, size_t N>
-	std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v)
+	std::ostream& operator<<(std::ostream& os, Vector<T, N> const& v)
 	{
 		for (size_t i = 0; i < N; i++)
 			os << v[i] << ' ';
@@ -171,31 +177,37 @@ namespace nbody
 	}
 
 	template <typename T, size_t N>
-	Vector<T, N> operator+(Vector<T, N> lhs, const Vector<T, N>& rhs)
+	Vector<T, N> operator+(Vector<T, N> lhs, Vector<T, N> const& rhs)
 	{
 		lhs += rhs;
 		return lhs;
 	}
 
 	template <typename T, size_t N>
-	Vector<T, N> operator-(Vector<T, N> lhs, const Vector<T, N>& rhs)
+	Vector<T, N> operator-(Vector<T, N> lhs, Vector<T, N> const& rhs)
 	{
 		lhs -= rhs;
 		return lhs;
 	}
 
-	template <typename T, typename F, size_t N, typename std::enable_if<std::is_arithmetic<F>::value>::type* = nullptr>
-	Vector<T, N> operator*(Vector<T, N> v, const F f)
+	template <typename T, typename F, size_t N, typename std::enable_if<std::is_convertible<F, T>::value>::type* = nullptr>
+	Vector<T, N> operator*(Vector<T, N> v, F const f)
 	{
 		v *= static_cast<T>(f);
 		return v;
 	}
 
-	template <typename T, typename F, size_t N, typename std::enable_if<std::is_arithmetic<F>::value>::type* = nullptr>
-	Vector<T, N> operator*(const F f, Vector<T, N> v)
+	template <typename T, typename F, size_t N, typename std::enable_if<std::is_convertible<F, T>::value>::type* = nullptr>
+	Vector<T, N> operator*(F const f, Vector<T, N> v)
 	{
 		return v *= static_cast<T>(f);
 		return v;
+	}
+
+	template <typename T, typename F, size_t N, typename std::enable_if<std::is_convertible<F, T>::value>::type* = nullptr>
+	Vector<T, N> operator/(Vector<T, N> v, F const f)
+	{
+		return v /= static_cast<T>(f);
 	}
 
 	typedef Vector<float, 2> Vector2f;
