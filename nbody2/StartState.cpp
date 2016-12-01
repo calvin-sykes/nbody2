@@ -188,9 +188,6 @@ namespace nbody
 			{
 				if (event.key.code == sf::Keyboard::Escape)
 					this->sim->window.close();
-				else if (event.key.code == sf::Keyboard::Space)
-					//this->run();
-					break;
 			}
 			default:
 				break;
@@ -448,10 +445,10 @@ namespace nbody
 			EndGroup();
 			auto sz = GetItemRectSize();
 			SameLine();
-			Dummy({ 50, 0 });
+			Dummy({ 207, 0 });
 			SameLine();
 			// Save button
-			if (Button("Save", { 50, sz.y }))
+			if (Button("Save", { 100, sz.y }))
 			{
 				l2_modal_is_open = true;
 				SetNextWindowPosCenter();
@@ -461,6 +458,13 @@ namespace nbody
 			{
 				makeSavePopup();
 				EndPopup();
+			}
+			SameLine();
+			// Run button
+			if (Button("Run", {100, sz.y}))
+			{
+				this->sim_props.bg_props = std::move(this->bg_props);
+				this->run();
 			}
 			SameLine();
 			Dummy({ GetContentRegionAvailWidth() - 30, 0 });
