@@ -221,7 +221,7 @@ namespace nbody
 			//////////////
 
 			// create root quadrant of tree
-			Quad root(com.x, com.y, 10 * RAD);
+			Quad root(com.x, com.y, 10 * Constants::RADIUS);
 
 			// reconstruct BH tree if needed
 			if (tree_old || current_show_grid != show_grid)
@@ -294,26 +294,26 @@ namespace nbody
 	{
 		size_t n1 = N; //(3 * N) / 4;
 		size_t n2 = N - n1;
-		auto r1 = 0.5 * RAD;
-		auto r2 = 0.375 * RAD;
+		auto r1 = 0.5 * Constants::RADIUS;
+		auto r2 = 0.375 * Constants::RADIUS;
 		auto cm1 = CENTRAL_MASS;
 		auto cm2 = 0.75 * CENTRAL_MASS;
-		auto pos1 = Vector2d(RAD / 2, 0.1 * RAD);
+		auto pos1 = Vector2d(Constants::RADIUS / 2, 0.1 * Constants::RADIUS);
 		auto pos2 = -2 * pos1;
 		auto vel1 = Vector2d(-5000, -2000);
 		auto vel2 = -1 * vel1;
 		// populate array of bodies
 		auto bodies = std::make_unique<std::array<Body2d, N_MAX>>();
-		auto dist1 = ExponentialDistributor(r1, cm1, -1.8, pos1, vel1);
-		auto dist2 = ExponentialDistributor(r2, cm2, -1.8, pos2, vel2);
+		//auto dist1 = ExponentialDistributor(r1, cm1, -1.8, pos1, vel1);
+		//auto dist2 = ExponentialDistributor(r2, cm2, -1.8, pos2, vel2);
 		//auto dist1 = PlummerDistributor(r1, cm1, n1, pos1, vel1);
 		//auto dist2 = PlummerDistributor(r2, cm2, n2, pos2, vel2);
 		//auto dist1 = IsothermalDistributor(r1, cm1, pos1, vel1);
 		//auto dist2 = IsothermalDistributor(r2, cm2, pos2, vel2);
-		for (size_t i = 0; i < n1; i++)
-			(*bodies)[i] = dist1.sample();
+		//for (size_t i = 0; i < n1; i++)
+		//	(*bodies)[i] = dist1.sample();
 		// central mass
-		(*bodies)[0] = Body2d(pos1, vel1, cm1, 0);
+		//(*bodies)[0] = Body2d(pos1, vel1, cm1, 0);
 		//for (size_t i = n1; i < N; i++)
 		//	(*bodies)[i] = dist2.sample();
 		// central mass
@@ -325,7 +325,7 @@ namespace nbody
 	{
 		auto p_tree = new BHTree(root, 0);
 		for (size_t i = 0; i < n; i++)
-			p_tree->insert(static_cast<pcBody>(&(*bodies)[i]));
+			p_tree->insert(&(*bodies)[i]);
 		return p_tree;
 	}
 

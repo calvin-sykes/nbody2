@@ -1,7 +1,8 @@
-#pragma once
+#ifndef INTEGRATOR_H
+#define INTEGRATOR_H
 
-#include "Vector.h"
 #include "Constants.h"
+#include "Vector.h"
 
 namespace nbody
 {
@@ -39,3 +40,5 @@ namespace nbody
 		}
 	};
 }
+
+#endif // INTEGRATOR_H

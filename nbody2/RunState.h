@@ -7,6 +7,8 @@
 
 namespace nbody
 {
+	class Sim;
+	
 	enum class ActionState { NONE, PANNING };
 
 	class RunState : public SimState

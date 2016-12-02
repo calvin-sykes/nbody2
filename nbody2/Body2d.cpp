@@ -1,5 +1,6 @@
 #include "Body2d.h"
 #include "Constants.h"
+#include "Integrator.h"
 
 namespace nbody
 {
@@ -12,7 +13,7 @@ namespace nbody
 	Body2d::Body2d(Vector2d const& posIn, Vector2d const& velIn, double const massIn, size_t const idIn)
 		: pos(posIn), vel(velIn), acc(), mass(massIn), id(idIn), trail(posIn)
 	{
-		auto rad = min(static_cast<float>(MIN_SIZE * log10(mass / BODY_MASS)), MAX_SIZE);
+		auto rad = min(static_cast<float>(MIN_SIZE * log10(mass / Constants::SOLAR_MASS)), MAX_SIZE);
 		gfx = sf::CircleShape(static_cast<float>(rad), 20);
 		gfx.setOrigin(static_cast<float>(rad), static_cast<float>(rad));
 		gfx.setOutlineColor(sf::Color::White);
@@ -26,7 +27,7 @@ namespace nbody
 		auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // r/|r|
 		// F = (G m1 m2 / (|r|**2 + eps**2) * r_hat
 		// a = F / m1
-		acc += (G * other_mass / (rel_pos_mag_sq + EPS * EPS)) * unit_vec;
+		acc += (Constants::G * other_mass / (rel_pos_mag_sq + Constants::SOFTENING * Constants::SOFTENING)) * unit_vec;
 	}
 
 	void Body2d::addAccel(Body2d const& other_body)
@@ -36,7 +37,7 @@ namespace nbody
 		auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // r/|r|
 		// F = (G m1 m2 / (|r|**2 + eps**2) * r_hat
 		// a = F / m1
-		acc += (G * other_body.mass / (rel_pos_mag_sq + EPS * EPS)) * unit_vec;
+		acc += (Constants::G * other_body.mass / (rel_pos_mag_sq + Constants::SOFTENING * Constants::SOFTENING)) * unit_vec;
 	}
 
 	void Body2d::resetAccel()
@@ -67,7 +68,7 @@ namespace nbody
 			auto scale = max(static_cast<float>(-std::log2(screen_scale)), 1.f);
 			gfx.setScale(scale, scale);
 			auto v_mag = vel.mag();
-			auto phase = min(PI / 2., (v_mag / 100000.) * (PI / 2.));
+			auto phase = min(Constants::PI / 2., (v_mag / 100000.) * (Constants::PI / 2.));
 			auto red = (int)(254 * sin(phase));
 			auto blue = (int)(254 * cos(phase));
 			auto green = 0;

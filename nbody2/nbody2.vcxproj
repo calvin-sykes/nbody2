@@ -310,6 +310,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
   <ItemGroup>
     <ClCompile Include="BHTree.cpp" />
     <ClCompile Include="Body2d.cpp" />
+    <ClCompile Include="BodyDistributor.cpp" />
     <ClCompile Include="BodyTrail.cpp" />
     <ClCompile Include="imgui_sfml.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -327,10 +328,12 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="Body2d.h" />
     <ClInclude Include="BodyDistributor.h" />
     <ClInclude Include="BodyTrail.h" />
+    <ClInclude Include="Colourer.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="BodyGroupProperties.h" />
+    <ClInclude Include="Evolver.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui_sfml.h" />
     <ClInclude Include="imgui.h" />

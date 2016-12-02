@@ -3,12 +3,11 @@
 
 #include "Components.h"
 
-#include <limits>
-#include <cmath>
-
-
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
+
+#include <cmath>
+#include <limits>
 
 namespace nbody
 {
@@ -210,11 +209,10 @@ namespace nbody
 		return v /= static_cast<T>(f);
 	}
 
-	typedef Vector<float, 2> Vector2f;
-	typedef Vector<float, 3> Vector3f;
-
-	typedef Vector<double, 2> Vector2d;
-	typedef Vector<double, 3> Vector3d;
+	using Vector2f = Vector<float, 2>;
+	using Vector3f = Vector<float, 3>;
+	using Vector2d = Vector<double, 2>;
+	using Vector3d = Vector<double, 3>;
 }
 
 #endif // VECTOR_H

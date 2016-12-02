@@ -1,47 +1,51 @@
 #ifndef SIM_H
 #define SIM_H
 
+#include "AssetManager.h"
 #include "Body2d.h"
 #include "BodyGroupProperties.h"
+#include "Evolver.h"
 #include "Integrator.h"
-
-#include "AssetManager.h"
-#include "imgui.h"
-#include "imgui_sfml.h"
-
-#include <stack>
-#include <map>
-#include <vector>
 
 #include <SFML/Graphics.hpp>
 
+#include <iterator>
+#include <stack>
+#include <vector>
 
 namespace nbody
 {
+	struct BodyGroupProperties;
 	class SimState;
 
-	// TODO: Move me?
-	enum class EvolveType
+	template <typename T>
+	typename std::vector<T>::iterator append(std::vector<T>&& src, std::vector<T>& dest)
 	{
-		BRUTE_FORCE,
-		BARNES_HUT,
-		N_METHODS,
-		INVALID = -1
-	};
-	// also TODO
-	struct EvolveProperties
-	{
-		EvolveType type;
-		char const* name;
-		char const* tooltip;
-	};
+		typename std::vector<T>::iterator result;
+
+		if (dest.empty()) {
+			dest = std::move(src);
+			result = std::begin(dest);
+		}
+		else {
+			result = dest.insert(std::end(dest),
+				std::make_move_iterator(std::begin(src)),
+				std::make_move_iterator(std::end(src)));
+		}
+
+		src.clear();
+		src.shrink_to_fit();
+
+		return result;
+	}
+
 
 	struct SimProperties
 	{
-		SimProperties() : int_type(IntegratorType::INVALID), ev_type(EvolveType::INVALID), bg_props{} {}
+		SimProperties() : int_type(IntegratorType::INVALID), ev_type(EvolverType::INVALID), bg_props{} {}
 		
 		IntegratorType int_type;
-		EvolveType ev_type;
+		EvolverType ev_type;
 		std::vector<BodyGroupProperties> bg_props;
 	};
 
@@ -57,14 +61,14 @@ namespace nbody
 		SimState* peekState();
 		
 		void loadTextures();
+		void loadObjects();
 
+		void setProperties(SimProperties const&);
+		void createBodyGroup(BodyGroupProperties const&);
 		void simLoop();
-
-		double static constexpr SOLAR_MASS = 1.98892E30;
-		double static constexpr RADIUS = 1E18;
-		size_t static constexpr MAX_N = 10000;
 		
-		Integrator * integrator;
+		Integrator * integrator_ptr;
+		Evolver * evolver_ptr;
 		
 		sf::RenderWindow window;
 		AssetManager asset_mgr;

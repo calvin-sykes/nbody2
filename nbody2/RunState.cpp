@@ -1,4 +1,5 @@
 #include "RunState.h"
+#include "Sim.h"
 #include "SimState.h"
 
 #include <SFML/Graphics.hpp>

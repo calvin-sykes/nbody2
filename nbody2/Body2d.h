@@ -1,16 +1,17 @@
 #ifndef BODY2D_H
 #define BODY2D_H
 
-#include "Vector.h"
-#include "Quad.h"
-#include "Integrator.h"
 #include "BodyTrail.h"
+#include "Vector.h"
+
+#include <SFML/Graphics.hpp>
 
 #include <memory>
-#include <SFML/Graphics.hpp>
 
 namespace nbody
 {
+	class Integrator;
+
 	class Body2d : public sf::Drawable
 	{
 	public:

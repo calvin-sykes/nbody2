@@ -1,18 +1,25 @@
 #ifndef START_STATE_H
 #define START_STATE_H
 
-#include "SimState.h"
 #include "BodyDistributor.h"
-#include "BodyGroupProperties.h"
+#include "Colourer.h"
+#include "Evolver.h"
+#include "Integrator.h"
+#include "Sim.h"
+#include "SimState.h"
+
+#include "imgui.h"
+
+#include <SFML/Graphics.hpp>
 
 #include <fstream>
 #include <string>
 #include <vector>
 
-#include <SFML/Graphics.hpp>
-
 namespace nbody
 {
+	struct BodyGroupProperties;
+	
 	enum class MenuState
 	{
 		INITIAL,
@@ -20,10 +27,15 @@ namespace nbody
 		CREATE_NEW
 	};
 
+	struct TempColArray
+	{
+		float cols[static_cast<size_t>(ColourerType::N_TYPES)][MAX_COLS_PER_COLOURER][3];
+	};
+
 	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
 	using CPArray = std::array<ColourerProperties, static_cast<size_t>(ColourerType::N_TYPES)>;
 	using IntArray = std::array<IntegratorProperties, static_cast<size_t>(IntegratorType::N_INTEGRATORS)>;
-	using EvlArray = std::array<EvolveProperties, static_cast<size_t>(EvolveType::N_METHODS)>;
+	using EvlArray = std::array<EvolverProperties, static_cast<size_t>(EvolverType::N_METHODS)>;
 	using ComboCallback = bool(*)(void*, int, char const**);
 
 	class StartState : public SimState
@@ -43,6 +55,7 @@ namespace nbody
 		void makeMassPopup(size_t const idx);
 		void makeCentralMassPopup(size_t const idx);
 		void makePosVelPopup(size_t const idx);
+		void makeRadiusPopup(size_t const idx);
 		void makeColourPopup(size_t const idx);
 		void makeSavePopup();
 
@@ -58,7 +71,7 @@ namespace nbody
 
 		// Sets of parameters for BodyGroups 
 		std::vector<BodyGroupProperties> bg_props;
-		// SImulation-wide parameters
+		// Simulation-wide parameters
 		SimProperties sim_props;
 		// Temporary storage variables
 		std::vector<TempColArray> tmp_cols;
@@ -151,12 +164,12 @@ namespace nbody
 
 		EvlArray evolve_infos = { {
 			{
-				EvolveType::BRUTE_FORCE,
+				EvolverType::BRUTE_FORCE,
 				"Brute-force",
 				"Forces between every pair of bodies are calculated directly"
 			},
 			{
-				EvolveType::BARNES_HUT,
+				EvolverType::BARNES_HUT,
 				"Barnes-Hut",
 				"Long-range forces are approximated using a Barnes-Hut tree"
 			}
@@ -180,7 +193,7 @@ namespace nbody
 	namespace fileio
 	{
 		char constexpr FILE_HEADER[] = "nb_settings";
-		char constexpr VERSION[] = "v1";
+		char constexpr VERSION[] = "v2";
 		char constexpr GLOBAL_HEADER[] = "global";
 		char constexpr ITEM_HEADER[] = "bgprop";
 		char constexpr SEP[] = "__";

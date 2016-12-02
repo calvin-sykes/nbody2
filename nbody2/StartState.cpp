@@ -1,11 +1,14 @@
+#include "Error.h"
 #include "StartState.h"
 #include "RunState.h"
 #include "SimState.h"
 
-#include <stdarg.h>
-#include <numeric>
+#include "imgui_sfml.h"
 
 #include <SFML/Graphics.hpp>
+
+#include <numeric>
+#include <stdarg.h>
 
 namespace ImGui
 {
@@ -313,15 +316,15 @@ namespace nbody
 				// Number of bodies slider
 				SameLine();
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
-				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, this->sim->MAX_N);
+				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, Constants::MAX_N);
 				PopItemWidth();
 				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, []( auto sum, auto const& b) -> int { return sum + b.N; });
 				// too many bodies, need to redistribute them
-				if (n_total > this->sim->MAX_N)
+				if (n_total > Constants::MAX_N)
 				{
 					// if too many, steal from previous, except if first, then steal from last
 					// if more need to be stolen than are available, move to next
-					auto n_excess = n_total - static_cast<int>(this->sim->MAX_N);
+					auto n_excess = n_total - static_cast<int>(Constants::MAX_N);
 					size_t j = 1;
 					while (n_excess > 0)
 					{
@@ -366,8 +369,9 @@ namespace nbody
 					EndTooltip();
 				}
 				Dummy({ 0, 5 });
+				ImVec2 btn_size(0.2 * (GetContentRegionAvailWidth() - style.ItemSpacing.x), 0);
 				// Mass range popup
-				if (Button("Mass...", { 0.25f * GetContentRegionAvailWidth(), 0 }))
+				if (Button("Mass...", btn_size))
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
@@ -378,9 +382,9 @@ namespace nbody
 					makeMassPopup(i);
 					EndPopup();
 				}
-				// Central mass
+				// Central mass popup
 				SameLine();
-				if (Button("Central mass...", { 0.33f * GetContentRegionAvailWidth(), 0 }))
+				if (Button("Central mass...", btn_size))
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
@@ -393,7 +397,7 @@ namespace nbody
 				}
 				// Position and velocity popup
 				SameLine();
-				if (Button("Position/velocity...", { 0.5f * GetContentRegionAvailWidth(), 0 }))
+				if (Button("Position/velocity...", btn_size))
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
@@ -404,9 +408,22 @@ namespace nbody
 					makePosVelPopup(i);
 					EndPopup();
 				}
+				// Radius popup
+				SameLine();
+				if (Button("Radius...", btn_size))
+				{
+					l2_modal_is_open = true;
+					SetNextWindowPosCenter();
+					OpenPopup("Radius settings");
+				}
+				if (BeginPopupModal("Radius settings", &l2_modal_is_open, window_flags))
+				{
+					makeRadiusPopup(i);
+					EndPopup();
+				}
 				// Colour settings popup
 				SameLine();
-				if (Button("Colour...", { GetContentRegionAvailWidth(), 0 }))
+				if (Button("Colour...", btn_size))
 				{
 					l2_modal_is_open = true;
 					SetNextWindowPosCenter();
@@ -464,6 +481,7 @@ namespace nbody
 			if (Button("Run", {100, sz.y}))
 			{
 				this->sim_props.bg_props = std::move(this->bg_props);
+				this->sim->setProperties(this->sim_props);
 				this->run();
 			}
 			SameLine();
@@ -528,11 +546,26 @@ namespace nbody
 		Checkbox("Use relative coordinates", &this->bg_props[idx].use_relative_coords);
 		SameLine();
 		ShowHelpMarker("If checked, positions and velocities entered will be interpreted as a fraction of the universe radius %.0em",
-			this->sim->RADIUS);
+			Constants::RADIUS);
 		PushItemWidth(2 * (80.f + this->style.ItemInnerSpacing.x));
 		InputDouble2("Position", &this->bg_props[idx].pos.x);
 		InputDouble2("Velocity", &this->bg_props[idx].vel.x);
 		PopItemWidth();
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
+		if (Button("OK"))
+		{
+			CloseCurrentPopup();
+		}
+	}
+
+	void StartState::makeRadiusPopup(size_t const idx)
+	{
+		using namespace ImGui;
+		Checkbox("Use relative coordinates", &this->bg_props[idx].use_relative_coords);
+		SameLine();
+		ShowHelpMarker("If checked, the radius entered will be interpreted as a fraction of the universe radius %.0em",
+			Constants::RADIUS);
+		InputDouble("Radius", &this->bg_props[idx].radius);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
@@ -637,6 +670,7 @@ namespace nbody
 				writeValue(bgp.N);
 				writeValue(bgp.pos);
 				writeValue(bgp.vel);
+				writeValue(bgp.radius);
 				writeValue(bgp.use_relative_coords);
 				writeValue(bgp.min_mass);
 				writeValue(bgp.max_mass);
@@ -711,6 +745,8 @@ namespace nbody
 			size_t n_groups;
 			readValue(n_groups);
 			this->bg_props.assign(n_groups, BodyGroupProperties());
+			this->tmp_cols.assign(n_groups, TempColArray());
+			size_t i = 0;
 			for (auto& bgp : bg_props)
 			{
 				good &= readString(ITEM_HEADER, SIZE_IH);
@@ -718,16 +754,24 @@ namespace nbody
 				good &= readValue(bgp.N);
 				good &= readValue(bgp.pos);
 				good &= readValue(bgp.vel);
+				good &= readValue(bgp.radius);
 				good &= readValue(bgp.use_relative_coords);
 				good &= readValue(bgp.min_mass);
 				good &= readValue(bgp.max_mass);
 				good &= readValue(bgp.has_central_mass);
 				good &= readValue(bgp.central_mass);
 				good &= readValue(bgp.colour);
+				size_t j = 0;
 				for (auto c : bgp.cols)
 				{
 					good &= readValue(c);
+					// buffer into array used by GUI
+					tmp_cols[i].cols[static_cast<size_t>(bgp.colour)][j][0] = c.r / 255;
+					tmp_cols[i].cols[static_cast<size_t>(bgp.colour)][j][1] = c.g / 255;
+					tmp_cols[i].cols[static_cast<size_t>(bgp.colour)][j][2] = c.b / 255;
+					j++;
 				}
+				i++;
 				if (!good)
 					throw MAKE_ERROR(std::string("Error reading BodyGroup properties in file ") + fn_str);
 			}

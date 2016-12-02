@@ -1,4 +1,5 @@
 #include "BHTree.h"
+#include "Body2d.h"
 #include "Constants.h"
 
 namespace nbody
@@ -11,7 +12,7 @@ namespace nbody
 		if (level > max_level) max_level = level;
 	}
 
-	BHTree::BHTree(pTree nwIn, pTree neIn, pTree swIn, pTree seIn) :
+	BHTree::BHTree(BHTree * nwIn, BHTree * neIn, BHTree * swIn, BHTree * seIn) :
 		com(), n(0), mass(0), b(nullptr), daughters{swIn, seIn, nwIn, neIn }
 	{
 		// deduce dimensions from daughters
@@ -28,8 +29,8 @@ namespace nbody
 			length = daughters[0]->q.getLength();
 
 			// require no gaps between daughters
-			if (!((daughters[NW]->q.getXmid() + length / 2) - (daughters[NE]->q.getXmid() - length / 2) < 0.0001 * RAD)
-				&& !((daughters[NW]->q.getYmid() - length / 2) - (daughters[SW]->q.getYmid() + length / 2) < 0.0001 * RAD))
+			if (!((daughters[NW]->q.getXmid() + length / 2) - (daughters[NE]->q.getXmid() - length / 2) < 0.0001 * Constants::RADIUS)
+				&& !((daughters[NW]->q.getYmid() - length / 2) - (daughters[SW]->q.getYmid() + length / 2) < 0.0001 * Constants::RADIUS))
 			{
 				throw std::invalid_argument("Constructing BHTree: daughter quads not space-filling");
 			}
@@ -77,7 +78,7 @@ namespace nbody
 		}
 	}
 
-	void BHTree::insert(pcBody const bIn)
+	void BHTree::insert(Body2d const* bIn)
 	{
 		// which daughter, if any, would contrain this body?
 		auto which_daughter = q.whichDaughter(bIn->getPos());

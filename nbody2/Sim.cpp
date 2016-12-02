@@ -1,10 +1,12 @@
-#include <stack>
+#include "BodyGroupProperties.h"
+#include "Sim.h"
+#include "SimState.h"
+
+#include "imgui.h"
+#include "imgui_sfml.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-
-#include "Sim.h"
-#include "SimState.h"
 
 #define WINDOW_W 800
 #define WINDOW_H 600
@@ -15,6 +17,8 @@ namespace nbody
 	{
 		// Load images from disk
 		this->loadTextures();
+		// Initialise objects
+		this->loadObjects();
 		// Create SFML window
 #ifndef NDEBUG
 		this->window.create(sf::VideoMode(WINDOW_W, WINDOW_H), "nbody2");
@@ -73,6 +77,29 @@ namespace nbody
 	{
 		asset_mgr.loadTexture("background", "media/background.png");
 		asset_mgr.loadTexture("icon", "media/sfml.png");
+	}
+
+	void Sim::loadObjects()
+	{
+		asset_mgr.loadIntegrators();
+		asset_mgr.loadEvolvers();
+		asset_mgr.loadDistributors();
+	}
+
+	void Sim::setProperties(SimProperties const& props)
+	{
+		this->integrator_ptr = asset_mgr.getIntegrator(props.int_type);
+		this->evolver_ptr = asset_mgr.getEvolver(props.ev_type);
+		for (auto& bgp : props.bg_props)
+		{
+			createBodyGroup(bgp);
+		}
+	}
+
+	void Sim::createBodyGroup(BodyGroupProperties const& bgp)
+	{
+		auto* distrib = asset_mgr.getDistributor(bgp.dist);
+		append(distrib->createDistribution(bgp), bodies);
 	}
 
 	void Sim::simLoop()

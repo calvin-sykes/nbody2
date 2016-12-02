@@ -1,10 +1,12 @@
 #ifndef SIM_STATE_H
 #define SIM_STATE_H
 
-#include "Sim.h"
+#include <SFML/System/Clock.hpp>
 
 namespace nbody
 {
+	class Sim;
+	
 	class SimState
 	{
 	public:
