@@ -1,10 +1,11 @@
 #include "Body2d.h"
 #include "Constants.h"
+#include "Display.h"
 #include "Integrator.h"
 
 namespace nbody
 {
-	std::unique_ptr<Integrator> Body2d::p_integrator = nullptr;
+	Integrator * Body2d::integrator_ptr = nullptr;
 	size_t Body2d::id_counter = 0;
 	float const Body2d::MIN_SIZE = 2;
 	float const Body2d::MAX_SIZE = 6;
@@ -52,20 +53,20 @@ namespace nbody
 
 	void Body2d::update(double const dt)
 	{
-		p_integrator->step(id, pos, vel, acc, dt);
+		integrator_ptr->step(id, pos, vel, acc, dt);
 	}
 
 	void Body2d::updateGfx(bool const show_trails)
 	{
-		auto screen_x = WORLD_TO_SCREEN_X(pos.x);
-		auto screen_y = WORLD_TO_SCREEN_Y(pos.y);
-		is_visible = screen_x < screen_size.x && screen_x > 0 && screen_y < screen_size.y && screen_y > 0;
+		auto screen_x = Display::worldToScreenX(pos.x);
+		auto screen_y = Display::worldToScreenY(pos.y);
+		is_visible = screen_x < Display::screen_size.x && screen_x > 0 && screen_y < Display::screen_size.y && screen_y > 0;
 		if (is_visible)
 		{
 			gfx.setPosition(screen_x, screen_y);
 			if (show_trails)
 				trail.update(pos);
-			auto scale = max(static_cast<float>(-std::log2(screen_scale)), 1.f);
+			auto scale = max(static_cast<float>(-std::log2(Display::screen_scale)), 1.f);
 			gfx.setScale(scale, scale);
 			auto v_mag = vel.mag();
 			auto phase = min(Constants::PI / 2., (v_mag / 100000.) * (Constants::PI / 2.));

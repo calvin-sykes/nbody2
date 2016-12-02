@@ -1,5 +1,6 @@
 #include "BodyTrail.h"
 #include "Constants.h"
+#include "Display.h"
 
 namespace nbody
 {
@@ -8,7 +9,7 @@ namespace nbody
 		for (size_t i = 0; i < NPOINTS; i++)
 		{
 			world_coords[i] = posIn;
-			screen_coords.append(sf::Vertex({ WORLD_TO_SCREEN_X(posIn.x), WORLD_TO_SCREEN_Y(posIn.y) }));
+			screen_coords.append(sf::Vertex({ Display::worldToScreenX(posIn.x), Display::worldToScreenY(posIn.y) }));
 		}
 	}
 
@@ -29,13 +30,13 @@ namespace nbody
 			// shift forward current world position data
 			world_coords[i] = world_coords[i + 1];
 			// add the corresponding screen position to the trail
-			screen_coords.append(sf::Vertex({ WORLD_TO_SCREEN_X(world_coords[i].x),
-				WORLD_TO_SCREEN_Y(world_coords[i].y) }));
+			screen_coords.append(sf::Vertex({ Display::worldToScreenX(world_coords[i].x),
+				Display::worldToScreenY(world_coords[i].y) }));
 		}
 		// slot in new world position data at end of array
 		world_coords[NPOINTS - 1] = pos;
 		// add the corresponding screen position to the trail
-		screen_coords.append(sf::Vertex({ WORLD_TO_SCREEN_X(pos.x), WORLD_TO_SCREEN_Y(pos.y) }));
+		screen_coords.append(sf::Vertex({ Display::worldToScreenX(pos.x), Display::worldToScreenY(pos.y) }));
 	}
 
 	void BodyTrail::reset()

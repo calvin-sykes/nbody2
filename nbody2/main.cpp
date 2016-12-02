@@ -24,17 +24,12 @@
 
 namespace nbody
 {
-	float screen_scale = 1;
-	float aspect_ratio = 0;
-	Vector2f screen_size = {};
-	Vector2f screen_offset = {};
-
 	std::unique_ptr<std::array<Body2d, N_MAX>> generateBodies();
 	BHTree* buildTree(size_t const n, std::array<Body2d, N_MAX> const* bodies, Quad const& root);
 	BHTree* buildTreeThreaded(size_t const n, std::array<Body2d, N_MAX> const* bodies, Quad const& root);
 	void stepBH(size_t const n, std::array<Body2d, N_MAX>* bodies, BHTree const* p_tree, Quad const& root);
 
-	int mainBH()
+/*	int mainBH()
 	{
 		auto running = false;
 		auto show_bodies = true;
@@ -288,7 +283,7 @@ namespace nbody
 			}
 		}
 		return 0;
-	}
+	}*/
 
 	std::unique_ptr<std::array<Body2d, N_MAX>> generateBodies()
 	{

@@ -7,23 +7,10 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include "Vector.h"
-
 #include <iostream>
 
 namespace nbody
 {
-	// Convenience macros to convert between screen and world coordinates
-#define WORLD_TO_SCREEN_X(var) static_cast<float>((var) / Constants::RADIUS * screen_size.x / (screen_scale * aspect_ratio * 2) + 0.5 * screen_size.x - screen_offset.x)
-
-#define WORLD_TO_SCREEN_Y(var) static_cast<float>(-1 * ((var) / Constants::RADIUS) * screen_size.y / (screen_scale * 2) + 0.5 * screen_size.y - screen_offset.y)
-
-#define WORLD_TO_SCREEN_SIZE(var) static_cast<float>((var) / Constants::RADIUS * screen_size.y / (screen_scale * 2))
-
-#define SCREEN_TO_WORLD_X(var) static_cast<float>(((var) - 0.5 * screen_size.x + screen_offset.x) * (2 * aspect_ratio * screen_scale * Constants::RADIUS) / screen_size.x)
-
-#define SCREEN_TO_WORLD_Y(var) static_cast<float>(-1 * ((var) - 0.5* screen_size.y + screen_offset.y) * (2 * screen_scale * Constants::RADIUS) / screen_size.y)
-
 	template <typename T> const T min(const T a, const T b) {
 		return (a > b) ? b : a;
 	}
@@ -41,14 +28,6 @@ namespace nbody
 		double constexpr SOLAR_MASS = 1.98892E30;
 		size_t constexpr MAX_N = 10000;
 	}
-
-	// Window properties
-	float extern aspect_ratio;
-	float extern screen_scale;
-	Vector2f extern screen_size;
-	Vector2f extern screen_offset;
-	//size_t extern screen_width;
-	//size_t extern screen_height;
 
 	// Simulation properties
 	size_t constexpr N_MAX = 10000;

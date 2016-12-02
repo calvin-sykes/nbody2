@@ -27,7 +27,7 @@ namespace nbody
 		void addAccel(Body2d const& other_body);
 		void resetAccel();
 
-		static std::unique_ptr<Integrator> p_integrator;
+		static Integrator * integrator_ptr;
 
 		bool operator==(Body2d const& other) const;
 		bool operator!=(Body2d const& other) const { return !operator==(other); };

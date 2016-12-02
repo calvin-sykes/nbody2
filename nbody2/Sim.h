@@ -18,16 +18,19 @@ namespace nbody
 	struct BodyGroupProperties;
 	class SimState;
 
+	// Apend a vector rvalue to a secoond vector, using move semantics
 	template <typename T>
 	typename std::vector<T>::iterator append(std::vector<T>&& src, std::vector<T>& dest)
 	{
 		typename std::vector<T>::iterator result;
 
-		if (dest.empty()) {
+		if (dest.empty())
+		{
 			dest = std::move(src);
 			result = std::begin(dest);
 		}
-		else {
+		else
+		{
 			result = dest.insert(std::end(dest),
 				std::make_move_iterator(std::begin(src)),
 				std::make_move_iterator(std::end(src)));
@@ -69,6 +72,8 @@ namespace nbody
 		
 		Integrator * integrator_ptr;
 		Evolver * evolver_ptr;
+
+		std::vector<Body2d> bodies;
 		
 		sf::RenderWindow window;
 		AssetManager asset_mgr;
@@ -76,8 +81,6 @@ namespace nbody
 
 	private:
 		std::stack<SimState*> states;
-
-		std::vector<Body2d> bodies;
 	};
 }
 #endif // SIM_H

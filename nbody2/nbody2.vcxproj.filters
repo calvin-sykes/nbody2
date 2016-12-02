@@ -31,6 +31,12 @@
     <Filter Include="Header Files\gui">
       <UniqueIdentifier>{3b0fd6f4-f3ca-4c69-87d9-c96266b6ca5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{8575e6d5-d448-47d7-aa2e-23fb5a816791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{b188edbe-f151-4a9e-b446-b9238f9754c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -75,11 +81,11 @@
     <ClCompile Include="BodyDistributor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Display.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Body2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -151,6 +157,12 @@
     </ClInclude>
     <ClInclude Include="stb_truetype.h">
       <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Header Files\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

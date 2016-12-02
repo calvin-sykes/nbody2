@@ -1,5 +1,6 @@
 #include "Quad.h"
 #include "Constants.h"
+#include "Display.h"
 
 namespace nbody
 {
@@ -48,16 +49,16 @@ namespace nbody
 
 	void Quad::updateGfx(const size_t level)
 	{
-		screen_length = WORLD_TO_SCREEN_SIZE(length);
+		screen_length = Display::worldToScreenLength(length);
 		auto half_length = screen_length / 2;
 		// is quad visible?
-		auto screen_x = WORLD_TO_SCREEN_X(mid_point.x);
-		auto screen_y = WORLD_TO_SCREEN_Y(mid_point.y);
+		auto screen_x = Display::worldToScreenX(mid_point.x);
+		auto screen_y = Display::worldToScreenY(mid_point.y);
 		is_visible = (screen_length > 5)
 			&& (screen_x + half_length > 0)
-			&& (screen_x - half_length < screen_size.x)
+			&& (screen_x - half_length < Display::screen_size.x)
 			&& (screen_y + half_length > 0)
-			&& (screen_y - half_length < screen_size.y);
+			&& (screen_y - half_length < Display::screen_size.y);
 
 		if (is_visible)
 		{
