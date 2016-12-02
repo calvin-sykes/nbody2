@@ -82,7 +82,7 @@ namespace nbody
 		virtual std::vector<Body2d> createDistribution(BodyGroupProperties const& props) const;
 
 	private:
-		double static constexpr lambda = 1.5;
+		double static constexpr lambda = -1.5;
 	};
 
 	class IsothermalDistributor : public BodyDistributor

@@ -24,7 +24,7 @@ namespace nbody
 		double constexpr PI = 3.141592;
 		double constexpr G = 6.67E-11;
 		double constexpr RADIUS = 1E18;
-		double constexpr SOFTENING = 0.005;
+		double constexpr SOFTENING = 0.005 * RADIUS;
 		double constexpr SOLAR_MASS = 1.98892E30;
 		size_t constexpr MAX_N = 10000;
 	}

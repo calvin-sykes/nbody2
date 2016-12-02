@@ -35,10 +35,10 @@ namespace nbody
 		bool view_dragging = false;
 		bool tree_old = true;
 
-		BHTree* buildTreeThreaded(size_t const n, std::vector<Body2d> const& bodies, Quad const& root);
-		BHTree* buildTree(size_t const n, std::vector<Body2d> const& bodies, Quad const& root);
+		BHTree* buildTreeThreaded(std::vector<Body2d> const& bodies, Quad const& root);
+		BHTree* buildTree(std::vector<Body2d> const& bodies, Quad const& root);
 
-		void stepBH(size_t const n, std::vector<Body2d> & bodies, BHTree const* tree_ptr, Quad const& root);
+		void stepBH(std::vector<Body2d> & bodies, BHTree const* tree_ptr, Quad const& root);
 
 	public:
 		virtual void draw(sf::Time const dt);
