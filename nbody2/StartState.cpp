@@ -318,7 +318,7 @@ namespace nbody
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
 				SliderInt("Number of bodies", &(this->bg_props[i].N), 0, Constants::MAX_N);
 				PopItemWidth();
-				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, []( auto sum, auto const& b) -> int { return sum + b.N; });
+				auto n_total = std::accumulate(bg_props.cbegin(), bg_props.cend(), 0, [](auto sum, auto const& b) -> int { return sum + b.N; });
 				// too many bodies, need to redistribute them
 				if (n_total > Constants::MAX_N)
 				{
@@ -478,7 +478,7 @@ namespace nbody
 			}
 			SameLine();
 			// Run button
-			if (Button("Run", {100, sz.y}))
+			if (Button("Run", { 100, sz.y }))
 			{
 				this->sim_props.bg_props = std::move(this->bg_props);
 				this->sim->setProperties(this->sim_props);
@@ -508,7 +508,7 @@ namespace nbody
 	void StartState::makeMassPopup(size_t const idx)
 	{
 		using namespace ImGui;
-
+		static bool share_values = false;
 		AlignFirstTextHeightToWidgets();
 		Text("Minimum");
 		SameLine();
@@ -521,21 +521,41 @@ namespace nbody
 		PushItemWidth(80.f);
 		InputDouble("solar masses##2", &this->bg_props[idx].max_mass);
 		PopItemWidth();
+		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
+		{
+			if (share_values)
+			{
+				for (auto & bgp : this->bg_props)
+				{
+					bgp.min_mass = this->bg_props[idx].min_mass;
+					bgp.max_mass = this->bg_props[idx].max_mass;
+				}
+			}
 			CloseCurrentPopup();
+		}
 	}
 
 	void StartState::makeCentralMassPopup(size_t const idx)
 	{
 		using namespace ImGui;
+		static bool share_values = false;
 		auto static label = "1E6 solar masses";
 		PushItemWidth(80.0f);
 		InputDouble(label, &this->bg_props[idx].central_mass);
 		PopItemWidth();
+		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
+			if (share_values)
+			{
+				for (auto & bgp : this->bg_props)
+				{
+					bgp.central_mass = this->bg_props[idx].central_mass;
+				}
+			}
 			CloseCurrentPopup();
 		}
 	}
@@ -543,6 +563,7 @@ namespace nbody
 	void StartState::makePosVelPopup(size_t const idx)
 	{
 		using namespace ImGui;
+		static bool share_values = false;
 		Checkbox("Use relative coordinates", &this->bg_props[idx].use_relative_coords);
 		SameLine();
 		ShowHelpMarker("If checked, positions and velocities entered will be interpreted as a fraction of the universe radius %.0em",
@@ -551,9 +572,18 @@ namespace nbody
 		InputDouble2("Position", &this->bg_props[idx].pos.x);
 		InputDouble2("Velocity", &this->bg_props[idx].vel.x);
 		PopItemWidth();
+		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
+			if (share_values)
+			{
+				for (auto & bgp : this->bg_props)
+				{
+					bgp.pos = this->bg_props[idx].pos;
+					bgp.vel = this->bg_props[idx].vel;
+				}
+			}
 			CloseCurrentPopup();
 		}
 	}
@@ -561,14 +591,23 @@ namespace nbody
 	void StartState::makeRadiusPopup(size_t const idx)
 	{
 		using namespace ImGui;
+		static bool share_values = false;
 		Checkbox("Use relative coordinates", &this->bg_props[idx].use_relative_coords);
 		SameLine();
 		ShowHelpMarker("If checked, the radius entered will be interpreted as a fraction of the universe radius %.0em",
 			Constants::RADIUS);
 		InputDouble("Radius", &this->bg_props[idx].radius);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
+		Checkbox("Same for all groups", &share_values);
 		if (Button("OK"))
 		{
+			if (share_values)
+			{
+				for (auto & bgp : this->bg_props)
+				{
+					bgp.radius = this->bg_props[idx].radius;
+				}
+			}
 			CloseCurrentPopup();
 		}
 	}
@@ -576,7 +615,7 @@ namespace nbody
 	void StartState::makeColourPopup(size_t const idx)
 	{
 		using namespace ImGui;
-
+		static bool share_values;
 		auto sel_col = (int*)(&bg_props[idx].colour);
 		if (Combo("Colour method", sel_col, getColourerName,
 			(void*)(this->colour_infos.data()), static_cast<int>(this->colour_infos.size())))
@@ -601,13 +640,32 @@ namespace nbody
 				auto& this_col = this->tmp_cols[idx].cols[*sel_col][i];
 				if (ColorEdit3(label, this_col))
 				{
-					this->bg_props[idx].cols[i] = { static_cast<sf::Uint8>(this_col[0] * 255), static_cast<sf::Uint8>(this_col[1] * 255), static_cast<sf::Uint8>(this_col[2] * 255), 255 };
+					this->bg_props[idx].cols[i] =
+					{ static_cast<sf::Uint8>(this_col[0] * 255), static_cast<sf::Uint8>(this_col[1] * 255), static_cast<sf::Uint8>(this_col[2] * 255), 255 };
 				}
 			}
 		}
+		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
+			if (share_values)
+			{
+				size_t bgp_ctr = 0;
+				for (auto & bgp : this->bg_props)
+				{
+					bgp.colour = this->bg_props[idx].colour;
+					for (size_t i = 0; i < this->colour_infos[*sel_col].cols_used; i++)
+					{
+						bgp.cols[i] = this->bg_props[idx].cols[i];
+						auto& src_col = this->tmp_cols[idx].cols[*sel_col][i];
+						auto& target_col = this->tmp_cols[bgp_ctr++].cols[*sel_col][i];
+						target_col[0] = src_col[0];
+						target_col[1] = src_col[1];
+						target_col[2] = src_col[2];
+					}
+				}
+			}
 			CloseCurrentPopup();
 		}
 	}
@@ -641,7 +699,7 @@ namespace nbody
 			file.write(reinterpret_cast<char*>(&data), sizeof(decltype(data)));
 			file.write(SEP, sizeof(SEP));
 		};
-		
+
 		// if a file extension was supplied, trim it and append '.dat. instead
 		std::string fn_str(filename);
 		auto pos = fn_str.find_last_of('.');
@@ -652,8 +710,8 @@ namespace nbody
 		fn_str.append(".dat");
 
 		file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-	
-		
+
+
 		try
 		{
 			file.open(fn_str, std::ios::binary);
@@ -680,7 +738,7 @@ namespace nbody
 				for (auto c : bgp.cols)
 				{
 					writeValue(c);
-				}				
+				}
 			}
 			file.close();
 		}
@@ -728,7 +786,7 @@ namespace nbody
 		fn_str.append(".dat");
 
 		try
-		{	
+		{
 			file.open(fn_str, std::ios::binary);
 			if (!file.is_open())
 				throw MAKE_ERROR(std::string("Could not open file ") + fn_str);

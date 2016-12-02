@@ -73,7 +73,7 @@ namespace nbody
 		std::vector<BodyGroupProperties> bg_props;
 		// Simulation-wide parameters
 		SimProperties sim_props;
-		// Temporary storage variables
+		// Temporary storage for imgui 0..1 colours
 		std::vector<TempColArray> tmp_cols;
 
 		// Info on BodyDistributors
