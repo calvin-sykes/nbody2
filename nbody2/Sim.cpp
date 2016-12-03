@@ -20,6 +20,13 @@ namespace nbody
 		this->loadTextures();
 		// Initialise objects
 		this->loadObjects();
+		// Load font
+		unsigned char* pixels;
+		int width;
+		int height, bytes_per_pixel;
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF("media/DroidSans.ttf", 14.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
+		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &bytes_per_pixel);
 		// Create SFML window
 #ifndef NDEBUG
 		this->window.create(sf::VideoMode(WINDOW_W, WINDOW_H), "nbody2");
@@ -41,7 +48,7 @@ namespace nbody
 		this->window.setIcon(icon_image.getSize().x, icon_image.getSize().y, icon_image.getPixelsPtr());
 		// Initialise GUI
 		ImGui::SFML::Init(window);
-		// 
+		// Initialise values needed for world-screen coordinate conversion
 		Display::screen_size = this->window.getSize();
 		Display::aspect_ratio = static_cast<float>(Display::screen_size.x) / static_cast<float>(Display::screen_size.y);
 	}
@@ -79,15 +86,20 @@ namespace nbody
 
 	void Sim::loadTextures()
 	{
-		asset_mgr.loadTexture("background", "media/background.png");
-		asset_mgr.loadTexture("icon", "media/sfml.png");
+		this->asset_mgr.loadTexture("background", "media/background.png");
+		this->asset_mgr.loadTexture("icon", "media/sfml.png");
 	}
 
 	void Sim::loadObjects()
 	{
-		asset_mgr.loadIntegrators();
-		asset_mgr.loadEvolvers();
-		asset_mgr.loadDistributors();
+		this->asset_mgr.loadIntegrators();
+		this->asset_mgr.loadEvolvers();
+		this->asset_mgr.loadDistributors();
+	}
+
+	void Sim::loadFonts()
+	{
+		this->asset_mgr.loadFont("droid_sans", "media/DroidSans.ttf");
 	}
 
 	void Sim::setProperties(SimProperties const& props)

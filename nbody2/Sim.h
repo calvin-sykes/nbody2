@@ -65,6 +65,7 @@ namespace nbody
 		
 		void loadTextures();
 		void loadObjects();
+		void loadFonts();
 
 		void setProperties(SimProperties const&);
 		void createBodyGroup(BodyGroupProperties const&);

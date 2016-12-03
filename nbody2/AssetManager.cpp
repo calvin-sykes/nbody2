@@ -17,6 +17,17 @@ namespace nbody
 		this->textures[name] = tex;
 	}
 
+	void AssetManager::loadFont(std::string const & name, std::string const & filename)
+	{
+		sf::Font font;
+		if (!font.loadFromFile(filename))
+		{
+			std::string msg = "Texture " + filename + " not found";
+			throw MAKE_ERROR(msg);
+		}
+		this->fonts[name] = font;
+	}
+
 	void AssetManager::loadIntegrators()
 	{
 		this->integrators[IntegratorType::EULER] = std::make_unique<EulerIntegrator>();
@@ -38,6 +49,11 @@ namespace nbody
 	sf::Texture & AssetManager::getTextureRef(const std::string & name)
 	{
 		return this->textures.at(name);
+	}
+
+	sf::Font & AssetManager::getFontRef(const std::string & name)
+	{
+		return this->fonts.at(name);
 	}
 
 	Integrator * AssetManager::getIntegrator(const IntegratorType type)

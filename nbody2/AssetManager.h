@@ -21,18 +21,21 @@ namespace nbody
 	public:
 		AssetManager() = default;
 		
-		void loadTexture(const std::string& name, const std::string& filename);
+		void loadTexture(std::string const& name, std::string const& filename);
+		void loadFont(std::string const& name, std::string const& filename);
 		void loadIntegrators();
 		void loadEvolvers();
 		void loadDistributors();
 
-		sf::Texture& getTextureRef(const std::string& name);
-		Integrator * getIntegrator(const IntegratorType type);
-		Evolver * getEvolver(const EvolverType type);
-		BodyDistributor * getDistributor(const DistributorType type);
+		sf::Texture& getTextureRef(std::string const& name);
+		sf::Font & getFontRef(std::string const& name);
+		Integrator * getIntegrator(IntegratorType const type);
+		Evolver * getEvolver(EvolverType const type);
+		BodyDistributor * getDistributor(DistributorType const type);
 
 	private:
 		std::map<std::string, sf::Texture> textures;
+		std::map<std::string, sf::Font> fonts;
 		std::map<IntegratorType, std::unique_ptr<Integrator>> integrators;
 		std::map<EvolverType, std::unique_ptr<Evolver>> evolvers;
 		std::map<DistributorType, std::unique_ptr<BodyDistributor>> distributors;
