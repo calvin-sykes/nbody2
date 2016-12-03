@@ -40,7 +40,7 @@ namespace nbody
 			auto radius = rad * expDist(lambda) + Constants::SOFTENING;
 			auto phi = get_rand(0, 2 * Constants::PI);
 			Vector2d pos(radius * cos(phi), radius * sin(phi));
-			Vector2d vel(vCirc(radius, props.central_mass * 1E6 * Constants::SOLAR_MASS));
+			Vector2d vel(vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS));
 			bodies.emplace_back(Body2d(pos + pos_offset, vel + vel_offset, mass));
 		}
 		return bodies;

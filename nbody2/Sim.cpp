@@ -1,4 +1,5 @@
 #include "BodyGroupProperties.h"
+#include "Display.h"
 #include "Sim.h"
 #include "SimState.h"
 
@@ -40,6 +41,9 @@ namespace nbody
 		this->window.setIcon(icon_image.getSize().x, icon_image.getSize().y, icon_image.getPixelsPtr());
 		// Initialise GUI
 		ImGui::SFML::Init(window);
+		// 
+		Display::screen_size = this->window.getSize();
+		Display::aspect_ratio = static_cast<float>(Display::screen_size.x) / static_cast<float>(Display::screen_size.y);
 	}
 
 	Sim::~Sim()
@@ -110,11 +114,12 @@ namespace nbody
 		{
 			auto dt = clock.restart();
 
-			if (peekState() == nullptr) continue;
-			peekState()->handleInput();
-			peekState()->update(dt);
+			auto current_state = peekState();
+			if (current_state == nullptr) continue;
+			current_state->handleInput();
+			current_state->update(dt);
 			this->window.clear(sf::Color::Black);
-			peekState()->draw(dt);
+			current_state->draw(dt);
 			this->window.display();
 		}
 	}

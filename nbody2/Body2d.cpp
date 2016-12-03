@@ -7,7 +7,7 @@ namespace nbody
 {
 	Integrator * Body2d::integrator_ptr = nullptr;
 	size_t Body2d::id_counter = 0;
-	float const Body2d::MIN_SIZE = 2;
+	float const Body2d::MIN_SIZE = 1;
 	float const Body2d::MAX_SIZE = 6;
 
 
