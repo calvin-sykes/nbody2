@@ -1,8 +1,16 @@
 #ifndef EVOLVER_H
 #define EVOLVER_H
 
+#include "Body2d.h"
+
+#include <vector>
+
 namespace nbody
 {
+	class BHTree;
+	class Quad;
+	class RunState;
+
 	enum class EvolverType
 	{
 		BRUTE_FORCE,
@@ -20,17 +28,23 @@ namespace nbody
 
 	class Evolver
 	{
-
+	public:
+		virtual void step(std::vector<Body2d> & bodies, RunState * context) = 0;
 	};
 
 	class BruteForceEvolver : public Evolver
 	{
-
+	public:
+		virtual void step(std::vector<Body2d> & bodies, RunState * context);
 	};
 
 	class BarnesHutEvolver : public Evolver
 	{
-
+	public:
+		virtual void step(std::vector<Body2d> & bodies, RunState * context);
+	private:
+		BHTree * buildTreeThreaded(std::vector<Body2d> const& bodies, Quad const& root);
+		BHTree * buildTree(std::vector<Body2d> const& bodies, Quad const& root);
 	};
 
 }

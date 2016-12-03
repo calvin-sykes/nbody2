@@ -16,6 +16,8 @@ namespace nbody
 
 	class RunState : public SimState
 	{
+		friend class BarnesHutEvolver;
+
 	private:
 		sf::View main_view;
 		sf::View gui_view;
@@ -34,11 +36,6 @@ namespace nbody
 		bool view_centre = true;
 		bool view_dragging = false;
 		bool tree_old = true;
-
-		BHTree* buildTreeThreaded(size_t const n, std::vector<Body2d> const& bodies, Quad const& root);
-		BHTree* buildTree(size_t const n, std::vector<Body2d> const& bodies, Quad const& root);
-
-		void stepBH(size_t const n, std::vector<Body2d> & bodies, BHTree const* tree_ptr, Quad const& root);
 
 	public:
 		virtual void draw(sf::Time const dt);

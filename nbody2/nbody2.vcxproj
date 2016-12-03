@@ -313,6 +313,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="BodyDistributor.cpp" />
     <ClCompile Include="BodyTrail.cpp" />
     <ClCompile Include="Display.cpp" />
+    <ClCompile Include="Evolver.cpp" />
     <ClCompile Include="imgui_sfml.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
