@@ -13,19 +13,26 @@ namespace nbody
 {
 	void BruteForceEvolver::step(std::vector<Body2d> & bodies, RunState * context)
 	{
-#pragma omp parallel for schedule(static)
-		for (int i = 0; i < bodies.size(); i++)
+		context->com = { 0, 0 };
+		context->tree_ptr = nullptr;
+		if (context->running)
 		{
-			for (int j = 0; j < bodies.size(); j++)
+
+#pragma omp parallel for schedule(static)
+			for (int i = 0; i < bodies.size(); i++)
 			{
-				bodies[i].addAccel(bodies[j]);
-				bodies[j].addAccel(bodies[i]);
+				for (int j = i + 1; j < bodies.size(); j++)
+				{
+					bodies[i].addAccel(bodies[j]);
+					bodies[j].addAccel(bodies[i]);
+				}
 			}
-		}
 #pragma omp parallel for schedule(static)
-		for (int i = 0; i < bodies.size(); i++)
-		{
-			bodies[i].update(Constants::TIMESTEP);
+			for (int i = 0; i < bodies.size(); i++)
+			{
+				bodies[i].update(Constants::TIMESTEP);
+				bodies[i].resetAccel();
+			}
 		}
 	}
 

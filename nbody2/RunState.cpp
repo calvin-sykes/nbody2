@@ -30,9 +30,7 @@ namespace nbody
 	}
 
 	void RunState::draw(sf::Time const dt)
-	{
-		this->sim->window.setView(this->main_view);
-		
+	{		
 		if (view_centre)
 		{
 			Vector2f com_screen(Display::worldToScreenX(com.x), Display::worldToScreenY(com.y));
@@ -71,6 +69,8 @@ namespace nbody
 	{
 		ImGui::SFML::Update(this->sim->window, dt);
 		this->sim->evolver_ptr->step(this->sim->bodies, this);
+
+		ImGui::ShowMetricsWindow();
 	}
 
 	void RunState::handleInput()

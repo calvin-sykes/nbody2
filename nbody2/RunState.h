@@ -17,6 +17,7 @@ namespace nbody
 	class RunState : public SimState
 	{
 		friend class BarnesHutEvolver;
+		friend class BruteForceEvolver;
 
 	private:
 		sf::View main_view;

@@ -241,4 +241,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
 *.dat
+*.ini
