@@ -11,11 +11,11 @@
 
 namespace nbody
 {
-	void BruteForceEvolver::step(std::vector<Body2d> & bodies, RunState * context)
+	void BruteForceEvolver::calcStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags)
 	{
-		context->com = { 0, 0 };
-		context->tree_ptr = nullptr;
-		context->tree_old = false;
+		com = { 0, 0 };
+		tree_ptr = nullptr;
+		flags.tree_old = false;
 #pragma omp parallel for schedule(static)
 		for (int i = 0; i < bodies.size(); i++)
 		{
@@ -25,6 +25,10 @@ namespace nbody
 				bodies[j].addAccel(bodies[i]);
 			}
 		}
+	}
+
+	void BruteForceEvolver::advanceStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags)
+	{
 #pragma omp parallel for schedule(static)
 		for (int i = 0; i < bodies.size(); i++)
 		{
@@ -33,38 +37,33 @@ namespace nbody
 		}
 	}
 
-	void BarnesHutEvolver::step(std::vector<Body2d> & bodies, RunState * context)
+	void BarnesHutEvolver::calcStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags)
 	{
 		// create root quadrant of tree
-		Quad root(context->com.x, context->com.y, 10 * Constants::RADIUS);
+		root = Quad(com.x, com.y, 10 * Constants::RADIUS);
 
-		// reconstruct BH tree if needed
-		if (context->tree_old || context->current_show_grid != context->show_grid)
-		{
-			context->tree_ptr = buildTreeThreaded(bodies, root);
-			context->com = context->tree_ptr->getPCoM();
-			context->tree_old = false;
-			context->current_show_grid = context->show_grid;
-		}
+			tree_ptr = buildTreeThreaded(bodies);
+			com = tree_ptr->getPCoM();
+			flags.tree_old = false;
+			flags.current_show_grid = flags.show_grid;
+	}
 
-		//if (context->running)
-		//{
-			// advance bodies
+	void BarnesHutEvolver::advanceStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags)
+	{
 #pragma omp parallel for schedule(static)
 		for (int i = 0; i < bodies.size(); i++)
 		{
 			if (root.contains(bodies[i].getPos()))
 			{
-				context->tree_ptr->updateAccel(bodies[i]);
+				tree_ptr->updateAccel(bodies[i]);
 				bodies[i].update(Constants::TIMESTEP);
 				bodies[i].resetAccel();
 			}
 		}
-		context->tree_old = true;
-		//}
+		flags.tree_old = true;
 	}
 
-	BHTree * nbody::BarnesHutEvolver::buildTreeThreaded(std::vector<Body2d> const & bodies, Quad const & root)
+	BHTree * nbody::BarnesHutEvolver::buildTreeThreaded(std::vector<Body2d> const & bodies)
 	{
 		BHTree * nwt, *net, *swt, *set;
 #pragma omp parallel sections

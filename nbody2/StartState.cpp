@@ -510,13 +510,20 @@ namespace nbody
 		using namespace ImGui;
 		static bool share_values = false;
 		AlignFirstTextHeightToWidgets();
+		auto text_width_min = CalcTextSize("Minimum").x;
+		auto text_width_max = CalcTextSize("Maximum").x;
+		auto text_width_used = max(text_width_min, text_width_max);
 		Text("Minimum");
+		SameLine();
+		Dummy({ text_width_used - text_width_min, 0 });
 		SameLine();
 		PushItemWidth(80.f);
 		InputDouble("solar masses##1", &this->bg_props[idx].min_mass);
 		PopItemWidth();
 		AlignFirstTextHeightToWidgets();
 		Text("Maximum");
+		SameLine();
+		Dummy({ text_width_used - text_width_max, 0 });
 		SameLine();
 		PushItemWidth(80.f);
 		InputDouble("solar masses##2", &this->bg_props[idx].max_mass);
@@ -596,9 +603,11 @@ namespace nbody
 		SameLine();
 		ShowHelpMarker("If checked, the radius entered will be interpreted as a fraction of the universe radius %.0em",
 			Constants::RADIUS);
+		PushItemWidth(80.0f);
 		InputDouble("Radius", &this->bg_props[idx].radius);
-		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
+		PopItemWidth();
 		Checkbox("Same for all groups", &share_values);
+		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
 		if (Button("OK"))
 		{
 			if (share_values)

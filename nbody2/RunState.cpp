@@ -25,46 +25,51 @@ namespace nbody
 		this->main_view.setCenter(0.5f * pos);
 		this->gui_view.setCenter(0.5f * pos);
 
-		this->tree_ptr = nullptr;
+		flags.tree_exists = this->sim->evolver_ptr->has_tree;
 		Body2d::integrator_ptr = this->sim->integrator_ptr;
 	}
 
 	void RunState::update(sf::Time const dt)
 	{
 		ImGui::SFML::Update(this->sim->window, dt);
-		if (running || tree_old)
-			this->sim->evolver_ptr->step(this->sim->bodies, this);
+
+		if (flags.running || flags.tree_exists && (flags.tree_old || flags.current_show_grid != flags.show_grid))
+			this->sim->evolver_ptr->calcStep(this->sim->bodies, this->com, this->tree_ptr, this->flags);
+
+		if (flags.running)
+			this->sim->evolver_ptr->advanceStep(this->sim->bodies, this->com, this->tree_ptr, this->flags);
 
 		ImGui::ShowMetricsWindow();
 	}
 
 	void RunState::draw(sf::Time const dt)
 	{		
-		if (view_centre)
+		if (flags.view_centre)
 		{
 			Vector2f com_screen(Display::worldToScreenX(com.x), Display::worldToScreenY(com.y));
 			Display::screen_offset += com_screen - 0.5f * Display::screen_size;
 		}
+
 		this->sim->window.setView(this->main_view);
 
-		if (show_bodies)
+		if (flags.show_bodies)
 		{
 			for (auto& b : this->sim->bodies)
 			{
-				b.updateGfx(show_trails);
+				b.updateGfx(flags.show_trails);
 				this->sim->window.draw(b);
 			}
 		}
 
-		if (show_grid && tree_ptr)
+		if (flags.tree_exists && flags.show_grid)
 		{
-			tree_ptr->updateGfx(show_grid_levels);
+			tree_ptr->updateGfx(flags.show_grid_levels);
 			this->sim->window.draw(*tree_ptr);
 		}
 
 		// finished with tree; it is regenerated from scratch next time
 		// delete to prevent memory leak
-		if (running || tree_old)
+		if (flags.tree_exists && (flags.running || flags.tree_old))
 		{
 			delete tree_ptr;
 		}
@@ -105,35 +110,35 @@ namespace nbody
 				{
 					if (event.key.code == sf::Keyboard::Space)
 					{
-						running = !running;
+						flags.running = !flags.running;
 					}
 					else if (event.key.code == sf::Keyboard::C)
 					{
-						view_centre = !view_centre;
+						flags.view_centre = !flags.view_centre;
 					}
 					else if (event.key.code == sf::Keyboard::G)
 					{
-						show_grid = !show_grid;
+						flags.show_grid = !flags.show_grid;
 					}
-					else if (event.key.code == sf::Keyboard::L && show_grid)
+					else if (event.key.code == sf::Keyboard::L && flags.show_grid)
 					{
-						show_grid_levels = !show_grid_levels;
+						flags.show_grid_levels = !flags.show_grid_levels;
 					}
 					else if (event.key.code == sf::Keyboard::B)
 					{
-						show_bodies = !show_bodies;
+						flags.show_bodies = !flags.show_bodies;
 						for (auto& b : this->sim->bodies)
 							b.resetTrail();
 					}
-					else if (event.key.code == sf::Keyboard::T && show_bodies)
+					else if (event.key.code == sf::Keyboard::T && flags.show_bodies)
 					{
-						show_trails = !show_trails;
+						flags.show_trails = !flags.show_trails;
 						for (auto& b : this->sim->bodies)
 							b.resetTrail();
 					}
 					else if (event.key.code == sf::Keyboard::R)
 					{
-						view_centre = false;
+						flags.view_centre = false;
 						Display::screen_scale = 1;
 						Display::screen_offset = { 0, 0 };
 					}
@@ -155,7 +160,7 @@ namespace nbody
 				case sf::Event::MouseMoved:
 				{
 					// if dragging, update pos
-					if (view_dragging)
+					if (flags.view_dragging)
 					{
 						prev_mouse_pos = new_mouse_pos;
 						new_mouse_pos = sf::Vector2i(event.mouseMove.x, event.mouseMove.y);
@@ -166,10 +171,10 @@ namespace nbody
 				case sf::Event::MouseButtonPressed:
 				{
 					// if not dragging, start
-					if (!view_dragging)
+					if (!flags.view_dragging)
 					{
-						view_centre = false;
-						view_dragging = true;
+						flags.view_centre = false;
+						flags.view_dragging = true;
 						new_mouse_pos = sf::Vector2i(event.mouseButton.x, event.mouseButton.y);
 					}
 					break;
@@ -177,9 +182,9 @@ namespace nbody
 				case sf::Event::MouseButtonReleased:
 				{
 					// if dragging, stop
-					if (view_dragging)
+					if (flags.view_dragging)
 					{
-						view_dragging = false;
+						flags.view_dragging = false;
 						//#ifdef NBOS_WINDOWS
 						//					// reset mouse to screen centre
 						//					auto hwnd = this->sim->window.getSystemHandle();

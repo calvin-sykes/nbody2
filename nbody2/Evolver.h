@@ -2,12 +2,14 @@
 #define EVOLVER_H
 
 #include "Body2d.h"
+#include "Quad.h"
 
 #include <vector>
 
 namespace nbody
 {
 	class BHTree;
+	struct Flags;
 	class Quad;
 	class RunState;
 
@@ -29,22 +31,35 @@ namespace nbody
 	class Evolver
 	{
 	public:
-		virtual void step(std::vector<Body2d> & bodies, RunState * context) = 0;
+		Evolver(bool has_tree) : has_tree(has_tree) {};
+
+		virtual void calcStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags) = 0;
+		virtual void advanceStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags) = 0;
+	public:
+		bool const has_tree;
 	};
 
 	class BruteForceEvolver : public Evolver
 	{
 	public:
-		virtual void step(std::vector<Body2d> & bodies, RunState * context);
+		BruteForceEvolver() : Evolver(false) {};
+
+		virtual void calcStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags);
+		virtual void advanceStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags);
 	};
 
 	class BarnesHutEvolver : public Evolver
 	{
 	public:
-		virtual void step(std::vector<Body2d> & bodies, RunState * context);
+		BarnesHutEvolver() : Evolver(true) {};
+
+		virtual void calcStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags);
+		virtual void advanceStep(std::vector<Body2d> & bodies, Vector2d & com, BHTree *& tree_ptr, Flags & flags);
 	private:
-		BHTree * buildTreeThreaded(std::vector<Body2d> const& bodies, Quad const& root);
+		BHTree * buildTreeThreaded(std::vector<Body2d> const& bodies);
 		BHTree * buildTree(std::vector<Body2d> const& bodies, Quad const& root);
+
+		Quad root;
 	};
 
 }
