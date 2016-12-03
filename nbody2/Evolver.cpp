@@ -15,24 +15,21 @@ namespace nbody
 	{
 		context->com = { 0, 0 };
 		context->tree_ptr = nullptr;
-		if (context->running)
+		context->tree_old = false;
+#pragma omp parallel for schedule(static)
+		for (int i = 0; i < bodies.size(); i++)
 		{
-
-#pragma omp parallel for schedule(static)
-			for (int i = 0; i < bodies.size(); i++)
+			for (int j = i + 1; j < bodies.size(); j++)
 			{
-				for (int j = i + 1; j < bodies.size(); j++)
-				{
-					bodies[i].addAccel(bodies[j]);
-					bodies[j].addAccel(bodies[i]);
-				}
+				bodies[i].addAccel(bodies[j]);
+				bodies[j].addAccel(bodies[i]);
 			}
+		}
 #pragma omp parallel for schedule(static)
-			for (int i = 0; i < bodies.size(); i++)
-			{
-				bodies[i].update(Constants::TIMESTEP);
-				bodies[i].resetAccel();
-			}
+		for (int i = 0; i < bodies.size(); i++)
+		{
+			bodies[i].update(Constants::TIMESTEP);
+			bodies[i].resetAccel();
 		}
 	}
 
@@ -50,21 +47,21 @@ namespace nbody
 			context->current_show_grid = context->show_grid;
 		}
 
-		if (context->running)
-		{
+		//if (context->running)
+		//{
 			// advance bodies
 #pragma omp parallel for schedule(static)
-			for (int i = 0; i < bodies.size(); i++)
+		for (int i = 0; i < bodies.size(); i++)
+		{
+			if (root.contains(bodies[i].getPos()))
 			{
-				if (root.contains(bodies[i].getPos()))
-				{
-					context->tree_ptr->updateAccel(bodies[i]);
-					bodies[i].update(Constants::TIMESTEP);
-					bodies[i].resetAccel();
-				}
+				context->tree_ptr->updateAccel(bodies[i]);
+				bodies[i].update(Constants::TIMESTEP);
+				bodies[i].resetAccel();
 			}
-			context->tree_old = true;
 		}
+		context->tree_old = true;
+		//}
 	}
 
 	BHTree * nbody::BarnesHutEvolver::buildTreeThreaded(std::vector<Body2d> const & bodies, Quad const & root)

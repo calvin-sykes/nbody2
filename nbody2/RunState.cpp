@@ -29,6 +29,15 @@ namespace nbody
 		Body2d::integrator_ptr = this->sim->integrator_ptr;
 	}
 
+	void RunState::update(sf::Time const dt)
+	{
+		ImGui::SFML::Update(this->sim->window, dt);
+		if (running || tree_old)
+			this->sim->evolver_ptr->step(this->sim->bodies, this);
+
+		ImGui::ShowMetricsWindow();
+	}
+
 	void RunState::draw(sf::Time const dt)
 	{		
 		if (view_centre)
@@ -47,7 +56,7 @@ namespace nbody
 			}
 		}
 
-		if (show_grid)
+		if (show_grid && tree_ptr)
 		{
 			tree_ptr->updateGfx(show_grid_levels);
 			this->sim->window.draw(*tree_ptr);
@@ -63,14 +72,6 @@ namespace nbody
 		this->sim->window.setView(this->gui_view);
 
 		ImGui::Render();
-	}
-
-	void RunState::update(sf::Time const dt)
-	{
-		ImGui::SFML::Update(this->sim->window, dt);
-		this->sim->evolver_ptr->step(this->sim->bodies, this);
-
-		ImGui::ShowMetricsWindow();
 	}
 
 	void RunState::handleInput()
