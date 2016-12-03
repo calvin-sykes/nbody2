@@ -21,12 +21,7 @@ namespace nbody
 		// Initialise objects
 		this->loadObjects();
 		// Load font
-		unsigned char* pixels;
-		int width;
-		int height, bytes_per_pixel;
-		ImGuiIO& io = ImGui::GetIO();
-		io.Fonts->AddFontFromFileTTF("media/DroidSans.ttf", 14.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
-		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &bytes_per_pixel);
+		this->loadFonts();
 		// Create SFML window
 #ifndef NDEBUG
 		this->window.create(sf::VideoMode(WINDOW_W, WINDOW_H), "nbody2");
@@ -99,7 +94,7 @@ namespace nbody
 
 	void Sim::loadFonts()
 	{
-		this->asset_mgr.loadFont("droid_sans", "media/DroidSans.ttf");
+		this->asset_mgr.loadFont("droid_sans", 14.f, "media2/DroidSans.ttf");
 	}
 
 	void Sim::setProperties(SimProperties const& props)

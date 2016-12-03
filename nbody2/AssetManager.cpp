@@ -4,6 +4,10 @@
 #include "Evolver.h"
 #include "Integrator.h"
 
+#include "imgui.h"
+
+#include <fstream>
+
 namespace nbody
 {
 	void AssetManager::loadTexture(const std::string & name, const std::string & filename)
@@ -17,15 +21,25 @@ namespace nbody
 		this->textures[name] = tex;
 	}
 
-	void AssetManager::loadFont(std::string const & name, std::string const & filename)
+	void AssetManager::loadFont(std::string const & name, float const size, std::string const & filename)
 	{
-		sf::Font font;
-		if (!font.loadFromFile(filename))
-		{
-			std::string msg = "Texture " + filename + " not found";
-			throw MAKE_ERROR(msg);
-		}
-		this->fonts[name] = font;
+		std::ifstream file;
+		file.open(filename, std::ios::binary);
+		if (!file.is_open())
+			throw MAKE_ERROR(std::string("Could not open file ") + filename);
+		file.seekg(0, file.end);
+		int len = file.tellg();
+		file.seekg(0, file.beg);
+		char *buf = new char[len];
+		file.read(buf, len);
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromMemoryTTF(buf, len, size, nullptr, io.Fonts->GetGlyphRangesDefault());
+
+		unsigned char* pixels;
+		int width;
+		int height, bytes_per_pixel;
+		io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height, &bytes_per_pixel);
 	}
 
 	void AssetManager::loadIntegrators()
@@ -49,11 +63,6 @@ namespace nbody
 	sf::Texture & AssetManager::getTextureRef(const std::string & name)
 	{
 		return this->textures.at(name);
-	}
-
-	sf::Font & AssetManager::getFontRef(const std::string & name)
-	{
-		return this->fonts.at(name);
 	}
 
 	Integrator * AssetManager::getIntegrator(const IntegratorType type)

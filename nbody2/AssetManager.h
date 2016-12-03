@@ -22,13 +22,12 @@ namespace nbody
 		AssetManager() = default;
 		
 		void loadTexture(std::string const& name, std::string const& filename);
-		void loadFont(std::string const& name, std::string const& filename);
+		void loadFont(std::string const& name, float const size, std::string const& filename);
 		void loadIntegrators();
 		void loadEvolvers();
 		void loadDistributors();
 
 		sf::Texture& getTextureRef(std::string const& name);
-		sf::Font & getFontRef(std::string const& name);
 		Integrator * getIntegrator(IntegratorType const type);
 		Evolver * getEvolver(EvolverType const type);
 		BodyDistributor * getDistributor(DistributorType const type);
