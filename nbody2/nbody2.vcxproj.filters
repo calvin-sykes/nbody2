@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\state">
+      <UniqueIdentifier>{50256df1-b083-4c71-ad4c-66cf42365b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\state">
+      <UniqueIdentifier>{cdbf9b8c-f4ab-4a3f-81c1-cdca6fb4bce6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui">
+      <UniqueIdentifier>{3b0fd6f4-f3ca-4c69-87d9-c96266b6ca5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sys">
+      <UniqueIdentifier>{b188edbe-f151-4a9e-b446-b9238f9754c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sys">
+      <UniqueIdentifier>{8575e6d5-d448-47d7-aa2e-23fb5a816791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\imgui">
+      <UniqueIdentifier>{ca700515-d95b-4920-a07a-21cf62c560b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\integration">
+      <UniqueIdentifier>{62b277f1-3a6c-4a87-b5cf-cf262a9575ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\integration">
+      <UniqueIdentifier>{ec7f5ef9-c03e-4a3c-9f80-af5b8c1fb09e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Body2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BHTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sim.cpp">
+      <Filter>Source Files\state</Filter>
+    </ClCompile>
+    <ClCompile Include="StartState.cpp">
+      <Filter>Source Files\state</Filter>
+    </ClCompile>
+    <ClCompile Include="RunState.cpp">
+      <Filter>Source Files\state</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_demo.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_draw.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_sfml.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="BodyDistributor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Display.cpp">
+      <Filter>Source Files\sys</Filter>
+    </ClCompile>
+    <ClCompile Include="Evolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files\sys</Filter>
+    </ClCompile>
+    <ClCompile Include="BodyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IIntegrator.cpp">
+      <Filter>Source Files\integration</Filter>
+    </ClCompile>
+    <ClCompile Include="Types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntegratorEuler.cpp">
+      <Filter>Source Files\integration</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBruteForce.cpp">
+      <Filter>Source Files\integration</Filter>
+    </ClCompile>
+    <ClCompile Include="IntegratorEulerImproved.cpp">
+      <Filter>Source Files\integration</Filter>
+    </ClCompile>
+    <ClCompile Include="IModel.cpp">
+      <Filter>Source Files\integration</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBarnesHut.cpp">
+      <Filter>Source Files\integration</Filter>
+    </ClCompile>
+    <ClCompile Include="BHTreeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Body2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BHTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyDistributor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sim.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="SimState.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="RunState.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="StartState.h">
+      <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imconfig.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_internal.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_sfml.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_rect_pack.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_textedit.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyGroupProperties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Colourer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_truetype.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="Error.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IIntegrator.h">
+      <Filter>Header Files\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="IModel.h">
+      <Filter>Header Files\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegratorEuler.h">
+      <Filter>Header Files\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBruteForce.h">
+      <Filter>Header Files\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegratorEulerImproved.h">
+      <Filter>Header Files\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBarnesHut.h">
+      <Filter>Header Files\integration</Filter>
+    </ClInclude>
+    <ClInclude Include="BHTreeNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="sfml-icon-small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="segoeui.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
+</Project>
