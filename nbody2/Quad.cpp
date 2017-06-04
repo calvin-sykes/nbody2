@@ -2,25 +2,17 @@
 #include "Constants.h"
 
 namespace nbody
-{
-	//StaticFont Quad::label_font("media/DroidSans.ttf");
-	
-	Quad::Quad(const double x_midIn, const double y_midIn, const double lengthIn) : mid_point{ x_midIn, y_midIn }, length(lengthIn)
+{	
+	Quad::Quad(const double x_midIn, const double y_midIn, const double lengthIn)
+		: m_centre{ x_midIn, y_midIn }, m_length(lengthIn)
 	{
-		/*b_box.setOutlineColor(sf::Color::Green);
-		b_box.setOutlineThickness(-1);
-		b_box.setFillColor(sf::Color::Transparent);
-
-		label.setFont(label_font.font);
-		label.setCharacterSize(20);
-		label.setFillColor(sf::Color::Green);*/
 	}
 
 	bool Quad::contains(Vector2d const & pt) const
 	{
-		auto half_length = length / 2;
-		auto bounds_x = abs(pt.x - mid_point.x) < half_length;
-		auto bounds_y = abs(pt.y - mid_point.y) < half_length;
+		auto half_length = m_length / 2;
+		auto bounds_x = abs(pt.x - m_centre.x) < half_length;
+		auto bounds_y = abs(pt.y - m_centre.y) < half_length;
 		return bounds_x && bounds_y;
 	}
 
@@ -36,58 +28,13 @@ namespace nbody
 		if(!contains(pt))
 			return Daughter::NONE;
 		else
-			return Daughter(((pt.x > mid_point.x) << 0) | ((pt.y > mid_point.y) << 1));
+			return Daughter(((pt.x > m_centre.x) << 0) | ((pt.y > m_centre.y) << 1));
 	}
 
 	Quad Quad::createDaughter(Daughter which) const
 	{
 		auto x_direction = (static_cast<size_t>(which) >> 0) & 1 ? 1 : -1;
 		auto y_direction = (static_cast<size_t>(which) >> 1) & 1 ? 1 : -1;
-		return Quad(mid_point.x + x_direction * length * 0.25, mid_point.y + y_direction * length * 0.25, length * 0.5);
+		return Quad(m_centre.x + x_direction * m_length * 0.25, m_centre.y + y_direction * m_length * 0.25, m_length * 0.5);
 	}
-
-	//void Quad::updateGfx(const size_t level)
-	//{
-	//	screen_length = Display::worldToScreenLength(length);
-	//	auto half_length = screen_length / 2;
-	//	// is quad visible?
-	//	auto screen_x = Display::worldToScreenX(mid_point.x);
-	//	auto screen_y = Display::worldToScreenY(mid_point.y);
-	//	is_visible = (screen_length > 5)
-	//		&& (screen_x + half_length > 0)
-	//		&& (screen_x - half_length < Display::screen_size.x)
-	//		&& (screen_y + half_length > 0)
-	//		&& (screen_y - half_length < Display::screen_size.y);
-
-	//	if (is_visible)
-	//	{
-	//		b_box.setSize(sf::Vector2f(screen_length, screen_length));
-	//		// place transformation origin in centre of box
-	//		b_box.setOrigin(half_length, half_length);
-
-	//		// translate box to correct screen position
-	//		b_box.setPosition(screen_x, screen_y);
-
-	//		if (screen_length > 20 && level != static_cast<size_t>(-1))
-	//		{
-	//			label.setString(std::to_string(level));
-	//			label.setPosition(screen_x - half_length, screen_y - half_length);
-	//			draw_label = true;
-	//		}
-	//		else
-	//			draw_label = false;
-	//	}
-	//}
-
-	//void Quad::draw(sf::RenderTarget & target, sf::RenderStates states) const
-	//{
-	//	if (is_visible)
-	//	{
-	//		target.draw(b_box);
-	//		if (draw_label)
-	//		{
-	//			target.draw(label);
-	//		}
-	//	}
-	//}
 }
