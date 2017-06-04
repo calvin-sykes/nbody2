@@ -128,9 +128,6 @@
     <ClInclude Include="Sim.h">
       <Filter>Header Files\state</Filter>
     </ClInclude>
-    <ClInclude Include="SimState.h">
-      <Filter>Header Files\state</Filter>
-    </ClInclude>
     <ClInclude Include="RunState.h">
       <Filter>Header Files\state</Filter>
     </ClInclude>
@@ -217,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="QuadManager.h">
       <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="IState.h">
+      <Filter>Header Files\state</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

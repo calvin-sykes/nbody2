@@ -23,17 +23,15 @@ namespace nbody
 		Quad(const double x_midIn, const double y_midIn, const double lengthIn);
 		~Quad() = default;
 
-		double getLength() const { return length; }
-		Vector2d getPos() const { return mid_point; }
-		//double getXmid() const { return mid_point.x; }
-		//double getYmid() const { return mid_point.y; }
+		double getLength() const { return m_length; }
+		Vector2d getPos() const { return m_centre; }
 
 		bool contains(Vector2d const& pt) const;
 		Daughter whichDaughter(Vector2d const& pt) const;
 		Quad createDaughter(Daughter which) const;
 
 	private:
-		double length;
-		Vector2d mid_point;
+		double m_length;
+		Vector2d m_centre;
 	};
 }

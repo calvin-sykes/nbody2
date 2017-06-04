@@ -360,7 +360,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="QuadManager.h" />
     <ClInclude Include="RunState.h" />
     <ClInclude Include="Sim.h" />
-    <ClInclude Include="SimState.h" />
+    <ClInclude Include="IState.h" />
     <ClInclude Include="StartState.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="stb_rect_pack.h" />

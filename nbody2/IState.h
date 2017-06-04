@@ -7,11 +7,11 @@ namespace nbody
 {
 	class Sim;
 	
-	class SimState
+	class IState
 	{
 	public:
 
-		Sim* sim;
+		Sim* m_sim;
 
 		virtual void draw(sf::Time const  dt) = 0;
 		virtual void update(sf::Time const dt) = 0;

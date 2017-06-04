@@ -15,19 +15,19 @@ namespace nbody
 		Error() = default;
 
 		Error(const std::string& msgIn, const std::string& fileIn, const std::string& funcIn, const int lineIn) :
-			std::runtime_error(msgIn), file(fileIn), func(funcIn), line(lineIn) {};
+			std::runtime_error(msgIn), m_file(fileIn), m_func(funcIn), m_line(lineIn) {};
 
 		virtual const char* what() const noexcept
 		{
 			std::ostringstream builder;
-			builder << "ERROR: " << std::runtime_error::what() << "\nFile: " << file << " at: " << func << ":" << line;
+			builder << "ERROR: " << std::runtime_error::what() << "\nFile: " << m_file << " at: " << m_func << ":" << m_line;
 			auto p_str = new std::string(builder.str());
 			return p_str->c_str();
 		}
 
 	private:
-		const std::string file, func;
-		const int line;
+		const std::string m_file, m_func;
+		const int m_line;
 	};
 }
 

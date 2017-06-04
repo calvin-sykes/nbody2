@@ -9,9 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 namespace nbody
-{
-	constexpr size_t TRAIL_LENGTH = 10;
-	
+{	
 	class Body2d;
 	class TrailManager : public sf::Drawable
 	{
@@ -24,10 +22,12 @@ namespace nbody
 		void reset();
 
 	private:
-		bool first_update;
+		constexpr static size_t s_TRAIL_LENGTH = 10;
 
-		std::vector<CircularBuffer<Vector2d>> world_coords;
-		sf::VertexArray vtx_array;
+		bool m_first_update;
+
+		std::vector<CircularBuffer<Vector2d>> m_world_coords;
+		sf::VertexArray m_vtx_array;
 	};
 }
 

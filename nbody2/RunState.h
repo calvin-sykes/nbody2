@@ -3,7 +3,7 @@
 
 #include "BodyManager.h"
 #include "QuadManager.h"
-#include "SimState.h"
+#include "IState.h"
 #include "TrailManager.h"
 #include "Vector.h"
 
@@ -35,17 +35,17 @@ namespace nbody
 		bool grid_mode_complete : 1;
 	};
 
-	class RunState : public SimState
+	class RunState : public IState
 	{
 	private:
-		sf::View main_view;
-		sf::View gui_view;
+		sf::View m_main_view;
+		sf::View m_gui_view;
 
-		BodyManager b_mgr;
-		TrailManager t_mgr;
-		QuadManager q_mgr;
+		BodyManager m_body_mgr;
+		TrailManager m_trail_mgr;
+		QuadManager m_quad_mgr;
 
-		Flags flags;
+		Flags m_flags;
 
 	public:
 		virtual void draw(sf::Time const dt);

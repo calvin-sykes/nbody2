@@ -6,7 +6,7 @@
 #include "IModel.h"
 #include "IIntegrator.h"
 #include "Sim.h"
-#include "SimState.h"
+#include "IState.h"
 
 #include "imgui.h"
 
@@ -40,7 +40,7 @@ namespace nbody
 
 	using ComboCallback = bool(*)(void*, int, char const**);
 
-	class StartState : public SimState
+	class StartState : public IState
 	{
 	public:
 		StartState(Sim * simIn);
@@ -50,7 +50,6 @@ namespace nbody
 		virtual void handleInput();
 	private:
 		bool checkRun(std::string & result_message);
-		void run();
 
 		void makeInitialWindow();
 		void makeLoadWindow();
@@ -65,29 +64,29 @@ namespace nbody
 		void saveSettings(char const* filename);
 		bool loadSettings(char const* filename);
 
-		bool do_run;
+		bool m_do_run;
 
-		sf::View view;
+		sf::View m_view;
 
-		MenuState menu_state;
-		bool l1_modal_is_open, l2_modal_is_open;
-		ImGuiWindowFlags window_flags;
-		ImGuiStyle& style;
+		MenuState m_menu_state;
+		bool m_l1_modal_open, m_l2_modal_open;
+		ImGuiWindowFlags m_window_flags;
+		ImGuiStyle& m_style;
 
 		// Sets of parameters for BodyGroups 
 		// References those held in Sim
-		std::vector<BodyGroupProperties> & bg_props;
+		std::vector<BodyGroupProperties> & m_bg_props;
 		// Simulation-wide parameters
 		// References those held in Sim
-		SimProperties & sim_props;
+		SimProperties & m_sim_props;
 		// Temporary storage for imgui 0..1 colours
-		std::vector<TempColArray> tmp_cols;
+		std::vector<TempColArray> m_tmp_cols;
 
 		// Error message from file load operations
-		std::string err_string;
+		std::string m_err_string;
 
 		// Info on BodyDistributors
-		DPArray dist_infos = { {
+		DPArray m_dist_infos = { {
 			{
 				DistributorType::EXPONENTIAL,
 				"Exponential",
@@ -108,7 +107,7 @@ namespace nbody
 			}
 		} };
 
-		ComboCallback getDistributorName = [](void * data, int idx, const char ** out_text)
+		ComboCallback m_getDistributorName = [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<DPArray*>(data);
 			if (idx < 0 || idx >= static_cast<int>(array.size()))
@@ -122,7 +121,7 @@ namespace nbody
 			}
 		};
 
-		CPArray colour_infos = { {
+		CPArray m_colour_infos = { {
 			{
 				ColourerType::SOLID,
 				"Single",
@@ -137,7 +136,7 @@ namespace nbody
 			}
 		} };
 
-		ComboCallback getColourerName = [](void * data, int idx, const char ** out_text)
+		ComboCallback m_getColourerName = [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<CPArray*>(data);
 			if (idx < 0 || idx >= static_cast<int>(array.size()))
@@ -151,7 +150,7 @@ namespace nbody
 			}
 		};
 
-		IntArray integrator_infos = { {
+		IntArray m_integrator_infos = { {
 			{
 				IntegratorType::EULER,
 				"Euler"
@@ -162,7 +161,7 @@ namespace nbody
 			}
 		} };
 
-		ComboCallback getIntegratorName = [](void * data, int idx, const char ** out_text)
+		ComboCallback m_getIntegratorName = [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<IntArray*>(data);
 			if (idx < 0 || idx >= static_cast<int>(array.size()))
@@ -176,7 +175,7 @@ namespace nbody
 			}
 		};
 
-		ModArray model_infos = { {
+		ModArray m_model_infos = { {
 			{
 				ModelType::BRUTE_FORCE,
 				"Brute-force",
@@ -189,7 +188,7 @@ namespace nbody
 			}
 			} };
 
-		ComboCallback getModelName = [](void * data, int idx, const char ** out_text)
+		ComboCallback m_getModelName = [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<ModArray*>(data);
 			if (idx < 0 || idx >= static_cast<int>(array.size()))
