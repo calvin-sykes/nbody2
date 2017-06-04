@@ -31,6 +31,8 @@ namespace nbody
 		size_t getNumBodies() const;
 		size_t getNumRenegades() const;
 
+		Quad const& getQuad() const;
+
 		double getTheta() const;
 		void setTheta(double theta);
 
@@ -44,13 +46,13 @@ namespace nbody
 
 		Vector2d calcForce(ParticleData const& p);
 
+		BHTreeNode * m_daughters[NUM_DAUGHTERS];
+
 	private:
 		BHTreeNode * createDaughter(Quad const& q) const;
 		
 		Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2);
 		Vector2d calcTreeForce(ParticleData const& p);
-
-		BHTreeNode * m_daughters[NUM_DAUGHTERS];
 
 		ParticleData m_body;
 		double m_mass;

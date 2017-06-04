@@ -17,6 +17,7 @@ namespace nbody
 
 		virtual void addBodies(BodyDistributor const& dist, BodyGroupProperties const& bgp);
 		virtual void eval(Vector2d * state_in, double time, Vector2d * deriv_out);
+		virtual BHTreeNode const* getTreeRoot() const;
 
 	private:
 		void buildTree(ParticleData const& all);

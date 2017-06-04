@@ -23,6 +23,7 @@ namespace nbody
 		this->main_view.setCenter(0.5f * pos);
 		this->gui_view.setCenter(0.5f * pos);
 
+		flags.tree_exists = sim->m_mod_ptr->hasTree();
 		//flags.tree_exists = this->sim->evolver_ptr->has_tree;
 		//Body2d::integrator_ptr = this->sim->integrator_ptr;
 	}
@@ -63,24 +64,18 @@ namespace nbody
 			this->sim->m_window.draw(this->b_mgr);
 		}
 
-		/*if (flags.tree_exists && flags.show_grid)
+		if (flags.tree_exists && flags.show_grid)
 		{
-			tree_ptr->updateGfx(flags.show_grid_levels);
-			this->sim->window.draw(*tree_ptr);
-		}*/
+			auto mode = flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
+			q_mgr.update(this->sim->m_mod_ptr->getTreeRoot(), mode);
+			sim->m_window.draw(q_mgr);
+		}
 
 		if (flags.show_trails)
 		{
 			this->t_mgr.update(sim->m_int_ptr->getState(),
 				sim->m_mod_ptr->getNumBodies());
 			this->sim->m_window.draw(this->t_mgr);
-		}
-
-		// finished with tree; it is regenerated from scratch next time
-		// delete to prevent memory leak
-		if (flags.tree_exists && (flags.running || flags.tree_old))
-		{
-			delete tree_ptr;
 		}
 
 		this->sim->m_window.setView(this->gui_view);
@@ -129,9 +124,9 @@ namespace nbody
 					{
 						flags.show_grid = !flags.show_grid;
 					}
-					else if (event.key.code == sf::Keyboard::L && flags.show_grid)
+					else if (event.key.code == sf::Keyboard::M && flags.show_grid)
 					{
-						flags.show_grid_levels = !flags.show_grid_levels;
+						flags.grid_mode_complete = !flags.grid_mode_complete;
 					}
 					else if (event.key.code == sf::Keyboard::B)
 					{

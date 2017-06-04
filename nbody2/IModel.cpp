@@ -2,11 +2,12 @@
 
 namespace nbody
 {
-	IModel::IModel(std::string name, size_t dim)
+	IModel::IModel(std::string name, bool has_tree, size_t dim)
 		: m_name(name),
 		m_dim(dim),
 		m_initial_state(nullptr),
 		m_aux_state(nullptr),
+		m_has_tree(has_tree),
 		m_num_bodies(0),
 		m_num_added(0),
 		m_step(1),
@@ -23,6 +24,11 @@ namespace nbody
 	void IModel::init(size_t num_bodies, double step)
 	{
 		resetDim(num_bodies, step);
+	}
+
+	bool IModel::hasTree() const
+	{
+		return m_has_tree;
 	}
 
 	size_t IModel::getNumBodies() const

@@ -80,6 +80,11 @@ namespace nbody
 		return s_renegades.size();
 	}
 
+	Quad const & BHTreeNode::getQuad() const
+	{
+		return m_quad;
+	}
+
 	double BHTreeNode::getTheta() const
 	{
 		return s_bh_theta;
@@ -98,7 +103,7 @@ namespace nbody
 	void BHTreeNode::statReset() const
 	{
 		if (!isRoot())
-			throw MAKE_ERROR("Non-root node attempted to rest statistics");
+			throw MAKE_ERROR("Non-root node attempted to reset statistics");
 
 		s_stat.m_num_calc = 0;
 
@@ -141,7 +146,7 @@ namespace nbody
 			{
 				std::stringstream ss;
 				ss << "Particle at " << new_body.m_state->pos
-					<< "is outside node centre (" << m_quad.getXmid() << "," << m_quad.getYmid()
+					<< "is outside node centre (" << m_quad.getPos()
 					<< "), length" << m_quad.getLength();
 				throw MAKE_ERROR(ss.str());
 			}

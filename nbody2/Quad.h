@@ -24,8 +24,9 @@ namespace nbody
 		~Quad() = default;
 
 		double getLength() const { return length; }
-		double getXmid() const { return mid_point.x; }
-		double getYmid() const { return mid_point.y; }
+		Vector2d getPos() const { return mid_point; }
+		//double getXmid() const { return mid_point.x; }
+		//double getYmid() const { return mid_point.y; }
 
 		bool contains(Vector2d const& pt) const;
 		Daughter whichDaughter(Vector2d const& pt) const;

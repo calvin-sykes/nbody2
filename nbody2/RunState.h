@@ -2,6 +2,7 @@
 #define RUN_STATE_H
 
 #include "BodyManager.h"
+#include "QuadManager.h"
 #include "SimState.h"
 #include "TrailManager.h"
 #include "Vector.h"
@@ -17,22 +18,21 @@ namespace nbody
 	struct Flags
 	{
 		Flags() :
-			running(false), show_bodies(true), show_trails(false),
-			show_grid(false), show_grid_levels(false), current_show_grid(false),
+			running(false),
+			show_bodies(true), show_trails(false), show_grid(false),
 			view_centre(true), view_dragging(false),
-			tree_old(true), tree_exists(false) {}
+			tree_exists(false), grid_mode_complete(true) {}
 
 		bool running : 1;
+		
 		bool show_bodies : 1;
 		bool show_trails : 1;
 		bool show_grid : 1;
-		bool show_grid_levels : 1;
-		bool current_show_grid : 1;
 
 		bool view_centre : 1;
 		bool view_dragging : 1;
-		bool tree_old : 1;
 		bool tree_exists : 1;
+		bool grid_mode_complete : 1;
 	};
 
 	class RunState : public SimState
@@ -41,9 +41,10 @@ namespace nbody
 		sf::View main_view;
 		sf::View gui_view;
 
-		BHTree * tree_ptr;
+		//BHTree * tree_ptr;
 		BodyManager b_mgr;
 		TrailManager t_mgr;
+		QuadManager q_mgr;
 
 		Flags flags;
 

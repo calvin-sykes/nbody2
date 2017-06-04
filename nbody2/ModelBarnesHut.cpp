@@ -7,7 +7,7 @@
 namespace nbody
 {
 	ModelBarnesHut::ModelBarnesHut()
-		: IModel("Barnes-Hut N-body simulation"),
+		: IModel("Barnes-Hut N-body simulation", true),
 		m_bounds(0, 0, Constants::RADIUS),
 		m_root(m_bounds)
 	{
@@ -64,8 +64,11 @@ namespace nbody
 
 		deriv_state[0].acc = m_root.calcForce(p);
 		deriv_state[0].vel = state[0].vel;
+	}
 
-		m_root.getStatNumCalc();
+	BHTreeNode const* ModelBarnesHut::getTreeRoot() const
+	{
+		return &m_root;
 	}
 
 	void ModelBarnesHut::buildTree(ParticleData const & all)

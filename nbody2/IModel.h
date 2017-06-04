@@ -11,6 +11,7 @@ namespace nbody
 {
 	struct BodyGroupProperties;
 	class BodyDistributor;
+	class BHTreeNode;
 
 	enum class ModelType
 	{
@@ -31,13 +32,16 @@ namespace nbody
 	{
 	public:
 
-		IModel(std::string name, size_t dim = 1);
+		IModel(std::string name, bool has_tree = false, size_t dim = 1);
 		virtual ~IModel();	
 		
 		void init(size_t num_bodies, double step);
 
 		virtual void addBodies(BodyDistributor const& dist, BodyGroupProperties const& bgp) = 0;
 		virtual void eval(Vector2d * state, double time, Vector2d * deriv_in) = 0;
+		virtual BHTreeNode const* getTreeRoot() const = 0;
+
+		bool hasTree() const;
 
 		size_t getNumBodies() const;
 		size_t getDim() const;
@@ -60,9 +64,9 @@ namespace nbody
 		Vector2d m_centre_mass;
 
 	private:
-
 		void resetDim(size_t num_bodies, double step);
 
+		bool m_has_tree;
 		size_t m_dim;
 		std::string m_name;
 	};

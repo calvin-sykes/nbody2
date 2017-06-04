@@ -1,6 +1,7 @@
 #include "BodyDistributor.h"
 #include "BodyGroupProperties.h"
 #include "Constants.h"
+#include "Error.h"
 #include "ModelBruteForce.h"
 #include "Types.h"
 
@@ -68,5 +69,10 @@ namespace nbody
 			m_centre_mass += state[i].pos * m_aux_state[i].mass;
 
 		m_centre_mass /= m_tot_mass;
+	}
+
+	BHTreeNode const* ModelBruteForce::getTreeRoot() const
+	{
+		return nullptr;
 	}
 }
