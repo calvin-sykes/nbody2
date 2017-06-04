@@ -38,15 +38,15 @@ namespace nbody
 	class RunState : public IState
 	{
 	private:
-		sf::View main_view;
-		sf::View gui_view;
+		sf::View m_main_view;
+		sf::View m_gui_view;
 
 		//BHTree * tree_ptr;
-		BodyManager b_mgr;
-		TrailManager t_mgr;
-		QuadManager q_mgr;
+		BodyManager m_body_mgr;
+		TrailManager m_trail_mgr;
+		QuadManager m_quad_mgr;
 
-		Flags flags;
+		Flags m_flags;
 
 	public:
 		virtual void draw(sf::Time const dt);
