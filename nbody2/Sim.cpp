@@ -1,7 +1,7 @@
 #include "BodyGroupProperties.h"
 #include "Display.h"
 #include "Sim.h"
-#include "SimState.h"
+#include "IState.h"
 
 #include "imgui.h"
 #include "imgui_sfml.h"
@@ -59,7 +59,7 @@ namespace nbody
 		ImGui::SFML::Shutdown();
 	}
 
-	void Sim::pushState(SimState* state)
+	void Sim::pushState(IState* state)
 	{
 		m_pending.op = PendingStateOp::PUSH;
 		m_pending.state = state;
@@ -71,13 +71,13 @@ namespace nbody
 		m_pending.state = nullptr;
 	}
 
-	void Sim::changeState(SimState* state)
+	void Sim::changeState(IState* state)
 	{
 		m_pending.op = PendingStateOp::CHANGE;
 		m_pending.state = state;
 	}
 
-	SimState* Sim::peekState()
+	IState* Sim::peekState()
 	{
 		if (m_states.empty()) return nullptr;
 		else return m_states.top();

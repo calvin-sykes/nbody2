@@ -3,7 +3,7 @@
 
 #include "BodyManager.h"
 #include "QuadManager.h"
-#include "SimState.h"
+#include "IState.h"
 #include "TrailManager.h"
 #include "Vector.h"
 
@@ -35,7 +35,7 @@ namespace nbody
 		bool grid_mode_complete : 1;
 	};
 
-	class RunState : public SimState
+	class RunState : public IState
 	{
 	private:
 		sf::View main_view;

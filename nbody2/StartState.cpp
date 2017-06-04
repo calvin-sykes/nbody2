@@ -2,7 +2,7 @@
 #include "Error.h"
 #include "StartState.h"
 #include "RunState.h"
-#include "SimState.h"
+#include "IState.h"
 
 #include "imgui_sfml.h"
 
@@ -118,8 +118,8 @@ namespace nbody
 	StartState::StartState(Sim * simIn) :
 		style(ImGui::GetStyle()), sim_props(simIn->m_sim_props), bg_props(simIn->m_sim_props.bg_props)
 	{
-		this->sim = simIn;
-		sf::Vector2f pos = sf::Vector2f(this->sim->m_window.getSize());
+		this->m_sim = simIn;
+		sf::Vector2f pos = sf::Vector2f(this->m_sim->m_window.getSize());
 		this->view.setSize(pos);
 		this->view.setCenter(0.5f * pos);
 
@@ -142,22 +142,22 @@ namespace nbody
 
 	void StartState::draw(sf::Time const dt)
 	{
-		this->sim->m_window.resetGLStates();
-		this->sim->m_window.setView(this->view);
-		this->sim->m_window.clear(sf::Color::Black);
-		this->sim->m_window.draw(this->sim->m_background);
+		this->m_sim->m_window.resetGLStates();
+		this->m_sim->m_window.setView(this->view);
+		this->m_sim->m_window.clear(sf::Color::Black);
+		this->m_sim->m_window.draw(this->m_sim->m_background);
 		ImGui::Render();
 	}
 
 	void StartState::update(sf::Time const dt)
 	{
-		ImGui::SFML::Update(this->sim->m_window, dt);
+		ImGui::SFML::Update(this->m_sim->m_window, dt);
 
 		makeInitialWindow();
 
 		if (this->do_run)
 		{
-			this->sim->setProperties(this->sim_props);
+			this->m_sim->setProperties(this->sim_props);
 			this->run();
 			this->do_run = false;
 		}
@@ -183,7 +183,7 @@ namespace nbody
 	{
 		sf::Event event;
 
-		while (this->sim->m_window.pollEvent(event))
+		while (this->m_sim->m_window.pollEvent(event))
 		{
 			ImGui::SFML::ProcessEvent(event);
 
@@ -191,22 +191,22 @@ namespace nbody
 			{
 			case sf::Event::Closed:
 			{
-				this->sim->m_window.close();
+				this->m_sim->m_window.close();
 				break;
 			}
 			case sf::Event::Resized:
 			{
 				this->view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
-				this->sim->m_background.setPosition(this->sim->m_window.mapPixelToCoords(sf::Vector2i(0, 0), this->view));
-				this->sim->m_background.setScale(
-					float(event.size.width) / float(this->sim->m_background.getTexture()->getSize().x),
-					float(event.size.height) / float(this->sim->m_background.getTexture()->getSize().y));
+				this->m_sim->m_background.setPosition(this->m_sim->m_window.mapPixelToCoords(sf::Vector2i(0, 0), this->view));
+				this->m_sim->m_background.setScale(
+					float(event.size.width) / float(this->m_sim->m_background.getTexture()->getSize().x),
+					float(event.size.height) / float(this->m_sim->m_background.getTexture()->getSize().y));
 				break;
 			}
 			case sf::Event::KeyPressed:
 			{
 				if (event.key.code == sf::Keyboard::Escape)
-					this->sim->m_window.close();
+					this->m_sim->m_window.close();
 			}
 			default:
 				break;
@@ -267,7 +267,7 @@ namespace nbody
 
 	void StartState::run()
 	{
-		this->sim->pushState(new RunState(this->sim));
+		this->m_sim->pushState(new RunState(this->m_sim));
 	}
 
 	void StartState::makeInitialWindow()
@@ -294,7 +294,7 @@ namespace nbody
 		SameLine();
 		if (Button("Quit", { GetContentRegionAvailWidth() * 0.5f, 50 }))
 		{
-			this->sim->m_window.close();
+			this->m_sim->m_window.close();
 		}
 		End();
 	}

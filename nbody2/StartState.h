@@ -6,7 +6,7 @@
 #include "IModel.h"
 #include "IIntegrator.h"
 #include "Sim.h"
-#include "SimState.h"
+#include "IState.h"
 
 #include "imgui.h"
 
@@ -40,7 +40,7 @@ namespace nbody
 
 	using ComboCallback = bool(*)(void*, int, char const**);
 
-	class StartState : public SimState
+	class StartState : public IState
 	{
 	public:
 		StartState(Sim * simIn);

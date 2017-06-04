@@ -5,7 +5,7 @@
 #include "Quad.h"
 #include "RunState.h"
 #include "Sim.h"
-#include "SimState.h"
+#include "IState.h"
 
 #include "imgui.h"
 #include "imgui_sfml.h"
@@ -16,24 +16,24 @@ namespace nbody
 {
 	RunState::RunState(Sim * simIn)
 	{
-		this->sim = simIn;
-		sf::Vector2f pos = sf::Vector2f(this->sim->m_window.getSize());
+		this->m_sim = simIn;
+		sf::Vector2f pos = sf::Vector2f(this->m_sim->m_window.getSize());
 		this->main_view.setSize(pos);
 		this->gui_view.setSize(pos);
 		this->main_view.setCenter(0.5f * pos);
 		this->gui_view.setCenter(0.5f * pos);
 
-		flags.tree_exists = sim->m_mod_ptr->hasTree();
+		flags.tree_exists = m_sim->m_mod_ptr->hasTree();
 		//flags.tree_exists = this->sim->evolver_ptr->has_tree;
 		//Body2d::integrator_ptr = this->sim->integrator_ptr;
 	}
 
 	void RunState::update(sf::Time const dt)
 	{
-		ImGui::SFML::Update(this->sim->m_window, dt);
+		ImGui::SFML::Update(this->m_sim->m_window, dt);
 
 		if (flags.running)
-			sim->m_int_ptr->singleStep();
+			m_sim->m_int_ptr->singleStep();
 
 		// todo
 		//if (flags.running || flags.tree_exists && (flags.tree_old || flags.current_show_grid != flags.show_grid))
@@ -49,36 +49,36 @@ namespace nbody
 	{
 		if (flags.view_centre)
 		{
-			Vector2d com = sim->m_mod_ptr->getCentreMass();
+			Vector2d com = m_sim->m_mod_ptr->getCentreMass();
 			Vector2f com_screen(Display::worldToScreenX(com.x), Display::worldToScreenY(com.y));
 			Display::screen_offset += com_screen - 0.5f * Display::screen_size;
 		}
 
-		this->sim->m_window.setView(this->main_view);
+		this->m_sim->m_window.setView(this->main_view);
 
 		if (flags.show_bodies)
 		{
-			this->b_mgr.update(sim->m_int_ptr->getState(),
-				sim->m_mod_ptr->getAuxState(),
-				sim->m_mod_ptr->getNumBodies());
-			this->sim->m_window.draw(this->b_mgr);
+			this->b_mgr.update(m_sim->m_int_ptr->getState(),
+				m_sim->m_mod_ptr->getAuxState(),
+				m_sim->m_mod_ptr->getNumBodies());
+			this->m_sim->m_window.draw(this->b_mgr);
 		}
 
 		if (flags.tree_exists && flags.show_grid)
 		{
 			auto mode = flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
-			q_mgr.update(this->sim->m_mod_ptr->getTreeRoot(), mode);
-			sim->m_window.draw(q_mgr);
+			q_mgr.update(this->m_sim->m_mod_ptr->getTreeRoot(), mode);
+			m_sim->m_window.draw(q_mgr);
 		}
 
 		if (flags.show_trails)
 		{
-			this->t_mgr.update(sim->m_int_ptr->getState(),
-				sim->m_mod_ptr->getNumBodies());
-			this->sim->m_window.draw(this->t_mgr);
+			this->t_mgr.update(m_sim->m_int_ptr->getState(),
+				m_sim->m_mod_ptr->getNumBodies());
+			this->m_sim->m_window.draw(this->t_mgr);
 		}
 
-		this->sim->m_window.setView(this->gui_view);
+		this->m_sim->m_window.setView(this->gui_view);
 
 		//ImGui::Render();
 	}
@@ -87,7 +87,7 @@ namespace nbody
 	{
 		sf::Event event;
 		sf::Vector2i static prev_mouse_pos, new_mouse_pos;
-		while (this->sim->m_window.pollEvent(event))
+		while (this->m_sim->m_window.pollEvent(event))
 		{
 			ImGui::SFML::ProcessEvent(event);
 
@@ -97,7 +97,7 @@ namespace nbody
 				{
 				case sf::Event::Closed:
 				{
-					this->sim->m_window.close();
+					this->m_sim->m_window.close();
 					break;
 				}
 				case sf::Event::Resized:
@@ -146,7 +146,7 @@ namespace nbody
 					else if (event.key.code == sf::Keyboard::Escape)
 					{
 						//this->sim->bodies.clear();
-						this->sim->popState();
+						this->m_sim->popState();
 					}
 					break;
 				}

@@ -15,7 +15,7 @@
 
 namespace nbody
 {
-	class SimState;
+	class IState;
 
 	// Apend a vector rvalue to a secoond vector, using move semantics
 	//template <typename T>
@@ -70,7 +70,7 @@ namespace nbody
 		PendingState() : op(PendingStateOp::NONE), state(nullptr) {}
 
 		PendingStateOp op;
-		SimState * state;
+		IState * state;
 	};
 
 	class Sim
@@ -79,10 +79,10 @@ namespace nbody
 		Sim();
 		~Sim();
 
-		void pushState(SimState* state);
+		void pushState(IState* state);
 		void popState();
-		void changeState(SimState* state);
-		SimState* peekState();
+		void changeState(IState* state);
+		IState* peekState();
 
 		void loadTextures();
 		void loadObjects();
@@ -103,7 +103,7 @@ namespace nbody
 		sf::Sprite m_background;
 
 	private:
-		std::stack<SimState*> m_states;
+		std::stack<IState*> m_states;
 		PendingState m_pending;
 
 		void handlePendingOp();
