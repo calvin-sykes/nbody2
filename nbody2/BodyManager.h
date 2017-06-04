@@ -30,18 +30,19 @@ namespace nbody
 		void drawBody(ParticleState const& p, size_t const idx);
 		float radiusFromMass(double mass);
 
-		float static constexpr MIN_SIZE = 1;
-		float static constexpr MAX_SIZE = 5;
-		float scl;
+		float static constexpr s_MIN_SIZE = 1;
+		float static constexpr s_MAX_SIZE = 5;
+		size_t static constexpr s_VERTICES = 20;
+		float static constexpr s_THETA = (2 * Constants::PI) / s_VERTICES;
 
-		size_t static constexpr N_VERTICES = 10;
-		float static constexpr THETA = (2 * Constants::PI) / N_VERTICES;
-		sf::Vector2f UNIT_CIRCLE[N_VERTICES];
-		sf::Vector2f scratch[N_VERTICES];
-		sf::VertexArray vtx_array;
+		sf::Vector2f m_unit_circle[s_VERTICES];
+		sf::Vector2f m_scratch[s_VERTICES];
+		sf::VertexArray m_vtx_array;
 
-		std::vector<float> radii;
-		bool first_update;
+		float m_scl;
+
+		std::vector<float> m_radii;
+		bool m_first_update;
 	};
 }
 
