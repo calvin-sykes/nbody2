@@ -41,7 +41,6 @@ namespace nbody
 		sf::View main_view;
 		sf::View gui_view;
 
-		//BHTree * tree_ptr;
 		BodyManager b_mgr;
 		TrailManager t_mgr;
 		QuadManager q_mgr;

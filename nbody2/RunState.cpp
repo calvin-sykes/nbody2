@@ -22,8 +22,6 @@ namespace nbody
 		this->gui_view.setCenter(0.5f * pos);
 
 		flags.tree_exists = sim->m_mod_ptr->hasTree();
-		//flags.tree_exists = this->sim->evolver_ptr->has_tree;
-		//Body2d::integrator_ptr = this->sim->integrator_ptr;
 	}
 
 	void RunState::update(sf::Time const dt)
@@ -32,13 +30,6 @@ namespace nbody
 
 		if (flags.running)
 			sim->m_int_ptr->singleStep();
-
-		// todo
-		//if (flags.running || flags.tree_exists && (flags.tree_old || flags.current_show_grid != flags.show_grid))
-		//	this->sim->evolver_ptr->calcStep(this->sim->bodies, this->com, this->tree_ptr, this->flags);
-
-		//if (flags.running)
-		//	this->sim->evolver_ptr->advanceStep(this->sim->bodies, this->sim->timestep, this->com, this->tree_ptr, this->flags);
 
 		//ImGui::ShowMetricsWindow();
 	}
@@ -143,7 +134,6 @@ namespace nbody
 					}
 					else if (event.key.code == sf::Keyboard::Escape)
 					{
-						//this->sim->bodies.clear();
 						this->sim->popState();
 					}
 					break;
