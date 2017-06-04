@@ -37,6 +37,12 @@
     <Filter Include="Source Files\integration">
       <UniqueIdentifier>{ec7f5ef9-c03e-4a3c-9f80-af5b8c1fb09e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{80adaeea-ef5d-4c67-bab6-c0494c283d8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{c987d615-855a-418a-96e1-35cd948a2998}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,15 +90,6 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Source Files\sys</Filter>
     </ClCompile>
-    <ClCompile Include="BodyManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TrailManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuadManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IIntegrator.cpp">
       <Filter>Source Files\integration</Filter>
     </ClCompile>
@@ -116,6 +113,15 @@
     </ClCompile>
     <ClCompile Include="BHTreeNode.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadManager.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TrailManager.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="BodyManager.cpp">
+      <Filter>Source Files\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,15 +197,6 @@
     <ClInclude Include="AssetManager.h">
       <Filter>Header Files\sys</Filter>
     </ClInclude>
-    <ClInclude Include="BodyManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TrailManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CircularBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IIntegrator.h">
       <Filter>Header Files\integration</Filter>
     </ClInclude>
@@ -223,6 +220,18 @@
     </ClInclude>
     <ClInclude Include="BHTreeNode.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BodyManager.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularBuffer.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
+    <ClInclude Include="TrailManager.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadManager.h">
+      <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
