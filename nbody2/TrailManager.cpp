@@ -1,4 +1,3 @@
-#include "Body2d.h"
 #include "Display.h"
 #include "TrailManager.h"
 #include "Types.h"

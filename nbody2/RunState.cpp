@@ -1,7 +1,5 @@
-#include "BHTree.h"
 #include "Constants.h"
 #include "Display.h"
-#include "Evolver.h"
 #include "Quad.h"
 #include "RunState.h"
 #include "Sim.h"

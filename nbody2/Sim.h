@@ -2,10 +2,9 @@
 #define SIM_H
 
 #include "AssetManager.h"
-#include "Body2d.h"
 #include "BodyGroupProperties.h"
-#include "IModel.h"
 #include "IIntegrator.h"
+#include "IModel.h"
 
 #include <SFML/Graphics.hpp>
 

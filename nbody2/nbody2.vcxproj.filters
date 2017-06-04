@@ -48,13 +48,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Body2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Quad.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BHTree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sim.cpp">
@@ -83,9 +77,6 @@
     </ClCompile>
     <ClCompile Include="Display.cpp">
       <Filter>Source Files\sys</Filter>
-    </ClCompile>
-    <ClCompile Include="Evolver.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
       <Filter>Source Files\sys</Filter>
@@ -125,16 +116,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Body2d.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Quad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BHTree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BodyDistributor.h">

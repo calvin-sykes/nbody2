@@ -310,13 +310,10 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BHTree.cpp" />
     <ClCompile Include="BHTreeNode.cpp" />
-    <ClCompile Include="Body2d.cpp" />
     <ClCompile Include="BodyDistributor.cpp" />
     <ClCompile Include="BodyManager.cpp" />
     <ClCompile Include="Display.cpp" />
-    <ClCompile Include="Evolver.cpp" />
     <ClCompile Include="IIntegrator.cpp" />
     <ClCompile Include="imgui_sfml.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -338,9 +335,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="Types.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BHTree.h" />
     <ClInclude Include="BHTreeNode.h" />
-    <ClInclude Include="Body2d.h" />
     <ClInclude Include="BodyDistributor.h" />
     <ClInclude Include="BodyManager.h" />
     <ClInclude Include="CircularBuffer.h" />
