@@ -20,6 +20,7 @@ namespace nbody
 		virtual BHTreeNode const* getTreeRoot() const;
 
 	private:
+		void calcBounds(ParticleData const& all);
 		void buildTree(ParticleData const& all);
 
 		BHTreeNode m_root;
