@@ -10,7 +10,7 @@ namespace nbody
 {
 	ModelBarnesHut::ModelBarnesHut()
 		: IModel("Barnes-Hut N-body simulation", true),
-		m_bounds(0, 0, Constants::RADIUS),
+		m_bounds({ 0, 0 }, Constants::RADIUS),
 		m_root(m_bounds)
 	{
 	}
@@ -91,7 +91,7 @@ namespace nbody
 
 		auto len{ 4 * avg_dist_from_centre };
 
-		m_bounds = Quad{ m_centre_mass.x, m_centre_mass.y, len };
+		m_bounds = { m_centre_mass.x, len };
 	}
 
 	void ModelBarnesHut::buildTree(ParticleData const & all)

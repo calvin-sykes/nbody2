@@ -20,7 +20,7 @@ namespace nbody
 	{
 	public:
 		Quad() = default;
-		Quad(const double x_midIn, const double y_midIn, const double lengthIn);
+		Quad(Vector2d const& centre, double const length);
 		~Quad() = default;
 
 		double getLength() const { return m_length; }
