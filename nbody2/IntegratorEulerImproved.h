@@ -3,6 +3,8 @@
 
 #include "IIntegrator.h"
 
+#include <memory>
+
 namespace nbody
 {
 	class IntegratorEulerImproved :	public IIntegrator
@@ -13,9 +15,9 @@ namespace nbody
 		IntegratorEulerImproved(IModel * model, double step);
 		virtual ~IntegratorEulerImproved();
 
-		virtual void singleStep();
-		virtual void setInitialState(Vector2d * state);
-		virtual Vector2d * getState() const;
+		void singleStep() override;
+		void setInitialState(Vector2d * state) override;
+		Vector2d * getState() const override;
 
 	private:
 		Vector2d * m_state, * m_tmp, * m_k1, * m_k2;

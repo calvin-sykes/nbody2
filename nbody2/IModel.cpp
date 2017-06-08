@@ -3,16 +3,16 @@
 namespace nbody
 {
 	IModel::IModel(std::string name, bool has_tree, size_t dim)
-		: m_name(name),
-		m_dim(dim),
-		m_initial_state(nullptr),
+		: m_initial_state(nullptr),
 		m_aux_state(nullptr),
-		m_has_tree(has_tree),
+		m_step(1),
 		m_num_bodies(0),
 		m_num_added(0),
-		m_step(1),
+		m_tot_mass(0),
 		m_centre_mass(),
-		m_tot_mass(0)
+		m_has_tree(has_tree),
+		m_dim(dim),
+		m_name(name)
 	{}
 
 	IModel::~IModel()
@@ -73,7 +73,7 @@ namespace nbody
 		m_step = step;
 	}
 
-	Vector2d * IModel::getInitialState()
+	Vector2d * IModel::getInitialState() const
 	{
 		return reinterpret_cast<Vector2d *>(m_initial_state);
 	}

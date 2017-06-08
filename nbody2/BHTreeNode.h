@@ -29,14 +29,14 @@ namespace nbody
 		bool wasTooClose() const;
 
 		size_t getNumBodies() const;
-		size_t getNumRenegades() const;
+		static size_t getNumRenegades();
 
 		Quad const& getQuad() const;
 
-		double getTheta() const;
-		void setTheta(double theta);
+		static double getTheta();
+		static void setTheta(double theta);
 
-		size_t getStatNumCalc() const;
+		static size_t getStatNumCalc();
 		void statReset() const;
 
 		void computeMassDistribution();
@@ -51,7 +51,7 @@ namespace nbody
 	private:
 		BHTreeNode * createDaughter(Quad const& q) const;
 		
-		Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2);
+		Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2) const;
 		Vector2d calcTreeForce(ParticleData const& p);
 
 		ParticleData m_body;

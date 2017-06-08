@@ -4,7 +4,7 @@
 
 namespace nbody
 {
-	TrailManager::TrailManager() : m_vtx_array(sf::Lines), m_first_update(true)
+	TrailManager::TrailManager() : m_first_update(true), m_vtx_array(sf::Lines)
 	{
 	}
 

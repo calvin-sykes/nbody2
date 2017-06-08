@@ -13,13 +13,18 @@ namespace nbody
 
 	IntegratorEulerImproved::IntegratorEulerImproved(IModel * model, double step)
 		: IIntegrator(model, step),
-		m_state(model ? new Vector2d[model->getDim()] : nullptr),
-		m_tmp(model ? new Vector2d[model->getDim()] : nullptr),
-		m_k1(model ? new Vector2d[model->getDim()] : nullptr),
-		m_k2(model ? new Vector2d[model->getDim()] : nullptr)
+		m_state(nullptr),
+		m_tmp(nullptr),
+		m_k1(nullptr),
+		m_k2(nullptr)
 	{
 		if (!model)
 			throw MAKE_ERROR("Model was nullptr");
+
+		m_state = new Vector2d[model->getDim()];
+		m_tmp = new Vector2d[model->getDim()];
+		m_k1 = new Vector2d[model->getDim()];
+		m_k2 = new Vector2d[model->getDim()];
 
 		std::stringstream ss;
 		ss << "Modified Euler (dt =" << step << ")";

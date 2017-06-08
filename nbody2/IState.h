@@ -10,6 +10,9 @@ namespace nbody
 	class IState
 	{
 	public:
+		
+		explicit IState() = default;
+		virtual ~IState() = default;
 
 		Sim* m_sim;
 

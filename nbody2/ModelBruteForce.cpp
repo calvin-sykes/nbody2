@@ -1,14 +1,13 @@
 #include "BodyDistributor.h"
 #include "BodyGroupProperties.h"
 #include "Constants.h"
-#include "Error.h"
 #include "ModelBruteForce.h"
 #include "Types.h"
 
 namespace nbody
 {
 	ModelBruteForce::ModelBruteForce()
-		: IModel("Brute-force N-body simulation")
+		: IModel("Brute-force N-body simulation"), m_tot_mass(0)
 	{
 	}
 

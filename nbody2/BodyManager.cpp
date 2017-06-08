@@ -4,7 +4,7 @@
 
 namespace nbody
 {
-	BodyManager::BodyManager() : m_vtx_array(sf::Triangles), m_first_update(true)
+	BodyManager::BodyManager() : m_vtx_array(sf::Triangles), m_scl(0), m_first_update(true)
 	{
 		// cache the vertices of a unit circle
 		for (size_t i = 0; i < s_VERTICES; i++)
@@ -59,8 +59,8 @@ namespace nbody
 			// WIP
 			auto v_mag = p.vel.mag();
 			auto phase = min(Constants::PI / 2., (v_mag * 1e-5) * (Constants::PI / 2.));
-			auto red = (int)(254 * sin(phase));
-			auto blue = (int)(254 * cos(phase));
+			auto red = static_cast<int>(254 * sin(phase));
+			auto blue = static_cast<int>(254 * cos(phase));
 			auto green = 0;
 			auto col = sf::Color(red, green, blue);
 
@@ -90,7 +90,7 @@ namespace nbody
 		target.draw(m_vtx_array);
 	}
 
-	float BodyManager::radiusFromMass(double mass)
+	float BodyManager::radiusFromMass(double mass) const
 	{
 		return min(static_cast<float>(s_MIN_SIZE * log10(mass / Constants::SOLAR_MASS)), s_MAX_SIZE);
 	}

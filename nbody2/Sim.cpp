@@ -3,11 +3,9 @@
 #include "Sim.h"
 #include "IState.h"
 
-#include "imgui.h"
 #include "imgui_sfml.h"
 
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
 
 #define WINDOW_W 800
 #define WINDOW_H 600
@@ -44,7 +42,7 @@ namespace nbody
 		// Initialise GUI
 		ImGui::SFML::Init(m_window);
 		// Initialise values needed for world-screen coordinate conversion
-		Display::screen_size = m_window.getSize();
+		Display::screen_size = Vector2f{ m_window.getSize() };
 		Display::aspect_ratio = static_cast<float>(Display::screen_size.x) / static_cast<float>(Display::screen_size.y);
 	}
 
@@ -96,7 +94,7 @@ namespace nbody
 		m_asset_mgr.loadDistributors();
 	}
 
-	void Sim::loadFonts()
+	void Sim::loadFonts() const
 	{
 		m_asset_mgr.loadFont("droid_sans", 16.f, "media/DroidSans.ttf");
 	}

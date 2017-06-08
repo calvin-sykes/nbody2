@@ -31,16 +31,16 @@ namespace nbody
 		Vector() noexcept : priv::Components<T, N>() {};
 
 		// Construct vector with all values equal to val
-		Vector(T const val) noexcept : priv::Components<T, N>(val) {};
+		explicit Vector(T const val) noexcept : priv::Components<T, N>(val) {};
 
 		// Construct from an SFML vector (2D)
 		template <typename Tin, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 2)>::type>
-		Vector(sf::Vector2<Tin> const& source) :
+		explicit Vector(sf::Vector2<Tin> const& source) :
 			priv::Components<T, 2>(static_cast<T>(source.x), static_cast<T>(source.y)) {};
 
 		// Construct from an SFML vector (3D)
 		template <typename Tin, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 3)>::type>
-		Vector(sf::Vector3<Tin> const& source) :
+		explicit Vector(sf::Vector3<Tin> const& source) :
 			priv::Components<T, 3>( static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z)) {};
 
 		// Copy-construct a vector
@@ -136,7 +136,7 @@ namespace nbody
 		}
 
 		// Move assignment
-		Vector& operator=(Vector&& other)
+		Vector& operator=(Vector&& other) noexcept
 		{
 			a_ = std::move(other.a_);
 			return *this;
@@ -145,7 +145,7 @@ namespace nbody
 		// Test for equality
 		bool operator==(Vector const& rhs) const
 		{
-			bool equal = true;
+			auto equal = true;
 			for (size_t i = 0; i < N; i++)
 			{
 				equal &= std::abs(a_[i] - rhs.a_[i]) <

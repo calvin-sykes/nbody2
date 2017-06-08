@@ -8,10 +8,13 @@ namespace nbody
 {
 	IntegratorEuler::IntegratorEuler(IModel * model, double step)
 		: IIntegrator(model, step),
-		m_state(model ?  new Vector2d[model->getDim()] : nullptr)
+		m_state(nullptr)
 	{
 		if (!model)
 			throw MAKE_ERROR("Model was nullptr");
+
+		m_state = new Vector2d[model->getDim()];
+		m_k1 = new Vector2d[model->getDim()];
 
 		std::stringstream ss;
 		ss << "Euler (dt =" << step << ")";
@@ -30,15 +33,12 @@ namespace nbody
 
 	void IntegratorEuler::singleStep()
 	{
-		auto k1 = new Vector2d[m_dim];
-		this->m_model->eval(m_state, m_time, k1);
+		m_model->eval(m_state, m_time, m_k1);
 
 		for (size_t i = 1; i < m_dim; i++)
-			m_state[i] += m_step * k1[i];
+			m_state[i] += m_step * m_k1[i];
 
 		m_time += m_step;
-
-		delete[] k1;
 	}
 
 	void IntegratorEuler::setInitialState(Vector2d * state)

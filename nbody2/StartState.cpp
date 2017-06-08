@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <algorithm>
+#include <fstream>
 #include <numeric>
 #include <stdarg.h>
 
@@ -80,7 +81,7 @@ namespace ImGui
 			// num of chars to fill with spaces
 			auto extras = max_len - line_lens[i];
 			// before text
-			memset((void*)(formatted + pos), ' ', extras / 2);
+			memset(static_cast<void*>(formatted + pos), ' ', extras / 2);
 			pos += extras / 2;
 			// text
 #ifdef SAFE_STRFN
@@ -91,7 +92,7 @@ namespace ImGui
 			pos += line_lens[i];
 			// after text until line is full, overwriting newline / null terminator
 			auto remaining_len = max_len - (pos - (max_len + 1) * i);
-			memset((void*)(formatted + pos), ' ', remaining_len);
+			memset(static_cast<void*>(formatted + pos), ' ', remaining_len);
 			pos += remaining_len;
 			// replace newline / null terminator
 			formatted[pos] = (i != n_lines - 1) ? '\n' : '\0';
@@ -115,11 +116,15 @@ namespace ImGui
 
 namespace nbody
 {
-	StartState::StartState(Sim * simIn) :
-		m_style(ImGui::GetStyle()), m_sim_props(simIn->m_sim_props), m_bg_props(simIn->m_sim_props.bg_props)
+	StartState::StartState(Sim * simIn)
+		: m_l1_modal_open(false),
+		m_l2_modal_open(false),
+		m_style(ImGui::GetStyle()),
+		m_bg_props(simIn->m_sim_props.bg_props),
+		m_sim_props(simIn->m_sim_props)
 	{
 		m_sim = simIn;
-		sf::Vector2f pos = sf::Vector2f(m_sim->m_window.getSize());
+		auto pos = sf::Vector2f{ m_sim->m_window.getSize() };
 		m_view.setSize(pos);
 		m_view.setCenter(0.5f * pos);
 
@@ -214,7 +219,7 @@ namespace nbody
 		}
 	}
 
-	bool StartState::checkRun(std::string & result_message)
+	bool StartState::checkRun(std::string & result_message) const
 	{
 		/* things to check
 		- bodies > 0 y
@@ -266,7 +271,7 @@ namespace nbody
 
 		SetNextWindowPosCenter();
 		SetNextWindowSize(ImVec2{ 500, 300 });
-		Begin("N-body Simulator", 0, m_window_flags);
+		Begin("N-body Simulator", nullptr, m_window_flags);
 		Dummy({ GetContentRegionAvailWidth(), 50 });
 		BeginGroup();
 		if (CentredButton("Load existing\ninitial conditions", { GetContentRegionAvailWidth() * 0.5f, 50 }))
@@ -357,7 +362,7 @@ namespace nbody
 			{
 				Text("Click \"+\" to add a group of bodies.");
 			}
-			float bg_size;
+			float bg_size = 0;
 			if (m_bg_props.size() > 0)
 				bg_size = max(static_cast<float>((400 - 2 * m_style.FramePadding.y - (m_bg_props.size() - 1) * m_style.ItemSpacing.y) / m_bg_props.size()), 70.f);
 			// Groups are bounded by square-cornered rectangles
@@ -373,10 +378,10 @@ namespace nbody
 #endif
 				// Single set of BodyGroup properties //
 				BeginChild(entry_id, { 0, bg_size }, true);
-				
+
 				// Number label
 				Text("Group %zu", i + 1);
-				
+
 				// Number of bodies slider
 				SameLine();
 				PushItemWidth(0.5f * GetContentRegionAvailWidth());
@@ -413,13 +418,13 @@ namespace nbody
 						}
 					}
 				}
-				
+
 				// Distributor combobox
 				SameLine();
 				PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize("Distribution").x);
-				auto sel_dist = (int*)(&m_bg_props[i].dist);
+				auto sel_dist = reinterpret_cast<int*>(&m_bg_props[i].dist);
 				if (Combo("Distribution", sel_dist, m_getDistributorName,
-					(void*)(m_dist_infos.data()), static_cast<int>(m_dist_infos.size())))
+					static_cast<void*>(m_dist_infos.data()), static_cast<int>(m_dist_infos.size())))
 				{
 					m_bg_props[i].has_central_mass = m_dist_infos[*sel_dist].has_central_mass;
 				}
@@ -433,9 +438,9 @@ namespace nbody
 					EndTooltip();
 				}
 				Dummy({ 0, 5 });
-				
+
 				ImVec2 btn_size(0.2f * GetContentRegionAvailWidth() - m_style.ItemSpacing.x, 0);
-				
+
 				// Mass range popup
 				if (Button("Mass...", btn_size))
 				{
@@ -448,7 +453,7 @@ namespace nbody
 					makeMassPopup(i);
 					EndPopup();
 				}
-				
+
 				// Central mass popup
 				SameLine();
 				if (Button("Central mass...", btn_size))
@@ -462,7 +467,7 @@ namespace nbody
 					makeCentralMassPopup(i);
 					EndPopup();
 				}
-				
+
 				// Position and velocity popup
 				SameLine();
 				if (Button("Position/velocity...", btn_size))
@@ -476,7 +481,7 @@ namespace nbody
 					makePosVelPopup(i);
 					EndPopup();
 				}
-				
+
 				// Radius popup
 				SameLine();
 				if (Button("Radius...", btn_size))
@@ -490,7 +495,7 @@ namespace nbody
 					makeRadiusPopup(i);
 					EndPopup();
 				}
-				
+
 				// Colour settings popup
 				SameLine();
 				if (Button("Colour...", btn_size))
@@ -509,20 +514,20 @@ namespace nbody
 			}
 			PopStyleVar(); // ImGuiStyleVar_ChildWindowRounding, 0.f
 			EndChild(); // BodyGroups
-			
+
 			Separator();
 			BeginGroup();
-			
+
 			// Integrator combobox
 			PushItemWidth(150);
-			auto sel_int = (int*)(&m_sim_props.int_type);
+			auto sel_int = reinterpret_cast<int*>(&m_sim_props.int_type);
 			Combo("Integrator", sel_int, m_getIntegratorName,
-				(void*)(m_integrator_infos.data()), static_cast<int>(m_integrator_infos.size()));
-			
+				static_cast<void*>(m_integrator_infos.data()), static_cast<int>(m_integrator_infos.size()));
+
 			// Model combobox
-			auto sel_ev = (int*)(&m_sim_props.mod_type);
+			auto sel_ev = reinterpret_cast<int*>(&m_sim_props.mod_type);
 			Combo("Algorithm", sel_ev, m_getModelName,
-				(void*)(m_model_infos.data()), static_cast<int>(m_model_infos.size()));
+				static_cast<void*>(m_model_infos.data()), static_cast<int>(m_model_infos.size()));
 			if (IsItemHovered() && *sel_ev != -1)
 			{
 				BeginTooltip();
@@ -535,7 +540,7 @@ namespace nbody
 			EndGroup();
 			auto sz = GetItemRectSize();
 			SameLine();
-			
+
 			// Timestep
 			PushItemWidth(sz.x - CalcTextSize("Timestep").x);
 			static double dt_in = m_sim_props.timestep == -1. ? 1 : m_sim_props.timestep * 1e-10;
@@ -547,7 +552,7 @@ namespace nbody
 			SameLine();
 			Dummy({ 207 - sz.x + 0 * CalcTextSize("Timestep").x, 0 });
 			SameLine();
-			
+
 			// Save button
 			if (Button("Save", { 100, sz.y }))
 			{
@@ -560,7 +565,7 @@ namespace nbody
 				EndPopup();
 			}
 			SameLine();
-			
+
 			// Run button
 			static std::string check_result;
 			if (Button("Run", { 100, sz.y }))
@@ -606,7 +611,7 @@ namespace nbody
 		}
 	}
 
-	void StartState::makeMassPopup(size_t const idx)
+	void StartState::makeMassPopup(size_t const idx) const
 	{
 		using namespace ImGui;
 		static bool share_values = false;
@@ -646,7 +651,7 @@ namespace nbody
 		}
 	}
 
-	void StartState::makeCentralMassPopup(size_t const idx)
+	void StartState::makeCentralMassPopup(size_t const idx) const
 	{
 		using namespace ImGui;
 		static bool share_values = false;
@@ -669,7 +674,7 @@ namespace nbody
 		}
 	}
 
-	void StartState::makePosVelPopup(size_t const idx)
+	void StartState::makePosVelPopup(size_t const idx) const
 	{
 		using namespace ImGui;
 		static bool share_values = false;
@@ -697,7 +702,7 @@ namespace nbody
 		}
 	}
 
-	void StartState::makeRadiusPopup(size_t const idx)
+	void StartState::makeRadiusPopup(size_t const idx) const
 	{
 		using namespace ImGui;
 		static bool share_values = false;
@@ -727,9 +732,9 @@ namespace nbody
 	{
 		using namespace ImGui;
 		static bool share_values;
-		auto sel_col = (int*)(&m_bg_props[idx].colour);
+		auto sel_col = reinterpret_cast<int*>(&m_bg_props[idx].colour);
 		if (Combo("Colour method", sel_col, m_getColourerName,
-			(void*)(m_colour_infos.data()), static_cast<int>(m_colour_infos.size())))
+			static_cast<void*>(m_colour_infos.data()), static_cast<int>(m_colour_infos.size())))
 		{
 			SetWindowSize({ 0, 0 });
 		}
