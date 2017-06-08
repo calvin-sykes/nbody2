@@ -3,7 +3,6 @@
 
 #define MAKE_ERROR(message) Error((message), __FILE__, __func__, __LINE__)
 
-#include <exception>
 #include <sstream>
 #include <string>
 
@@ -17,12 +16,12 @@ namespace nbody
 		Error(const std::string& msgIn, const std::string& fileIn, const std::string& funcIn, const int lineIn) :
 			std::runtime_error(msgIn), m_file(fileIn), m_func(funcIn), m_line(lineIn) {};
 
-		virtual const char* what() const noexcept
+		const char* what() const noexcept override
 		{
 			std::ostringstream builder;
 			builder << "ERROR: " << std::runtime_error::what() << "\nFile: " << m_file << " at: " << m_func << ":" << m_line;
-			auto p_str = new std::string(builder.str());
-			return p_str->c_str();
+			auto p_str = std::string(builder.str());
+			return p_str.c_str();
 		}
 
 	private:

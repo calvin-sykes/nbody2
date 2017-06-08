@@ -3,8 +3,6 @@
 
 #include "IModel.h"
 
-#include <memory>
-
 namespace nbody
 {
 	enum class IntegratorType
@@ -17,6 +15,12 @@ namespace nbody
 
 	struct IntegratorProperties
 	{
+		IntegratorProperties(IntegratorType type, char const* name)
+			: type(type),
+			  name(name)
+		{
+		}
+
 		IntegratorType const type;
 		char const* name;
 	};
@@ -43,11 +47,11 @@ namespace nbody
 		virtual Vector2d * getState() const = 0;
 
 	protected:		
-		void eval(Vector2d const* initial,
+		/*void eval(Vector2d const* initial,
 			Vector2d const* deriv_in,
 			double step,
 			double time,
-			Vector2d * deriv_out);
+			Vector2d * deriv_out);*/
 
 		IModel * m_model;
 		double m_step, m_time, m_err;

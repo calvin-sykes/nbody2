@@ -24,11 +24,11 @@ namespace nbody
 		~BodyManager();
 
 		void update(Vector2d const* state, ParticleAuxState const* aux_state, size_t const num_bodies);
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	private:
 		void drawBody(ParticleState const& p, size_t const idx);
-		float radiusFromMass(double mass);
+		float radiusFromMass(double mass) const;
 
 		float static constexpr s_MIN_SIZE = 1;
 		float static constexpr s_MAX_SIZE = 5;

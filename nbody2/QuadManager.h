@@ -3,8 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <vector>
-
 namespace nbody
 {
 	enum class GridDrawMode
@@ -21,7 +19,7 @@ namespace nbody
 		~QuadManager();
 
 		void update(BHTreeNode const* root, GridDrawMode mode);
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	private:
 		void drawNode(BHTreeNode const* node, GridDrawMode mode);

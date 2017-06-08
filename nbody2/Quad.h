@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Vector.h"
-#include "Error.h"
 
 namespace nbody
 {

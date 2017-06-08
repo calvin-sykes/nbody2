@@ -12,8 +12,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <fstream>
-#include <string>
 #include <vector>
 
 namespace nbody
@@ -43,21 +41,22 @@ namespace nbody
 	class StartState : public IState
 	{
 	public:
-		StartState(Sim * simIn);
+		explicit StartState(Sim * simIn);
+		virtual ~StartState() = default;
 
-		virtual void draw(sf::Time const dt);
-		virtual void update(sf::Time const dt);
-		virtual void handleInput();
+		void draw(sf::Time const dt) override;
+		void update(sf::Time const dt) override;
+		void handleInput() override;
 	private:
-		bool checkRun(std::string & result_message);
+		bool checkRun(std::string & result_message) const;
 
 		void makeInitialWindow();
 		void makeLoadWindow();
 		void makeGenerateWindow();
-		void makeMassPopup(size_t const idx);
-		void makeCentralMassPopup(size_t const idx);
-		void makePosVelPopup(size_t const idx);
-		void makeRadiusPopup(size_t const idx);
+		void makeMassPopup(size_t const idx) const;
+		void makeCentralMassPopup(size_t const idx) const;
+		void makePosVelPopup(size_t const idx) const;
+		void makeRadiusPopup(size_t const idx) const;
 		void makeColourPopup(size_t const idx);
 		void makeSavePopup();
 
@@ -86,7 +85,7 @@ namespace nbody
 		std::string m_err_string;
 
 		// Info on BodyDistributors
-		DPArray m_dist_infos = { {
+		DPArray m_dist_infos = { { 
 			{
 				DistributorType::EXPONENTIAL,
 				"Exponential",

@@ -13,6 +13,14 @@ namespace nbody
 
 	struct ColourerProperties
 	{
+		ColourerProperties(ColourerType type, char const* name, char const* tooltip, char cols_used)
+			: type(type),
+			  name(name),
+			  tooltip(tooltip),
+			  cols_used(cols_used)
+		{
+		}
+
 		ColourerType const type;
 		char const* name;
 		char const* tooltip;

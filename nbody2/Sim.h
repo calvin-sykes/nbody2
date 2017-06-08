@@ -8,7 +8,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <iterator>
 #include <stack>
 #include <vector>
 
@@ -46,7 +45,8 @@ namespace nbody
 			: timestep(-1.),
 			int_type(IntegratorType::INVALID),
 			mod_type(ModelType::INVALID),
-			bg_props()
+			bg_props(),
+			n_bodies(0)
 			{}
 
 		double timestep;
@@ -85,7 +85,7 @@ namespace nbody
 
 		void loadTextures();
 		void loadObjects();
-		void loadFonts();
+		void loadFonts() const;
 
 		void setProperties(SimProperties const&);
 		void simLoop();

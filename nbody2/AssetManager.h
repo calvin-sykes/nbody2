@@ -5,15 +5,11 @@
 
 #include <map>
 #include <memory>
-#include <string>
 
 namespace nbody
 {
-	//class Integrator;
 	class IIntegrator;
 	enum class IntegratorType;
-	//class Evolver;
-	//enum class EvolverType;
 	class IModel;
 	enum class ModelType;
 	class BodyDistributor;
@@ -29,7 +25,7 @@ namespace nbody
 		AssetManager() = default;
 		
 		void loadTexture(std::string const& name, std::string const& filename);
-		void loadFont(std::string const& name, float const size, std::string const& filename);
+		static void loadFont(std::string const& name, float const size, std::string const& filename);
 		void loadIntegrators();
 		void loadModels();
 		void loadDistributors();
