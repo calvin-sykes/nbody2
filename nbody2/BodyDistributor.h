@@ -2,10 +2,8 @@
 #define DISTRIBUTOR_H
 
 #include <functional>
-#include <chrono>
 #include <memory>
 #include <random>
-#include <vector>
 
 namespace nbody
 {
@@ -32,7 +30,7 @@ namespace nbody
 	struct BodyGroupProperties;
 	struct ParticleData;
 
-	using param_t = typename std::uniform_real_distribution<>::param_type;
+	using param_t = std::uniform_real_distribution<>::param_type;
 
 	enum class DistributorType
 	{
@@ -45,6 +43,14 @@ namespace nbody
 
 	struct DistributorProperties
 	{
+		DistributorProperties(DistributorType type, char const* name, char const* tooltip, bool has_central_mass)
+			: type(type),
+			  name(name),
+			  tooltip(tooltip),
+			  has_central_mass(has_central_mass)
+		{
+		}
+
 		DistributorType const type;
 		char const* name;
 		char const* tooltip;
@@ -61,6 +67,8 @@ namespace nbody
 				return dist(gen, param_t{ lower, upper });
 			};
 		}
+
+		virtual ~BodyDistributor() = default;
 
 		virtual void createDistribution(ParticleData & bodies, BodyGroupProperties const&) const = 0;
 
@@ -84,7 +92,7 @@ namespace nbody
 		
 		ExponentialDistributor() : BodyDistributor() {}
 
-		virtual void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const;
+		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 
 	private:
 		double static constexpr lambda = -1.5;
@@ -97,7 +105,7 @@ namespace nbody
 		
 		IsothermalDistributor() : BodyDistributor() {}
 
-		virtual void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const;
+		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 	};
 
 	class PlummerDistributor : public BodyDistributor
@@ -107,7 +115,7 @@ namespace nbody
 
 		PlummerDistributor() : BodyDistributor() {}
 
-		virtual void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const;
+		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 	};
 }
 

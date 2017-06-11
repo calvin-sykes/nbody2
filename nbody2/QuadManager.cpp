@@ -37,31 +37,31 @@ namespace nbody
 		auto half_length = screen_length / 2;
 		auto screen_x = Display::worldToScreenX(world_pos.x);
 		auto screen_y = Display::worldToScreenY(world_pos.y);
-		bool is_visible = (screen_length > 5)
+		auto is_visible = (screen_length > 5)
 			&& (screen_x + half_length > 0)
 			&& (screen_x - half_length < Display::screen_size.x)
 			&& (screen_y + half_length > 0)
 			&& (screen_y - half_length < Display::screen_size.y);
 
-		auto col = (mode == GridDrawMode::COMPLETE) ? sf::Color::Green : sf::Color::Red;
+		auto col{ (mode == GridDrawMode::COMPLETE) ? sf::Color::Green : sf::Color::Red };
 
 		if (is_visible && (mode == GridDrawMode::COMPLETE || (mode == GridDrawMode::APPROX && !node->wasTooClose())))
 		{
 			// left edge
-			m_vtx_array.append(sf::Vertex({ screen_x - half_length, screen_y - half_length }, col));
-			m_vtx_array.append(sf::Vertex({ screen_x - half_length, screen_y + half_length }, col));
+			m_vtx_array.append({{ screen_x - half_length, screen_y - half_length }, col});
+			m_vtx_array.append({{ screen_x - half_length, screen_y + half_length }, col});
 			// top edge
-			m_vtx_array.append(sf::Vertex({ screen_x - half_length, screen_y - half_length }, col));
-			m_vtx_array.append(sf::Vertex({ screen_x + half_length, screen_y - half_length }, col));
+			m_vtx_array.append({{ screen_x - half_length, screen_y - half_length }, col});
+			m_vtx_array.append({{ screen_x + half_length, screen_y - half_length }, col});
 			// right edge
-			m_vtx_array.append(sf::Vertex({ screen_x + half_length, screen_y - half_length }, col));
-			m_vtx_array.append(sf::Vertex({ screen_x + half_length, screen_y + half_length }, col));
+			m_vtx_array.append({{ screen_x + half_length, screen_y - half_length }, col});
+			m_vtx_array.append({{ screen_x + half_length, screen_y + half_length }, col});
 			// bottom edge
-			m_vtx_array.append(sf::Vertex({ screen_x + half_length, screen_y + half_length }, col));
-			m_vtx_array.append(sf::Vertex({ screen_x - half_length, screen_y + half_length }, col));
+			m_vtx_array.append({{ screen_x + half_length, screen_y + half_length }, col});
+			m_vtx_array.append({{ screen_x - half_length, screen_y + half_length }, col});
 		}
 
-		if (mode != GridDrawMode::COMPLETE && !node->wasTooClose())
+		if (mode == GridDrawMode::APPROX && !node->wasTooClose())
 			return;
 
 		for (auto d : node->m_daughters)

@@ -1,6 +1,8 @@
 #ifndef INTEGRATOR_EULER_H
 #define INTEGRATOR_EULER_H
 
+#include <memory>
+
 #include "IIntegrator.h"
 
 namespace nbody
@@ -13,12 +15,12 @@ namespace nbody
 		IntegratorEuler(IModel * model, double step);
 		virtual ~IntegratorEuler();
 
-		virtual void singleStep();
-		virtual void setInitialState(Vector2d * state);
-		virtual Vector2d * getState() const;
+		void singleStep() override;
+		void setInitialState(Vector2d * state) override;
+		Vector2d * getState() const override;
 
 	private:
-		Vector2d * m_state;
+		Vector2d * m_state, * m_k1;
 	};
 }
 

@@ -34,10 +34,10 @@ namespace nbody
 		file.seekg(0, file.end);
 		size_t len = file.tellg();
 		file.seekg(0, file.beg);
-		char *buf = new char[len];
+		auto * buf = new char[len];
 		file.read(buf, len);
 
-		ImGuiIO& io = ImGui::GetIO();
+		auto& io = ImGui::GetIO();
 		io.Fonts->AddFontFromMemoryTTF(buf, static_cast<int>(len), size, nullptr, io.Fonts->GetGlyphRangesDefault());
 
 		unsigned char* pixels;

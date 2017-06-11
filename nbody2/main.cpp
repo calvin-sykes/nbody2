@@ -16,7 +16,7 @@
 
 std::wstring charToWstring(const char* str)
 {
-	const size_t size = strlen(str);
+	const auto size = strlen(str);
 	std::wstring wstr;
 	if (size > 0) {
 		wstr.resize(size);
@@ -43,20 +43,20 @@ int main(int argc, char** argv)
 	catch (Error e)
 	{
 #ifdef OS_WINDOWS
-		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
+		MessageBox(nullptr, charToWstring(e.what()).data(), nullptr, MB_ICONERROR);
 #else
 		std::cout << e.what();
 #endif
 		return 1;
 	}
-	/*catch (std::exception e)
+	catch (std::exception e)
 	{
 #ifdef OS_WINDOWS
-		MessageBox(NULL, L"UNCAUGHT ERROR!", NULL, MB_ICONERROR);
-		MessageBox(NULL, charToWstring(e.what()).data(), NULL, MB_ICONERROR);
+		MessageBox(nullptr, L"UNCAUGHT ERROR!", nullptr, MB_ICONERROR);
+		MessageBox(nullptr, charToWstring(e.what()).data(), nullptr, MB_ICONERROR);
 #else
-		std::cout << "UNCAUGHT ERROR!" << std::endl;
+		std::cout << "UNCAUGHT ERROR! " << e.what() << std::endl;
 #endif
-	}*/
+	}
 	return 0;
 }

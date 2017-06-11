@@ -4,6 +4,8 @@
 #include "Types.h"
 #include "Vector.h"
 
+#include <chrono>
+
 namespace nbody
 {
 	namespace priv
@@ -14,7 +16,7 @@ namespace nbody
 			auto angle_v = atan(abs(r.y / r.x));
 			auto v_x = -1 * sgn(r.y) * sin(angle_v) * mag_v;
 			auto v_y = sgn(r.x) * cos(angle_v) * mag_v;
-			return Vector2d(v_x, v_y);
+			return{ v_x, v_y };
 		}
 	}
 
@@ -40,19 +42,19 @@ namespace nbody
 			vel_offset *= Constants::RADIUS;
 			rad *= Constants::RADIUS;
 		}
-		
+
 		// central mass
 		bodies.m_state[0].pos = pos_offset;
 		bodies.m_state[0].vel = vel_offset;
 		bodies.m_aux_state[0].mass = props.central_mass * 1E6 * Constants::SOLAR_MASS;
-		
+
 		for (size_t i = 1; i < props.num; i++)
 		{
 			auto mass = get_rand(props.min_mass, props.max_mass) * Constants::SOLAR_MASS;
 			auto radius = rad * expDist(lambda) + Constants::SOFTENING;
 			auto phi = get_rand(0, 2 * Constants::PI);
-			Vector2d pos(radius * cos(phi), radius * sin(phi));
-			Vector2d vel(vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS));
+			auto pos = Vector2d{ radius * cos(phi), radius * sin(phi) };
+			auto vel = vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS);
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass;
@@ -81,14 +83,14 @@ namespace nbody
 		bodies.m_state[0].pos = pos_offset;
 		bodies.m_state[0].vel = vel_offset;
 		bodies.m_aux_state[0].mass = props.central_mass * 1E6 * Constants::SOLAR_MASS;
-		
+
 		for (size_t i = 1; i < props.num; i++)
 		{
 			auto mass = get_rand(props.min_mass, props.max_mass) * Constants::SOLAR_MASS;
 			auto radius = get_rand(0, rad) + Constants::SOFTENING;
 			auto phi = get_rand(0, 2 * Constants::PI);
-			Vector2d pos(radius * cos(phi), radius * sin(phi));
-			Vector2d vel(vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS));
+			auto pos = Vector2d{ radius * cos(phi), radius * sin(phi) };
+			auto vel = vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS);
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass;
@@ -124,7 +126,7 @@ namespace nbody
 			auto fractional_rad = plummer_rad / sqrt(pow(get_rand(0, 1), -2.0 / 3.0) - 1);
 			// Random distribution for azimuthal angle
 			auto phi = get_rand(0, 2 * Constants::PI);
-			Vector2d pos(fractional_rad * cos(phi), fractional_rad * sin(phi));
+			auto pos = Vector2d{ fractional_rad * cos(phi), fractional_rad * sin(phi) };
 
 			// escape velocity v_e
 			auto vel_esc = sqrt(2. * Constants::G * m_tot) * pow(fractional_rad * fractional_rad + plummer_rad * plummer_rad, -0.25);
@@ -141,7 +143,7 @@ namespace nbody
 			// Random distribution for azimuthal velocity angle
 			auto phi_v = get_rand(0, 2 * Constants::PI);
 			// Convert from spherical polar to Cartesian coordinates
-			Vector2d vel(velocity * cos(phi_v), velocity * sin(phi_v));
+			auto vel = Vector2d{ velocity * cos(phi_v), velocity * sin(phi_v) };
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass;

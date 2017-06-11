@@ -1,10 +1,9 @@
 #include "Quad.h"
-#include "Constants.h"
 
 namespace nbody
 {
 	Quad::Quad(Vector2d const& centre, double const length)
-		: m_centre(centre), m_length(length)
+		: m_length(length), m_centre(centre)
 	{
 	}
 

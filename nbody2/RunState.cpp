@@ -1,4 +1,3 @@
-#include "Constants.h"
 #include "Display.h"
 #include "Quad.h"
 #include "RunState.h"
@@ -15,7 +14,7 @@ namespace nbody
 	RunState::RunState(Sim * simIn)
 	{
 		m_sim = simIn;
-		sf::Vector2f pos = sf::Vector2f(m_sim->m_window.getSize());
+		auto pos = sf::Vector2f(m_sim->m_window.getSize());
 		m_main_view.setSize(pos);
 		m_gui_view.setSize(pos);
 		m_main_view.setCenter(0.5f * pos);
@@ -154,7 +153,7 @@ namespace nbody
 					{
 						prev_mouse_pos = new_mouse_pos;
 						new_mouse_pos = sf::Vector2i(event.mouseMove.x, event.mouseMove.y);
-						Display::screen_offset += new_mouse_pos - prev_mouse_pos;
+						Display::screen_offset += Vector2f{ new_mouse_pos - prev_mouse_pos };
 					}
 					break;
 				}

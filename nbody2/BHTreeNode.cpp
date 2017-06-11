@@ -75,7 +75,7 @@ namespace nbody
 		return m_num;
 	}
 
-	size_t BHTreeNode::getNumRenegades() const
+	size_t BHTreeNode::getNumRenegades()
 	{
 		return s_renegades.size();
 	}
@@ -85,7 +85,7 @@ namespace nbody
 		return m_quad;
 	}
 
-	double BHTreeNode::getTheta() const
+	double BHTreeNode::getTheta()
 	{
 		return s_bh_theta;
 	}
@@ -95,7 +95,7 @@ namespace nbody
 		s_bh_theta = theta;
 	}
 
-	size_t BHTreeNode::getStatNumCalc() const
+	size_t BHTreeNode::getStatNumCalc()
 	{
 		return s_stat.m_num_calc;
 	}
@@ -241,7 +241,7 @@ namespace nbody
 	}
 
 	// accel caused by p2 on p1
-	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2)
+	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2) const
 	{
 		Vector2d acc = {};
 

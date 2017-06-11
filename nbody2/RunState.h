@@ -5,7 +5,6 @@
 #include "QuadManager.h"
 #include "IState.h"
 #include "TrailManager.h"
-#include "Vector.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -48,11 +47,12 @@ namespace nbody
 		Flags m_flags;
 
 	public:
-		virtual void draw(sf::Time const dt);
-		virtual void update(sf::Time const dt);
-		virtual void handleInput();
+		void draw(sf::Time const dt) override;
+		void update(sf::Time const dt) override;
+		void handleInput() override;
 
-		RunState(Sim * sim);
+		explicit RunState(Sim * sim);
+		virtual ~RunState() = default;
 	};
 }
 

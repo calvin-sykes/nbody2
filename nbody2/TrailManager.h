@@ -18,7 +18,7 @@ namespace nbody
 		~TrailManager();
 
 		void update(Vector2d const* state, size_t const num_bodies);
-		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 		void reset();
 
 	private:

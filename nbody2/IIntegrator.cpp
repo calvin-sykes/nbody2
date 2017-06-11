@@ -62,7 +62,7 @@ namespace nbody
 		return m_name;
 	}
 
-	void IIntegrator::eval(Vector2d const* initial,
+	/*void IIntegrator::eval(Vector2d const* initial,
 		Vector2d const* deriv_in,
 		double step,
 		double time,
@@ -76,5 +76,5 @@ namespace nbody
 		m_model->eval(state, time + step, deriv_out);
 
 		delete[] state;
-	}
+	}*/
 }

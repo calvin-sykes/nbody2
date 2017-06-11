@@ -18,9 +18,9 @@ namespace nbody
 
 		explicit CircularBuffer(size_t capacity = 100) :
 			buf_(new value_type[capacity]),
-			buf_size_(capacity),
-			head_(1), tail_(0),
-			contents_size_(0)
+			head_(1),
+			tail_(0), contents_size_(0),
+			buf_size_(capacity)
 		{}
 
 		~CircularBuffer()
@@ -100,7 +100,7 @@ namespace nbody
 			return buf_size_;
 		}
 
-		size_type max_size() const
+		static size_type max_size()
 		{
 			return size_type(-1) / sizeof(value_type);
 		}

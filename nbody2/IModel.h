@@ -4,7 +4,6 @@
 #include "Types.h"
 #include "Vector.h"
 
-#include <memory>
 #include <string>
 
 namespace nbody
@@ -47,7 +46,7 @@ namespace nbody
 		size_t getDim() const;
 		void setDim(size_t const dim);
 
-		Vector2d * getInitialState();
+		Vector2d * getInitialState() const;
 		ParticleAuxState const* getAuxState() const;
 		Vector2d getCentreMass() const;
 		std::string const& getName() const;
