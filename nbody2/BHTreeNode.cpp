@@ -250,7 +250,7 @@ namespace nbody
 
 		Vector2d const& r1 = p1.m_state->pos;
 		Vector2d const& r2 = p2.m_state->pos;
-		double const& m2 = p2.m_aux_state->mass;
+		double m2 = p2.m_aux_state->mass;
 
 		auto rel_pos = r2 - r1; // relative position vector r
 		auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2

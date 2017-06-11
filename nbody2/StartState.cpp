@@ -800,18 +800,20 @@ namespace nbody
 
 	void StartState::saveSettings(char const* filename)
 	{
-		using namespace fileio;
+		//using namespace fileio;
+		//char constexpr SEP[] = "__";
+
 		std::ofstream file;
 		auto writeString = [&file](char const data[], size_t len) -> void
 		{
 			file.write(data, len);
-			file.write(SEP, sizeof(SEP));
+			file.write(fileio::SEP, sizeof(fileio::SEP));
 		};
 
 		auto writeValue = [&file](auto data) -> void
 		{
 			file.write(reinterpret_cast<char*>(&data), sizeof(decltype(data)));
-			file.write(SEP, sizeof(SEP));
+			file.write(fileio::SEP, sizeof(fileio::SEP));
 		};
 
 		// if a file extension was supplied, trim it and append '.dat. instead
@@ -828,16 +830,16 @@ namespace nbody
 		try
 		{
 			file.open(fn_str, std::ios::binary);
-			writeString(FILE_HEADER, SIZE_FH);
-			writeString(VERSION, SIZE_VER);
-			writeString(GLOBAL_HEADER, SIZE_GH);
+			writeString(fileio::FILE_HEADER, fileio::SIZE_FH);
+			writeString(fileio::VERSION, fileio::SIZE_VER);
+			writeString(fileio::GLOBAL_HEADER, fileio::SIZE_GH);
 			writeValue(m_sim_props.timestep);
 			writeValue(m_sim_props.n_bodies);
 			writeValue(m_sim_props.int_type);
 			writeValue(m_sim_props.mod_type);
 			writeValue(m_bg_props.size());
 			std::for_each(m_bg_props.begin(), m_bg_props.end(), [&](auto& bgp) {
-				writeString(ITEM_HEADER, SIZE_IH);
+				writeString(fileio::ITEM_HEADER, fileio::SIZE_IH);
 				writeValue(bgp.dist);
 				writeValue(bgp.num);
 				writeValue(bgp.pos);
@@ -865,7 +867,7 @@ namespace nbody
 
 	bool StartState::loadSettings(char const * filename)
 	{
-		using namespace fileio;
+		//using namespace fileio;
 		std::ifstream file;
 		auto readString = [&file](char const data[], size_t len) -> bool
 		{
@@ -873,9 +875,9 @@ namespace nbody
 			file.read(buf, len);
 			auto str_read = !strcmp(data, buf);
 			delete[] buf;
-			char buf2[sizeof(SEP) + 1];
-			file.read(buf2, sizeof(SEP));
-			return str_read & !strcmp(buf2, SEP);
+			char buf2[sizeof(fileio::SEP) + 1];
+			file.read(buf2, sizeof(fileio::SEP));
+			return str_read & !strcmp(buf2, fileio::SEP);
 		};
 		auto readValue = [&file](auto&& dest) -> bool
 		{
@@ -884,9 +886,9 @@ namespace nbody
 			file.read(buf, len);
 			dest = reinterpret_cast<decltype(dest)>(*buf);
 			delete[] buf;
-			char buf2[sizeof(SEP) + 1];
-			file.read(buf2, sizeof(SEP));
-			return !strcmp(buf2, SEP);
+			char buf2[sizeof(fileio::SEP) + 1];
+			file.read(buf2, sizeof(fileio::SEP));
+			return !strcmp(buf2, fileio::SEP);
 
 		};
 
@@ -905,9 +907,9 @@ namespace nbody
 			if (!file.is_open())
 				throw MAKE_ERROR(std::string("file " + fn_str + " does not exist"));
 
-			auto good = readString(FILE_HEADER, SIZE_FH);
-			good &= readString(VERSION, SIZE_VER);
-			good &= readString(GLOBAL_HEADER, SIZE_GH);
+			auto good = readString(fileio::FILE_HEADER, fileio::SIZE_FH);
+			good &= readString(fileio::VERSION, fileio::SIZE_VER);
+			good &= readString(fileio::GLOBAL_HEADER, fileio::SIZE_GH);
 			if (!good)
 				throw MAKE_ERROR(std::string("could not read header of file ") + fn_str);
 			good &= readValue(m_sim_props.timestep);
@@ -922,7 +924,7 @@ namespace nbody
 			m_tmp_cols.assign(n_groups, TempColArray());
 			size_t bgp_number = 0;
 			auto foo = std::for_each(m_bg_props.begin(), m_bg_props.end(), [&](auto& bgp) {
-				good &= readString(ITEM_HEADER, SIZE_IH);
+				good &= readString(fileio::ITEM_HEADER, fileio::SIZE_IH);
 				good &= readValue(bgp.dist);
 				good &= readValue(bgp.num);
 				good &= readValue(bgp.pos);
