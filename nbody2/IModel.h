@@ -4,6 +4,9 @@
 #include "Types.h"
 #include "Vector.h"
 
+#include <memory>
+#include <vector>
+
 namespace nbody
 {
 	struct BodyGroupProperties;
@@ -34,7 +37,8 @@ namespace nbody
 		virtual ~IModel();	
 		
 		void init(size_t num_bodies, double step);
-		void addBodies(BodyDistributor const& dist, BodyGroupProperties const& bgp);
+		void addBodies(BodyDistributor const& dist, std::unique_ptr<IColourer> col, BodyGroupProperties const& bgp);
+		void updateColours(Vector2d const* all);
 		
 		virtual void eval(Vector2d * state, double time, Vector2d * deriv_in) = 0;
 		virtual BHTreeNode const* getTreeRoot() const = 0;
@@ -48,14 +52,14 @@ namespace nbody
 
 		Vector2d * getInitialState() const;
 		ParticleAuxState const* getAuxState() const;
-		ParticleColourState* getColourState() const;
+		ParticleColourState const* getColourState() const;
 		Vector2d getCentreMass() const;
 		std::string const& getName() const;
 
 	protected:
 		ParticleState * m_initial_state;
 		ParticleAuxState * m_aux_state;
-		ParticleColourState * m_colours;
+		ParticleColourState * m_colour_state;
 		
 	protected:
 		double m_step;
@@ -71,6 +75,8 @@ namespace nbody
 		bool m_has_tree;
 		size_t m_dim;
 		std::string m_name;
+
+		std::vector<std::unique_ptr<IColourer>> m_colourers;
 	};
 }
 

@@ -124,6 +124,9 @@
       <Filter>Source Files\colour</Filter>
     </ClCompile>
     <ClCompile Include="ColourerSolid.cpp">
+      <Filter>Source Files\colour</Filter>
+    </ClCompile>
+    <ClCompile Include="ColourerVelocity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -232,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="ColourerSolid.h">
       <Filter>Header Files\colour</Filter>
+    </ClInclude>
+    <ClInclude Include="ColourerVelocity.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

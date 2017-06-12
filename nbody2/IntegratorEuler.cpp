@@ -49,7 +49,7 @@ namespace nbody
 		m_time = 0;
 	}
 
-	Vector2d * IntegratorEuler::getState() const
+	Vector2d const* IntegratorEuler::getState() const
 	{
 		return m_state;
 	}

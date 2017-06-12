@@ -8,7 +8,7 @@ namespace nbody
 	IModel::IModel(std::string name, bool has_tree, size_t dim)
 		: m_initial_state(nullptr),
 		m_aux_state(nullptr),
-		m_colours(nullptr),
+		m_colour_state(nullptr),
 		m_step(1),
 		m_num_bodies(0),
 		m_num_added(0),
@@ -24,7 +24,7 @@ namespace nbody
 	{
 		delete m_initial_state;
 		delete m_aux_state;
-		delete m_colours;
+		delete m_colour_state;
 	}
 
 	void IModel::init(size_t num_bodies, double step)
@@ -32,8 +32,12 @@ namespace nbody
 		resetDim(num_bodies, step);
 	}
 
-	void IModel::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
+	void IModel::addBodies(BodyDistributor const & dist, std::unique_ptr<IColourer> col, BodyGroupProperties const & bgp)
 	{
+		col->setup(m_num_added, bgp.num, bgp.cols);
+		m_colourers.emplace_back(std::move(col));
+		
+		
 		ParticleData empty(m_initial_state + m_num_added, m_aux_state + m_num_added);
 		dist.createDistribution(empty, bgp);
 
@@ -45,6 +49,14 @@ namespace nbody
 
 		m_num_added += bgp.num;
 		m_centre_mass /= m_tot_mass;
+	}
+
+	void IModel::updateColours(Vector2d const * state)
+	{
+		for (auto& col : m_colourers)
+		{
+			col->apply(reinterpret_cast<ParticleState const*>(state), m_aux_state, m_colour_state);
+		}
 	}
 
 	bool IModel::hasTree() const
@@ -62,14 +74,14 @@ namespace nbody
 		return m_num_added;
 	}
 
-	ParticleAuxState const * IModel::getAuxState() const
+	ParticleAuxState const* IModel::getAuxState() const
 	{
 		return m_aux_state;
 	}
 
-	ParticleColourState* IModel::getColourState() const
+	ParticleColourState const* IModel::getColourState() const
 	{
-		return m_colours;
+		return m_colour_state;
 	}
 
 	Vector2d IModel::getCentreMass() const
@@ -99,7 +111,7 @@ namespace nbody
 
 		m_initial_state = new ParticleState[num_bodies];
 		m_aux_state = new ParticleAuxState[num_bodies];
-		m_colours = new ParticleColourState[num_bodies];
+		m_colour_state = new ParticleColourState[num_bodies];
 
 		m_step = step;
 	}

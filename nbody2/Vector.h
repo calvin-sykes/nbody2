@@ -149,7 +149,7 @@ namespace nbody
 			for (size_t i = 0; i < N; i++)
 			{
 				equal &= std::abs(a_[i] - rhs.a_[i]) <
-					std::numeric_limits<T>().epsilon() * max(std::abs(a_[i]), std::abs(rhs.a_[i]));
+					std::numeric_limits<T>().epsilon() * std::max(std::abs(a_[i]), std::abs(rhs.a_[i]));
 			}
 			return equal;
 		}

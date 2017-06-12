@@ -2,8 +2,7 @@
 
 namespace nbody
 {
-	ColourerSolid::ColourerSolid(size_t offset, size_t num_bodies, sf::Color const* cols)
-	: IColourer(offset, num_bodies, cols, 1)
+	ColourerSolid::ColourerSolid() : IColourer(1)
 	{
 	}
 
@@ -11,9 +10,9 @@ namespace nbody
 	{
 	}
 
-	std::unique_ptr<IColourer> ColourerSolid::create(size_t offset, size_t num_bodies, sf::Color const* cols)
+	std::unique_ptr<IColourer> ColourerSolid::create()
 	{
-		return std::make_unique<ColourerSolid>(offset, num_bodies, cols);
+		return std::make_unique<ColourerSolid>();
 	}
 
 	void ColourerSolid::applyImpl(ParticleData const * state, ParticleColourState * colour)

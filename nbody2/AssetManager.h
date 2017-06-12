@@ -17,7 +17,7 @@ namespace nbody
 	class BodyDistributor;
 	enum class DistributorType;
 
-	typedef std::unique_ptr<IColourer>(*ColourerFactory)(size_t, size_t, sf::Color const*);
+	typedef std::unique_ptr<IColourer>(*ColourerFactory)();
 	typedef std::unique_ptr<IIntegrator>(*IntegratorFactory)(IModel *, double);
 	typedef std::unique_ptr<IModel>(*ModelFactory)();
 	typedef std::unique_ptr<BodyDistributor>(*DistributorFactory)();
@@ -38,7 +38,7 @@ namespace nbody
 		std::unique_ptr<IIntegrator> getIntegrator(IntegratorType const type, IModel * model, double step);
 		std::unique_ptr<IModel> getModel(ModelType const type);
 		std::unique_ptr<BodyDistributor> getDistributor(DistributorType const type);
-		std::unique_ptr<IColourer> getColourer(ColourerType const type, size_t const offset, size_t const num_bodies, sf::Color const* cols);
+		std::unique_ptr<IColourer> getColourer(ColourerType const type);
 
 	private:
 		std::map<std::string, sf::Texture> m_textures;

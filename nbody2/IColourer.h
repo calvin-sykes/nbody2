@@ -38,9 +38,11 @@ namespace nbody
 	class IColourer
 	{
 	public:
-		explicit IColourer(size_t offset, size_t num_bodies, sf::Color const* cols, size_t n_cols = MAX_COLS_PER_COLOURER);
+		explicit IColourer(size_t n_cols = MAX_COLS_PER_COLOURER);
 		virtual ~IColourer();
 
+		void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols);
+		
 		void apply(ParticleState const* state, ParticleAuxState const* aux_state, ParticleColourState * colours);
 		virtual void applyImpl(ParticleData const* state, ParticleColourState * colour) = 0;
 
@@ -48,7 +50,7 @@ namespace nbody
 		sf::Color m_cols[MAX_COLS_PER_COLOURER];
 
 	private:
-		size_t const m_offset, m_num_bodies;
+		size_t m_offset, m_num_bodies;
 		size_t m_n_cols;
 
 	};

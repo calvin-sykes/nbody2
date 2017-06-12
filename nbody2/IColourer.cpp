@@ -2,14 +2,20 @@
 
 namespace nbody
 {
-	IColourer::IColourer(size_t offset, size_t num_bodies, sf::Color const* cols, size_t n_cols) :
-		m_offset(offset), m_num_bodies(num_bodies), m_n_cols(n_cols)
+	IColourer::IColourer(size_t n_cols) :
+		m_offset(0), m_num_bodies(0), m_n_cols(n_cols)
 	{
-		std::copy(&cols[0], &cols[0] + MAX_COLS_PER_COLOURER, &m_cols[0]);
 	}
 
 	IColourer::~IColourer()
 	{
+	}
+
+	void IColourer::setup(size_t const offset, size_t const num_bodies, sf::Color const * cols)
+	{
+		m_offset = offset;
+		m_num_bodies = num_bodies;
+		std::copy(&cols[0], &cols[0] + MAX_COLS_PER_COLOURER, &m_cols[0]);
 	}
 
 	void IColourer::apply(ParticleState const* state, ParticleAuxState const* aux_state, ParticleColourState * colours)

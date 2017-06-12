@@ -1,15 +1,15 @@
-#ifndef COLOURER_SOLID_H
-#define COLOURER_SOLID_H
+#ifndef COLOURER_VELOCITY_H
+#define COLOURER_VELOCITY_H
 
 #include "IColourer.h"
 
 namespace nbody
 {
-	class ColourerSolid : public IColourer
+	class ColourerVelocity : public IColourer
 	{
 	public:
-		ColourerSolid();
-		virtual ~ColourerSolid();
+		ColourerVelocity();
+		virtual ~ColourerVelocity();
 
 		static std::unique_ptr<IColourer> create();
 
@@ -17,4 +17,4 @@ namespace nbody
 	};
 }
 
-#endif // COLOURER_SOLID_H
+#endif // COLOURER_VELOCITY_H

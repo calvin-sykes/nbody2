@@ -19,7 +19,7 @@ namespace nbody
 
 	void nbody::BodyManager::update(Vector2d const* state, ParticleAuxState const* aux_state, ParticleColourState const* colour_state, size_t const num_bodies)
 	{
-		auto bodies{ reinterpret_cast<ParticleState const*>(state) };
+		auto bodies = reinterpret_cast<ParticleState const*>(state);
 		
 		if (m_first_update)
 		{
@@ -32,7 +32,7 @@ namespace nbody
 			m_first_update = false;
 		}
 
-		m_scl = max(static_cast<float>(-std::log2(Display::screen_scale)), 1.f);
+		m_scl = std::max(static_cast<float>(-std::log2(Display::screen_scale)), 1.f);
 
 		m_vtx_array.clear();
 
@@ -94,6 +94,6 @@ namespace nbody
 
 	float BodyManager::radiusFromMass(double mass) const
 	{
-		return min(static_cast<float>(s_MIN_SIZE * log10(mass / Constants::SOLAR_MASS)), s_MAX_SIZE);
+		return std::min(static_cast<float>(s_MIN_SIZE * log10(mass / Constants::SOLAR_MASS)), s_MAX_SIZE);
 	}
 }

@@ -20,7 +20,6 @@ namespace nbody
 	//typename std::vector<T>::iterator append(std::vector<T>&& src, std::vector<T>& dest)
 	//{
 	//	typename std::vector<T>::iterator result;
-
 	//	if (dest.empty())
 	//	{
 	//		dest = std::move(src);
@@ -32,10 +31,8 @@ namespace nbody
 	//			std::make_move_iterator(std::begin(src)),
 	//			std::make_move_iterator(std::end(src)));
 	//	}
-
 	//	src.clear();
 	//	src.shrink_to_fit();
-
 	//	return result;
 	//}
 
@@ -89,7 +86,6 @@ namespace nbody
 
 		void setProperties(SimProperties const&);
 		void simLoop();
-		void updateColours();
 
 		AssetManager m_asset_mgr;
 
@@ -103,8 +99,6 @@ namespace nbody
 		sf::Sprite m_background;
 
 	private:
-		std::vector<std::unique_ptr<IColourer>> m_colourers;
-
 		std::stack<IState*> m_states;
 		PendingState m_pending;
 

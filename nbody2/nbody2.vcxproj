@@ -323,6 +323,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="BodyDistributor.cpp" />
     <ClCompile Include="BodyManager.cpp" />
     <ClCompile Include="ColourerSolid.cpp" />
+    <ClCompile Include="ColourerVelocity.cpp" />
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="IColourer.cpp" />
     <ClCompile Include="IIntegrator.cpp" />
@@ -351,6 +352,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="BodyManager.h" />
     <ClInclude Include="CircularBuffer.h" />
     <ClInclude Include="ColourerSolid.h" />
+    <ClInclude Include="ColourerVelocity.h" />
     <ClInclude Include="IColourer.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Config.h" />

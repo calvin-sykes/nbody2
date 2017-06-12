@@ -364,7 +364,7 @@ namespace nbody
 			}
 			float bg_size = 0;
 			if (m_bg_props.size() > 0)
-				bg_size = max(static_cast<float>((400 - 2 * m_style.FramePadding.y - (m_bg_props.size() - 1) * m_style.ItemSpacing.y) / m_bg_props.size()), 70.f);
+				bg_size = std::max(static_cast<float>((400 - 2 * m_style.FramePadding.y - (m_bg_props.size() - 1) * m_style.ItemSpacing.y) / m_bg_props.size()), 70.f);
 			// Groups are bounded by square-cornered rectangles
 			PushStyleVar(ImGuiStyleVar_ChildWindowRounding, 0.f);
 			for (size_t i = 0; i < m_bg_props.size(); i++)
@@ -618,7 +618,7 @@ namespace nbody
 		AlignFirstTextHeightToWidgets();
 		auto text_width_min = CalcTextSize("Minimum").x;
 		auto text_width_max = CalcTextSize("Maximum").x;
-		auto text_width_used = max(text_width_min, text_width_max);
+		auto text_width_used = std::max(text_width_min, text_width_max);
 		auto spacing = m_style.ItemSpacing.x;
 		Text("Minimum");
 		SameLine();

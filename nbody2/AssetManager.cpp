@@ -9,6 +9,7 @@
 #include "IntegratorEulerImproved.h"
 #include "IColourer.h"
 #include "ColourerSolid.h"
+#include "ColourerVelocity.h"
 
 #include "imgui.h"
 
@@ -70,7 +71,7 @@ namespace nbody
 	void AssetManager::loadColourers()
 	{
 		m_colourers[ColourerType::SOLID] = ColourerSolid::create;
-		//m_colourers[ColourerType::VELOCITY] =
+		m_colourers[ColourerType::VELOCITY] = ColourerVelocity::create;
 	}
 
 	sf::Texture & AssetManager::getTextureRef(const std::string & name)
@@ -93,8 +94,8 @@ namespace nbody
 		return m_distributors.at(type)();
 	}
 
-	std::unique_ptr<IColourer> AssetManager::getColourer(ColourerType const type, size_t const offset, size_t const num_bodies, sf::Color const* cols)
+	std::unique_ptr<IColourer> AssetManager::getColourer(ColourerType const type)
 	{
-		return m_colourers.at(type)(offset, num_bodies, cols);
+		return m_colourers.at(type)();
 	}
 }

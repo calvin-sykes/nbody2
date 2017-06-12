@@ -111,19 +111,9 @@ namespace nbody
 
 		for (auto& bgp : props.bg_props)
 		{
-			m_colourers.emplace_back(
-				m_asset_mgr.getColourer(
-					bgp.colour,
-					m_mod_ptr->getNumAdded(),
-					bgp.num,
-					bgp.cols
-				)
-			);
-
+			auto col = m_asset_mgr.getColourer(bgp.colour);
 			auto dist = m_asset_mgr.getDistributor(bgp.dist);
-			m_mod_ptr->addBodies(*dist, bgp);
-
-
+			m_mod_ptr->addBodies(*dist, std::move(col), bgp);
 		}
 
 		m_int_ptr->setInitialState(m_mod_ptr->getInitialState());
@@ -146,16 +136,6 @@ namespace nbody
 			m_window.clear(sf::Color::Black);
 			peekState()->draw(dt);
 			m_window.display();
-		}
-	}
-
-	void Sim::updateColours()
-	{
-		for (auto& col : m_colourers)
-		{
-			col->apply(reinterpret_cast<ParticleState const*>(m_int_ptr->getState()),
-				m_mod_ptr->getAuxState(),
-				m_mod_ptr->getColourState());
 		}
 	}
 

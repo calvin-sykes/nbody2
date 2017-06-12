@@ -21,6 +21,8 @@ namespace nbody
 		m_gui_view.setCenter(0.5f * pos);
 
 		m_flags.tree_exists = m_sim->m_mod_ptr->hasTree();
+
+		m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getState());
 	}
 
 	void RunState::update(sf::Time const dt)
@@ -30,7 +32,7 @@ namespace nbody
 		if (m_flags.running)
 		{
 			m_sim->m_int_ptr->singleStep();
-			m_sim->updateColours();
+			m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getState());
 		}
 
 		ImGui::Begin("Diagnostics");
@@ -54,7 +56,8 @@ namespace nbody
 
 		if (m_flags.show_bodies)
 		{
-			m_body_mgr.update(m_sim->m_int_ptr->getState(),
+			m_body_mgr.update(
+				m_sim->m_int_ptr->getState(),
 				m_sim->m_mod_ptr->getAuxState(),
 				m_sim->m_mod_ptr->getColourState(),
 				m_sim->m_mod_ptr->getNumBodies());

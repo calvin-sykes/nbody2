@@ -17,7 +17,7 @@ namespace nbody
 
 		void singleStep() override;
 		void setInitialState(Vector2d * state) override;
-		Vector2d * getState() const override;
+		Vector2d const* getState() const override;
 
 	private:
 		Vector2d * m_state, * m_tmp, * m_k1, * m_k2;
