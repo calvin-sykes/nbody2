@@ -307,6 +307,11 @@ namespace ImGui
     IMGUI_API bool          InputInt3(const char* label, int v[3], ImGuiInputTextFlags extra_flags = 0);
     IMGUI_API bool          InputInt4(const char* label, int v[4], ImGuiInputTextFlags extra_flags = 0);
 
+	// MODIFIED BY ME
+	IMGUI_API bool          InputDoubleScientific(const char* label, double* v, const char *display_format = "%.3g", ImGuiInputTextFlags extra_flags = 0);
+	IMGUI_API bool			InputDoubleScientific2(const char * label, double v[2], const char* display_format = "%.3g", ImGuiInputTextFlags extra_flags = 0);
+	// END
+
     // Widgets: Sliders (tip: ctrl+click on a slider to input with keyboard. manually input values aren't clamped, can go off-bounds)
     IMGUI_API bool          SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format = "%.3f", float power = 1.0f);     // adjust display_format to decorate the value with a prefix or a suffix. Use power!=1.0 for logarithmic sliders
     IMGUI_API bool          SliderFloat2(const char* label, float v[2], float v_min, float v_max, const char* display_format = "%.3f", float power = 1.0f);

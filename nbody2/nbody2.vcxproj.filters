@@ -130,7 +130,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="imgui_additional.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -243,7 +243,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imgui_additional.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

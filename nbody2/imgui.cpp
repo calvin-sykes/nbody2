@@ -8370,6 +8370,91 @@ bool ImGui::InputDouble4(const char* label, double v[4], int decimal_precision, 
 	return InputDoubleN(label, v, 4, decimal_precision, extra_flags);
 }
 
+// MODIFIED BY ME
+
+static bool DataTypeApplyOpFromTextScientific(const char* buf, const char* initial_value_buf, ImGuiDataType data_type, void* data_ptr, const char* scalar_format)
+{
+	scalar_format = "%f";
+	double* v = (double*)data_ptr;
+	const double old_v = *v;
+	*v = (double)atof(buf);
+	return *v != old_v;
+}
+
+bool ImGui::InputScalarScientific(const char* label, ImGuiDataType data_type, void* data_ptr, const char* scalar_format, ImGuiInputTextFlags extra_flags)
+{
+	ImGuiWindow* window = GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGuiContext& g = *GImGui;
+	const ImGuiStyle& style = g.Style;
+	const ImVec2 label_size = CalcTextSize(label, NULL, true);
+
+	ImGui::BeginGroup();
+	ImGui::PushID(label);
+
+	char buf[64];
+	DataTypeFormatString(data_type, data_ptr, scalar_format, buf, IM_ARRAYSIZE(buf));
+
+	bool value_changed = false;
+	extra_flags |= ImGuiInputTextFlags_AutoSelectAll;
+	if (ImGui::InputText("", buf, IM_ARRAYSIZE(buf), extra_flags))
+		value_changed = DataTypeApplyOpFromTextScientific(buf, GImGui->InputTextState.InitialText.begin(), data_type, data_ptr, scalar_format);
+
+	ImGui::PopID();
+
+	if (label_size.x > 0)
+	{
+		ImGui::SameLine(0, style.ItemInnerSpacing.x);
+		RenderText(ImVec2(window->DC.CursorPos.x, window->DC.CursorPos.y + style.FramePadding.y), label);
+		ItemSize(label_size, style.FramePadding.y);
+	}
+	ImGui::EndGroup();
+
+	return value_changed;
+}
+
+bool ImGui::InputDoubleScientific(const char * label, double* v, const char * display_format, ImGuiInputTextFlags extra_flags)
+{
+	return InputScalarScientific(label, ImGuiDataType_Double, (void*)v, display_format, extra_flags);
+}
+
+bool ImGui::InputDoubleScientificN(const char* label, double* v, int components, const char* display_format, ImGuiInputTextFlags extra_flags)
+{
+	ImGuiWindow* window = GetCurrentWindow();
+	if (window->SkipItems)
+		return false;
+
+	ImGuiContext& g = *GImGui;
+	bool value_changed = false;
+	BeginGroup();
+	PushID(label);
+	PushMultiItemsWidths(components);
+	for (int i = 0; i < components; i++)
+	{
+		PushID(i);
+		value_changed |= InputDoubleScientific("##v", &v[i], display_format, extra_flags);
+		SameLine(0, g.Style.ItemInnerSpacing.x);
+		PopID();
+		PopItemWidth();
+	}
+	PopID();
+
+	window->DC.CurrentLineTextBaseOffset = ImMax(window->DC.CurrentLineTextBaseOffset, g.Style.FramePadding.y);
+	TextUnformatted(label, FindRenderedTextEnd(label));
+	EndGroup();
+
+	return value_changed;
+}
+
+bool ImGui::InputDoubleScientific2(const char * label, double v[2], const char* display_format, ImGuiInputTextFlags extra_flags)
+{
+	return InputDoubleScientificN(label, v, 2, display_format, extra_flags);
+}
+
+// END
+
 bool ImGui::InputFloatN(const char* label, float* v, int components, int decimal_precision, ImGuiInputTextFlags extra_flags)
 {
     ImGuiWindow* window = GetCurrentWindow();

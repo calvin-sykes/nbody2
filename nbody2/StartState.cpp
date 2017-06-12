@@ -442,10 +442,10 @@ namespace nbody
 
 			// Timestep
 			PushItemWidth(sz.x - CalcTextSize("Timestep").x);
-			static double dt_in = m_sim_props.timestep == -1. ? 1 : m_sim_props.timestep * 1e-10;
-			if (InputDouble("Timestep", &dt_in) || (m_sim_props.timestep == -1.))
+			static double dt_in = m_sim_props.timestep == -1. ? 1e10 : m_sim_props.timestep;
+			if (InputDoubleScientific("Timestep", &dt_in) || (m_sim_props.timestep == -1.))
 			{
-				m_sim_props.timestep = dt_in * 1e10;
+				m_sim_props.timestep = dt_in;
 			}
 			PopItemWidth();
 			SameLine();
@@ -522,7 +522,7 @@ namespace nbody
 		Dummy({ text_width_used - text_width_min - spacing, 0 });
 		SameLine();
 		PushItemWidth(80.f);
-		InputDouble("solar masses##1", &m_bg_props[idx].min_mass);
+		InputDoubleScientific("solar masses##1", &m_bg_props[idx].min_mass);
 		PopItemWidth();
 		AlignFirstTextHeightToWidgets();
 		Text("Maximum");
@@ -530,7 +530,7 @@ namespace nbody
 		Dummy({ text_width_used - text_width_max - spacing, 0 });
 		SameLine();
 		PushItemWidth(80.f);
-		InputDouble("solar masses##2", &m_bg_props[idx].max_mass);
+		InputDoubleScientific("solar masses##2", &m_bg_props[idx].max_mass);
 		PopItemWidth();
 		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
@@ -552,9 +552,9 @@ namespace nbody
 	{
 		using namespace ImGui;
 		static bool share_values = false;
-		auto static label = "1E6 solar masses";
+		auto static label = "solar masses";
 		PushItemWidth(80.0f);
-		InputDouble(label, &m_bg_props[idx].central_mass);
+		InputDoubleScientific(label, &m_bg_props[idx].central_mass);
 		PopItemWidth();
 		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
@@ -580,8 +580,8 @@ namespace nbody
 		ShowHelpMarker("If checked, the entered position will be interpreted as a fraction of the universe radius %.0em",
 			Constants::RADIUS);
 		PushItemWidth(2 * (80.f + m_style.ItemInnerSpacing.x));
-		InputDouble2("Position", &m_bg_props[idx].pos.x);
-		InputDouble2("Velocity", &m_bg_props[idx].vel.x);
+		InputDoubleScientific2("Position", &m_bg_props[idx].pos.x);
+		InputDoubleScientific2("Velocity", &m_bg_props[idx].vel.x);
 		PopItemWidth();
 		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
@@ -608,7 +608,7 @@ namespace nbody
 		ShowHelpMarker("If checked, the radius entered will be interpreted as a fraction of the universe radius %.0em",
 			Constants::RADIUS);
 		PushItemWidth(80.0f);
-		InputDouble("Radius", &m_bg_props[idx].radius);
+		InputDoubleScientific("Radius", &m_bg_props[idx].radius);
 		PopItemWidth();
 		Checkbox("Same for all groups", &share_values);
 		SetCursorPosX(0.5f * GetWindowContentRegionWidth());
