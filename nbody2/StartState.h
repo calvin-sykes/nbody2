@@ -30,12 +30,6 @@ namespace nbody
 		CREATE_NEW
 	};
 
-	struct TempColArray
-	{
-		float cols[static_cast<size_t>(ColourerType::N_TYPES)][MAX_COLS_PER_COLOURER][3];
-	};
-
-
 	using ComboCallback = bool(*)(void*, int, char const**);
 
 	class StartState : public IState
@@ -78,8 +72,6 @@ namespace nbody
 		// Simulation-wide parameters
 		// References those held in Sim
 		SimProperties & m_sim_props;
-		// Temporary storage for imgui 0..1 colours
-		std::vector<TempColArray> m_tmp_cols;
 
 		// Error message from file load operations
 		std::string m_err_string;
@@ -183,7 +175,7 @@ namespace nbody
 			{
 				ModelType::BARNES_HUT,
 				"Barnes-Hut",
-				"Long-range forces are approximated using a Barnes-Hut tree (WIP)"
+				"Long-range forces are approximated using a Barnes-Hut tree"
 			}
 			} };
 
@@ -205,7 +197,7 @@ namespace nbody
 	namespace fileio
 	{
 		char constexpr FILE_HEADER[] = "nb_settings";
-		char constexpr VERSION[] = "v5";
+		char constexpr VERSION[] = "v6";
 		char constexpr GLOBAL_HEADER[] = "global";
 		char constexpr ITEM_HEADER[] = "bgprop";
 		char constexpr SEP[] = "__";

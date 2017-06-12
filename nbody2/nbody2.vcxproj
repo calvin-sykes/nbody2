@@ -327,6 +327,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="Display.cpp" />
     <ClCompile Include="IColourer.cpp" />
     <ClCompile Include="IIntegrator.cpp" />
+    <ClCompile Include="imgui_additional.cpp" />
     <ClCompile Include="imgui_sfml.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
@@ -362,6 +363,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="BodyGroupProperties.h" />
     <ClInclude Include="IIntegrator.h" />
     <ClInclude Include="imconfig.h" />
+    <ClInclude Include="imgui_additional.h" />
     <ClInclude Include="imgui_sfml.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_internal.h" />

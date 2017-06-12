@@ -129,6 +129,9 @@
     <ClCompile Include="ColourerVelocity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imgui_additional.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector.h">
@@ -237,6 +240,9 @@
       <Filter>Header Files\colour</Filter>
     </ClInclude>
     <ClInclude Include="ColourerVelocity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_additional.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

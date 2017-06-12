@@ -4,6 +4,7 @@
 #include "RunState.h"
 #include "IState.h"
 
+#include "imgui_additional.h"
 #include "imgui_sfml.h"
 
 #include <SFML/Graphics.hpp>
@@ -11,108 +12,6 @@
 #include <algorithm>
 #include <fstream>
 #include <numeric>
-#include <stdarg.h>
-
-namespace ImGui
-{
-	static void ShowHelpMarker(char const* fmt, ...)
-	{
-		TextDisabled("(?)");
-		if (IsItemHovered())
-		{
-			BeginTooltip();
-			PushTextWrapPos(200.0f);
-			va_list args;
-			va_start(args, fmt);
-			TextWrappedV(fmt, args);
-			va_end(args);
-			PopTextWrapPos();
-			EndTooltip();
-		}
-	}
-
-	bool CentredButton(char const* label, ImVec2 const& size)
-	{
-		size_t n_lines = 0;
-		auto len = strlen(label);
-		auto lines = new char*[len + 1]; // Worst case: every character is carriage return
-
-		// Make a modifiable copy of the argument
-		auto label_cpy = new char[len + 1];
-		// Split the argument acroos newline characters
-		char * next_tok = nullptr;
-		strncpy(label_cpy, label, len + 1);
-#ifdef SAFE_STRFN
-		auto tok = strtok_s(label_cpy, "\n", &next_tok);
-		while (tok != nullptr)
-		{
-			lines[n_lines] = new char[strlen(tok) + 1];
-			strncpy(lines[n_lines++], tok, strlen(tok) + 1);
-			tok = strtok_s(nullptr, "\n", &next_tok);
-		}
-#else
-		auto tok = strtok(label_cpy, "\n");
-		while (tok != nullptr)
-		{
-			lines[n_lines] = new char[strlen(tok) + 1];
-			strncpy(lines[n_lines++], tok, strlen(tok) + 1);
-			tok = strtok(nullptr, "\n");
-		}
-#endif
-
-		// Figure out length of each line and find the maximum length
-		size_t* line_lens = new size_t[n_lines];
-		size_t max_len = 0;
-		for (size_t i = 0; i < n_lines; i++)
-		{
-			line_lens[i] = strlen(lines[i]);
-			if (line_lens[i] > max_len)
-				max_len = line_lens[i];
-		}
-
-		// Length of formatted string
-		//	= number of lines * ( longest line * + 1 for newlines / null terminator)
-		auto formatted_len = (max_len + 1) * n_lines;
-		char* formatted = new char[formatted_len];
-		// copy strings, padding with spaces either side
-		for (size_t i = 0; i < n_lines; i++)
-		{
-			size_t pos = i * (max_len + 1);
-			// num of chars to fill with spaces
-			auto extras = max_len - line_lens[i];
-			// before text
-			memset(static_cast<void*>(formatted + pos), ' ', extras / 2);
-			pos += extras / 2;
-			// text
-#ifdef SAFE_STRFN
-			strncpy_s(formatted + pos, formatted_len - pos, lines[i], line_lens[i]);
-#else
-			strncpy(formatted + pos, lines[i], line_lens[i]);
-#endif		
-			pos += line_lens[i];
-			// after text until line is full, overwriting newline / null terminator
-			auto remaining_len = max_len - (pos - (max_len + 1) * i);
-			memset(static_cast<void*>(formatted + pos), ' ', remaining_len);
-			pos += remaining_len;
-			// replace newline / null terminator
-			formatted[pos] = (i != n_lines - 1) ? '\n' : '\0';
-		}
-
-		// clean up
-		delete[] label_cpy;
-		for (size_t i = 0; i < n_lines; i++)
-		{
-			delete[] lines[i];
-		};
-		delete[] line_lens;
-		delete[] lines;
-
-		// display button before deleting the formatted label
-		auto res = Button(formatted, size);
-		delete[] formatted;
-		return res;
-	}
-}
 
 namespace nbody
 {
@@ -598,12 +497,10 @@ namespace nbody
 			if (Button("+", { GetContentRegionAvailWidth(), 0 }))
 			{
 				m_bg_props.emplace_back();
-				m_tmp_cols.emplace_back();
 			}
 			if (Button("-", { GetContentRegionAvailWidth(), 0 }))
 			{
 				m_bg_props.pop_back();
-				m_tmp_cols.pop_back();
 			}
 			EndGroup(); // Add/remove buttons
 
@@ -756,12 +653,8 @@ namespace nbody
 #else
 				sprintf(label, "Colour %zu", i + 1);
 #endif
-				auto& this_col = m_tmp_cols[idx].cols[*sel_col][i];
-				if (ColorEdit3(label, this_col))
-				{
-					m_bg_props[idx].cols[i] =
-					{ static_cast<sf::Uint8>(this_col[0] * 255), static_cast<sf::Uint8>(this_col[1] * 255), static_cast<sf::Uint8>(this_col[2] * 255), 255 };
-				}
+				auto this_col = &m_bg_props[idx].cols[i];
+				ColorEdit3_sf(label, this_col);
 			}
 		}
 		Checkbox("Same for all groups", &share_values);
@@ -770,18 +663,12 @@ namespace nbody
 		{
 			if (share_values)
 			{
-				size_t bgp_ctr = 0;
 				for (auto & bgp : m_bg_props)
 				{
 					bgp.colour = m_bg_props[idx].colour;
-					for (size_t i = 0; i < m_colour_infos[*sel_col].cols_used; i++)
+					for(auto i = 0; i < MAX_COLS_PER_COLOURER; i++)
 					{
 						bgp.cols[i] = m_bg_props[idx].cols[i];
-						auto& src_col = m_tmp_cols[idx].cols[*sel_col][i];
-						auto& target_col = m_tmp_cols[bgp_ctr++].cols[*sel_col][i];
-						target_col[0] = src_col[0];
-						target_col[1] = src_col[1];
-						target_col[2] = src_col[2];
 					}
 				}
 			}
@@ -805,9 +692,6 @@ namespace nbody
 
 	void StartState::saveSettings(char const* filename)
 	{
-		//using namespace fileio;
-		//char constexpr SEP[] = "__";
-
 		std::ofstream file;
 		auto writeString = [&file](char const data[], size_t len) -> void
 		{
@@ -843,7 +727,7 @@ namespace nbody
 			writeValue(m_sim_props.int_type);
 			writeValue(m_sim_props.mod_type);
 			writeValue(m_bg_props.size());
-			std::for_each(m_bg_props.begin(), m_bg_props.end(), [&](auto& bgp) {
+			std::for_each(m_bg_props.begin(), m_bg_props.end(), [&](BodyGroupProperties const& bgp) {
 				writeString(fileio::ITEM_HEADER, fileio::SIZE_IH);
 				writeValue(bgp.dist);
 				writeValue(bgp.num);
@@ -926,9 +810,7 @@ namespace nbody
 			size_t n_groups;
 			readValue(n_groups);
 			m_bg_props.assign(n_groups, BodyGroupProperties());
-			m_tmp_cols.assign(n_groups, TempColArray());
-			size_t bgp_number = 0;
-			auto foo = std::for_each(m_bg_props.begin(), m_bg_props.end(), [&](auto& bgp) {
+			std::for_each(m_bg_props.begin(), m_bg_props.end(), [&](BodyGroupProperties& bgp) {
 				good &= readString(fileio::ITEM_HEADER, fileio::SIZE_IH);
 				good &= readValue(bgp.dist);
 				good &= readValue(bgp.num);
@@ -941,17 +823,10 @@ namespace nbody
 				good &= readValue(bgp.has_central_mass);
 				good &= readValue(bgp.central_mass);
 				good &= readValue(bgp.colour);
-				size_t colour_number = 0;
-				for (auto colour : bgp.cols)
+				for (auto& colour : bgp.cols)
 				{
 					good &= readValue(colour);
-					// buffer into array used by GUI
-					m_tmp_cols[bgp_number].cols[static_cast<size_t>(bgp.colour)][colour_number][0] = static_cast<float>(colour.r) / 255;
-					m_tmp_cols[bgp_number].cols[static_cast<size_t>(bgp.colour)][colour_number][1] = static_cast<float>(colour.g) / 255;
-					m_tmp_cols[bgp_number].cols[static_cast<size_t>(bgp.colour)][colour_number][2] = static_cast<float>(colour.b) / 255;
-					colour_number++;
 				}
-				bgp_number++;
 				if (!good)
 					throw MAKE_ERROR(std::string("could not read BodyGroup properties in file ") + fn_str);
 			});
