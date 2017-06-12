@@ -36,40 +36,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 17.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 17.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release (No OpenMP)|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 17.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 17.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 17.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release (No OpenMP)|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>Intel C++ Compiler 17.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -255,14 +255,17 @@ xcopy media "$(OutDir)media" /S/E/Y/D/E/I</Command>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>/Qoverride-limits</AdditionalOptions>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <Cpp0xSupport>false</Cpp0xSupport>
       <GenerateAlternateCodePaths>AVX2</GenerateAlternateCodePaths>
       <UseProcessorExtensions>HOST</UseProcessorExtensions>
       <OpenMP>GenerateParallelCode</OpenMP>
+      <OptimizeForWindowsApplication>true</OptimizeForWindowsApplication>
+      <UseIntelOptimizedHeaders>false</UseIntelOptimizedHeaders>
+      <Mtune>Haswell</Mtune>
+      <Parallelization>true</Parallelization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -319,7 +322,9 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="BHTreeNode.cpp" />
     <ClCompile Include="BodyDistributor.cpp" />
     <ClCompile Include="BodyManager.cpp" />
+    <ClCompile Include="ColourerSolid.cpp" />
     <ClCompile Include="Display.cpp" />
+    <ClCompile Include="IColourer.cpp" />
     <ClCompile Include="IIntegrator.cpp" />
     <ClCompile Include="imgui_sfml.cpp" />
     <ClCompile Include="imgui.cpp" />
@@ -345,7 +350,8 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="BodyDistributor.h" />
     <ClInclude Include="BodyManager.h" />
     <ClInclude Include="CircularBuffer.h" />
-    <ClInclude Include="Colourer.h" />
+    <ClInclude Include="ColourerSolid.h" />
+    <ClInclude Include="IColourer.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Constants.h" />

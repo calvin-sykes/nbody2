@@ -2,7 +2,7 @@
 #define BODY_GROUP_PROPERTIES_H
 
 #include "BodyDistributor.h"
-#include "Colourer.h"
+#include "IColourer.h"
 #include "Vector.h"
 
 #include <SFML/Graphics/Color.hpp>

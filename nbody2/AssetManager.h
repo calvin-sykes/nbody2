@@ -8,6 +8,8 @@
 
 namespace nbody
 {
+	class IColourer;
+	enum class ColourerType;
 	class IIntegrator;
 	enum class IntegratorType;
 	class IModel;
@@ -15,6 +17,7 @@ namespace nbody
 	class BodyDistributor;
 	enum class DistributorType;
 
+	typedef std::unique_ptr<IColourer>(*ColourerFactory)(size_t, size_t, sf::Color const*);
 	typedef std::unique_ptr<IIntegrator>(*IntegratorFactory)(IModel *, double);
 	typedef std::unique_ptr<IModel>(*ModelFactory)();
 	typedef std::unique_ptr<BodyDistributor>(*DistributorFactory)();
@@ -29,16 +32,19 @@ namespace nbody
 		void loadIntegrators();
 		void loadModels();
 		void loadDistributors();
+		void loadColourers();
 
 		sf::Texture& getTextureRef(std::string const& name);
 		std::unique_ptr<IIntegrator> getIntegrator(IntegratorType const type, IModel * model, double step);
 		std::unique_ptr<IModel> getModel(ModelType const type);
 		std::unique_ptr<BodyDistributor> getDistributor(DistributorType const type);
+		std::unique_ptr<IColourer> getColourer(ColourerType const type, size_t const offset, size_t const num_bodies, sf::Color const* cols);
 
 	private:
 		std::map<std::string, sf::Texture> m_textures;
 		std::map<std::string, sf::Font> m_fonts;
 		std::map<IntegratorType, IntegratorFactory> m_integrators;
+		std::map<ColourerType, ColourerFactory> m_colourers;
 		std::map<ModelType, ModelFactory> m_models;
 		std::map<DistributorType, DistributorFactory> m_distributors;
 	};

@@ -2,7 +2,7 @@
 #define START_STATE_H
 
 #include "BodyDistributor.h"
-#include "Colourer.h"
+#include "IColourer.h"
 #include "IModel.h"
 #include "IIntegrator.h"
 #include "Sim.h"

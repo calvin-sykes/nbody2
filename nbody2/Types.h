@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include "Vector.h"
+#include <SFML/Graphics/Color.hpp>
 
 #pragma pack(push, 1)
 
@@ -16,6 +17,11 @@ namespace nbody
 	struct ParticleAuxState
 	{
 		double mass;
+	};
+
+	struct ParticleColourState
+	{
+		sf::Color colour;
 	};
 	
 	struct ParticleDerivState

@@ -43,6 +43,12 @@
     <Filter Include="Source Files\graphics">
       <UniqueIdentifier>{c987d615-855a-418a-96e1-35cd948a2998}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\colour">
+      <UniqueIdentifier>{8badea9d-17a6-4bd3-b1ff-20c6e4c1e17f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\colour">
+      <UniqueIdentifier>{fd85908a-de6f-4686-a473-3548a334c025}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -114,6 +120,12 @@
     <ClCompile Include="BodyManager.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="IColourer.cpp">
+      <Filter>Source Files\colour</Filter>
+    </ClCompile>
+    <ClCompile Include="ColourerSolid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector.h">
@@ -156,9 +168,6 @@
       <Filter>Header Files\gui</Filter>
     </ClInclude>
     <ClInclude Include="BodyGroupProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Colourer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stb_truetype.h">
@@ -217,6 +226,12 @@
     </ClInclude>
     <ClInclude Include="IState.h">
       <Filter>Header Files\state</Filter>
+    </ClInclude>
+    <ClInclude Include="IColourer.h">
+      <Filter>Header Files\colour</Filter>
+    </ClInclude>
+    <ClInclude Include="ColourerSolid.h">
+      <Filter>Header Files\colour</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

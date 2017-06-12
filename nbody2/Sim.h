@@ -9,11 +9,11 @@
 #include <SFML/Graphics.hpp>
 
 #include <stack>
-#include <vector>
 
 namespace nbody
 {
 	class IState;
+	class IColourer;
 
 	// Apend a vector rvalue to a secoond vector, using move semantics
 	//template <typename T>
@@ -89,6 +89,7 @@ namespace nbody
 
 		void setProperties(SimProperties const&);
 		void simLoop();
+		void updateColours();
 
 		AssetManager m_asset_mgr;
 
@@ -102,6 +103,8 @@ namespace nbody
 		sf::Sprite m_background;
 
 	private:
+		std::vector<std::unique_ptr<IColourer>> m_colourers;
+
 		std::stack<IState*> m_states;
 		PendingState m_pending;
 

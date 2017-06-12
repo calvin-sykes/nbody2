@@ -20,23 +20,27 @@ namespace nbody
 		return std::make_unique<ModelBruteForce>();
 	}
 
-	void ModelBruteForce::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
+	/*void ModelBruteForce::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
 	{
 		ParticleData empty(m_initial_state + m_num_added, m_aux_state + m_num_added);
 		dist.createDistribution(empty, bgp);
 
-		for (size_t i = m_num_added; i < m_num_added + bgp.num; i++)
+		for (auto i = m_num_added; i < m_num_added + bgp.num; i++)
+		{
+			m_centre_mass += m_initial_state[i].pos * m_aux_state[i].mass;
 			m_tot_mass += m_aux_state[i].mass;
+		}
 
 		m_num_added += bgp.num;
-	}
+		m_centre_mass /= m_tot_mass;
+	}*/
 
 	void ModelBruteForce::eval(Vector2d * state_in, double time, Vector2d * deriv_out)
 	{
 		// Reinterpret single array of vectors as individual particles
 		// Simplifies following logic
-		ParticleState* state = reinterpret_cast<ParticleState *>(state_in);
-		ParticleDerivState* deriv_state = reinterpret_cast<ParticleDerivState *>(deriv_out);
+		auto state = reinterpret_cast<ParticleState *>(state_in);
+		auto deriv_state = reinterpret_cast<ParticleDerivState *>(deriv_out);
 
 		for (size_t i = 0; i < m_num_bodies; i++)
 		{
@@ -47,9 +51,9 @@ namespace nbody
 		m_centre_mass = {};
 
 #pragma omp parallel for schedule(static)
-		for (int i = 0; i < m_num_bodies; i++)
+		for (auto i = 0; i < m_num_bodies; i++)
 		{
-			for (int j = i + 1; j < m_num_bodies; j++)
+			for (auto j = i + 1; j < m_num_bodies; j++)
 			{
 				auto rel_pos = state[j].pos - state[i].pos; // relative position vector r
 				auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2

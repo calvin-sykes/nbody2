@@ -28,7 +28,15 @@ namespace nbody
 		ImGui::SFML::Update(m_sim->m_window, dt);
 
 		if (m_flags.running)
+		{
 			m_sim->m_int_ptr->singleStep();
+			m_sim->updateColours();
+		}
+
+		ImGui::Begin("Diagnostics");
+		auto fps = 1000.f / dt.asMilliseconds();
+		ImGui::Text("FPS = %f", fps);
+		ImGui::End();
 
 		//ImGui::ShowMetricsWindow();
 	}
@@ -37,8 +45,8 @@ namespace nbody
 	{
 		if (m_flags.view_centre)
 		{
-			Vector2d com = m_sim->m_mod_ptr->getCentreMass();
-			Vector2f com_screen(Display::worldToScreenX(com.x), Display::worldToScreenY(com.y));
+			auto com = m_sim->m_mod_ptr->getCentreMass();
+			auto com_screen = Vector2f{ Display::worldToScreenX(com.x), Display::worldToScreenY(com.y) };
 			Display::screen_offset += com_screen - 0.5f * Display::screen_size;
 		}
 
@@ -48,6 +56,7 @@ namespace nbody
 		{
 			m_body_mgr.update(m_sim->m_int_ptr->getState(),
 				m_sim->m_mod_ptr->getAuxState(),
+				m_sim->m_mod_ptr->getColourState(),
 				m_sim->m_mod_ptr->getNumBodies());
 			m_sim->m_window.draw(m_body_mgr);
 		}
@@ -68,7 +77,7 @@ namespace nbody
 
 		m_sim->m_window.setView(m_gui_view);
 
-		//ImGui::Render();
+		ImGui::Render();
 	}
 
 	void RunState::handleInput()

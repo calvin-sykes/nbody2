@@ -52,6 +52,7 @@ namespace nbody
 	{
 		return m_model;
 	}
+
 	void IIntegrator::setName(std::string id)
 	{
 		m_name = id;
@@ -61,20 +62,4 @@ namespace nbody
 	{
 		return m_name;
 	}
-
-	/*void IIntegrator::eval(Vector2d const* initial,
-		Vector2d const* deriv_in,
-		double step,
-		double time,
-		Vector2d * deriv_out)
-	{
-		auto state = new Vector2d[m_dim];
-
-		for (size_t i = 0; i < m_model->getDim(); i++)
-			state[i] = initial[i] + step * deriv_in[i];
-
-		m_model->eval(state, time + step, deriv_out);
-
-		delete[] state;
-	}*/
 }

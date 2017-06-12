@@ -24,12 +24,12 @@ namespace nbody
 		return std::make_unique<ModelBarnesHut>();
 	}
 
-	void ModelBarnesHut::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
+	/*void ModelBarnesHut::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
 	{
 		ParticleData empty{ m_initial_state + m_num_added, m_aux_state + m_num_added };
 		dist.createDistribution(empty, bgp);
 
-		for (size_t i{ m_num_added }; i < m_num_added + bgp.num; i++)
+		for (auto i = m_num_added; i < m_num_added + bgp.num; i++)
 		{
 			m_centre_mass += m_initial_state[i].pos * m_aux_state[i].mass;
 			m_tot_mass += m_aux_state[i].mass;
@@ -37,7 +37,7 @@ namespace nbody
 
 		m_num_added += bgp.num;
 		m_centre_mass /= m_tot_mass;
-	}
+	}*/
 
 	void ModelBarnesHut::eval(Vector2d * state_in, double time, Vector2d * deriv_out)
 	{

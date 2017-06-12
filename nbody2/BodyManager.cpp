@@ -17,7 +17,7 @@ namespace nbody
 	{
 	}
 
-	void nbody::BodyManager::update(Vector2d const* state, ParticleAuxState const* aux_state, size_t const num_bodies)
+	void nbody::BodyManager::update(Vector2d const* state, ParticleAuxState const* aux_state, ParticleColourState const* colour_state, size_t const num_bodies)
 	{
 		auto bodies{ reinterpret_cast<ParticleState const*>(state) };
 		
@@ -38,11 +38,11 @@ namespace nbody
 
 		for (size_t i = 0; i < num_bodies; i++)
 		{
-			drawBody(bodies[i], i);
+			drawBody(bodies[i], colour_state[i], i);
 		}
 	}
 
-	void BodyManager::drawBody(ParticleState const & p, size_t const idx)
+	void BodyManager::drawBody(ParticleState const & p, ParticleColourState const& c, size_t const idx)
 	{
 		auto world_pos = p.pos;
 		
@@ -57,12 +57,14 @@ namespace nbody
 			auto radius = m_radii[idx] * m_scl;
 
 			// WIP
-			auto v_mag = p.vel.mag();
+			/*auto v_mag = p.vel.mag();
 			auto phase = min(Constants::PI / 2., (v_mag * 1e-5) * (Constants::PI / 2.));
 			auto red = static_cast<int>(254 * sin(phase));
 			auto blue = static_cast<int>(254 * cos(phase));
 			auto green = 0;
-			auto col = sf::Color(red, green, blue);
+			auto col = sf::Color(red, green, blue);*/
+
+			auto col = c.colour;
 
 			// Calculate positions of vertices around the edge of the body
 			for (size_t i = 0; i < s_VERTICES; i++)
