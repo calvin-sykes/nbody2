@@ -8,12 +8,13 @@
 namespace nbody
 {
 	std::vector<ParticleData> BHTreeNode::s_renegades;
-	BHTreeNode::DebugStat BHTreeNode::s_stat = { 0 };
+	DebugStats BHTreeNode::s_stat = { 0 };
 	double BHTreeNode::s_bh_theta = 0.9;
 	//double BHTreeNode::s_bh_theta = 0;
 
-	BHTreeNode::BHTreeNode(Quad const& q, BHTreeNode const* parent)
-		: m_body(),
+	BHTreeNode::BHTreeNode(Quad const& q, size_t const level, BHTreeNode const* parent)
+		: m_level(level),
+		m_body(),
 		m_mass(0),
 		m_centre_mass(),
 		m_quad(q),
@@ -22,6 +23,11 @@ namespace nbody
 		m_subdivided(false)
 	{
 		m_daughters[0] = m_daughters[1] = m_daughters[2] = m_daughters[3] = nullptr;
+		s_stat.m_node_ct++;
+		if(level > s_stat.m_max_level)
+		{
+			s_stat.m_max_level++;
+		}
 	}
 
 	BHTreeNode::~BHTreeNode()
@@ -48,6 +54,9 @@ namespace nbody
 		m_num = 0;
 		m_mass = 0;
 		m_centre_mass = {};
+
+		s_stat.m_max_level = 0;
+		s_stat.m_node_ct = 0;
 
 		s_renegades.clear();
 	}
@@ -95,12 +104,12 @@ namespace nbody
 		s_bh_theta = theta;
 	}
 
-	size_t BHTreeNode::getStatNumCalc()
+	DebugStats const& BHTreeNode::getStats()
 	{
-		return s_stat.m_num_calc;
+		return s_stat;
 	}
 
-	void BHTreeNode::statReset() const
+	void BHTreeNode::forceCalcStatReset() const
 	{
 		if (!isRoot())
 			throw MAKE_ERROR("Non-root node attempted to reset statistics");
@@ -118,7 +127,16 @@ namespace nbody
 			}
 		};
 
-		reset_subdivide_flags(this);		
+		reset_subdivide_flags(this);
+	}
+
+	void BHTreeNode::treeStatReset() const
+	{
+		if (!isRoot())
+			throw MAKE_ERROR("Non-root node attempted to reset statistics");
+
+		s_stat.m_node_ct = 0;
+		s_stat.m_max_level = 0;
 	}
 
 	const Vector2d & BHTreeNode::getCentreMass() const
@@ -128,7 +146,7 @@ namespace nbody
 
 	BHTreeNode * BHTreeNode::createDaughter(Quad const& q) const
 	{
-		return new BHTreeNode(q, this);
+		return new BHTreeNode(q, m_level + 1, this);
 	}
 
 	void BHTreeNode::insert(ParticleData const& new_body, size_t level)

@@ -24,21 +24,6 @@ namespace nbody
 		return std::make_unique<ModelBarnesHut>();
 	}
 
-	/*void ModelBarnesHut::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
-	{
-		ParticleData empty{ m_initial_state + m_num_added, m_aux_state + m_num_added };
-		dist.createDistribution(empty, bgp);
-
-		for (auto i = m_num_added; i < m_num_added + bgp.num; i++)
-		{
-			m_centre_mass += m_initial_state[i].pos * m_aux_state[i].mass;
-			m_tot_mass += m_aux_state[i].mass;
-		}
-
-		m_num_added += bgp.num;
-		m_centre_mass /= m_tot_mass;
-	}*/
-
 	void ModelBarnesHut::eval(Vector2d * state_in, double time, Vector2d * deriv_out)
 	{
 		// Reinterpret single array of vectors as individual particles
@@ -51,7 +36,7 @@ namespace nbody
 		buildTree(all);
 
 #pragma omp parallel for schedule(static)
-		for (int i{ 1 }; i < m_num_bodies; i++)
+		for (auto i = 1; i < m_num_bodies; i++)
 		{
 			ParticleData p{ &state[i], &m_aux_state[i] };
 
@@ -60,7 +45,7 @@ namespace nbody
 		}
 
 		// particle 0 calculated separately for stats
-		m_root.statReset();
+		m_root.forceCalcStatReset();
 
 		ParticleData p{ &state[0], &m_aux_state[0] };
 
@@ -75,18 +60,12 @@ namespace nbody
 
 	void ModelBarnesHut::calcBounds(ParticleData const & all)
 	{
-		/*auto minmax_x{ std::minmax_element(&all.m_state[0].pos, &all.m_state[m_num_bodies].pos, [](Vector2d const& a, Vector2d const& b) -> bool {return a.x < b.x; }) };
-		auto minmax_y{ std::minmax_element(&all.m_state[0].pos, &all.m_state[m_num_bodies].pos, [](Vector2d const& a, Vector2d const& b) -> bool {return a.y < b.y; }) };
-
-		auto len_x{ minmax_x.second->x - minmax_x.first->x };
-		auto len_y{ minmax_y.second->y - minmax_y.first->y };
-		auto len{ std::max(len_x, len_y) };
-		
-		Vector2d centre{ (minmax_x.second->x + minmax_x.first->x) / 2, (minmax_y.second->y + minmax_y.first->y) / 2 };
-
-		m_bounds = Quad{ centre.x, centre.y, len };*/
-
-		auto avg_dist_from_centre = std::accumulate(&all.m_state[0].pos, &all.m_state[m_num_bodies].pos, double{ 0 }, [this](double a, Vector2d const& b) { return a + (b - this->m_centre_mass).mag(); });
+		auto avg_dist_from_centre = std::accumulate(
+			&all.m_state[0].pos,
+			&all.m_state[m_num_bodies].pos,
+			0.,
+			[this](double a, Vector2d const& b) { return a + (b - this->m_centre_mass).mag(); }
+		);
 		avg_dist_from_centre /= m_num_bodies;
 
 		auto len{ 4 * avg_dist_from_centre };

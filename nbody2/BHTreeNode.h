@@ -9,16 +9,17 @@
 
 namespace nbody
 {
+	struct DebugStats
+	{
+		size_t m_num_calc; // Number of calculations for force estimation
+		size_t m_node_ct; // Number of nodes in tree
+		size_t m_max_level; // Deepest level in tree
+	};
+
 	class BHTreeNode
 	{
 	public:
-		
-		struct DebugStat
-		{
-			size_t m_num_calc; // Number of calculations for force estimation
-		};
-		
-		BHTreeNode(Quad const& q, BHTreeNode const* parent = nullptr);
+		explicit BHTreeNode(Quad const& q, size_t const level = 0, BHTreeNode const* parent = nullptr);
 		~BHTreeNode();
 
 		void reset(Quad const& q);
@@ -36,8 +37,9 @@ namespace nbody
 		static double getTheta();
 		static void setTheta(double theta);
 
-		static size_t getStatNumCalc();
-		void statReset() const;
+		static DebugStats const& getStats();
+		void forceCalcStatReset() const;
+		void treeStatReset() const;
 
 		void computeMassDistribution();
 		const Vector2d & getCentreMass() const;
@@ -54,6 +56,7 @@ namespace nbody
 		Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2) const;
 		Vector2d calcTreeForce(ParticleData const& p);
 
+		size_t m_level;
 		ParticleData m_body;
 		double m_mass;
 		Vector2d m_centre_mass;
@@ -63,7 +66,7 @@ namespace nbody
 		mutable bool m_subdivided;
 
 		static std::vector<ParticleData> s_renegades;
-		static BHTreeNode::DebugStat s_stat;
+		static DebugStats s_stat;
 		static double s_bh_theta;
 	};
 }

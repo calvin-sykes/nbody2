@@ -1,8 +1,9 @@
+#include "BHTreeNode.h"
 #include "Display.h"
-#include "Quad.h"
+#include "IState.h"
+#include "ModelBarnesHut.h"
 #include "RunState.h"
 #include "Sim.h"
-#include "IState.h"
 
 #include "imgui.h"
 #include "imgui_sfml.h"
@@ -27,20 +28,50 @@ namespace nbody
 
 	void RunState::update(sf::Time const dt)
 	{
-		ImGui::SFML::Update(m_sim->m_window, dt);
-
 		if (m_flags.running)
 		{
 			m_sim->m_int_ptr->singleStep();
 			m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getState());
 		}
 
+		if (m_flags.show_bodies)
+		{
+			m_body_mgr.update(
+				m_sim->m_int_ptr->getState(),
+				m_sim->m_mod_ptr->getAuxState(),
+				m_sim->m_mod_ptr->getColourState(),
+				m_sim->m_mod_ptr->getNumBodies());
+		}
+
+		if (m_flags.tree_exists && m_flags.show_grid)
+		{
+			auto mode = m_flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
+			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode);
+		}
+
+		if (m_flags.show_trails)
+		{
+			m_trail_mgr.update(
+				m_sim->m_int_ptr->getState(),
+				m_sim->m_mod_ptr->getNumBodies());
+		}
+
+		ImGui::SFML::Update(m_sim->m_window, dt);
+
 		ImGui::Begin("Diagnostics");
 		auto fps = 1000.f / dt.asMilliseconds();
 		ImGui::Text("FPS = %f", fps);
+		if (m_sim->m_mod_ptr->getTreeRoot())
+		{
+			auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
+			auto stats = mod_bh_tree->getTreeRoot()->getStats();
+			ImGui::Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
+			ImGui::Text("Total nodes in tree = %zu", stats.m_node_ct);
+			ImGui::Text("Level of deepest node = %zu", stats.m_max_level);
+		}
 		ImGui::End();
 
-		//ImGui::ShowMetricsWindow();
+		ImGui::ShowTestWindow();
 	}
 
 	void RunState::draw(sf::Time const dt)
@@ -56,25 +87,16 @@ namespace nbody
 
 		if (m_flags.show_bodies)
 		{
-			m_body_mgr.update(
-				m_sim->m_int_ptr->getState(),
-				m_sim->m_mod_ptr->getAuxState(),
-				m_sim->m_mod_ptr->getColourState(),
-				m_sim->m_mod_ptr->getNumBodies());
 			m_sim->m_window.draw(m_body_mgr);
 		}
 
 		if (m_flags.tree_exists && m_flags.show_grid)
 		{
-			auto mode = m_flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
-			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode);
 			m_sim->m_window.draw(m_quad_mgr);
 		}
 
 		if (m_flags.show_trails)
 		{
-			m_trail_mgr.update(m_sim->m_int_ptr->getState(),
-				m_sim->m_mod_ptr->getNumBodies());
 			m_sim->m_window.draw(m_trail_mgr);
 		}
 
