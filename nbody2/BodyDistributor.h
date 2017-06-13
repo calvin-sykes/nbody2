@@ -80,13 +80,6 @@ namespace nbody
 
 	class ExponentialDistributor : public BodyDistributor
 	{
-	private:
-		// exponential distribution function
-		double expDist(double lambda) const
-		{
-			return log(1 - get_rand(0, 1)) / lambda;
-		}
-
 	public:
 		static std::unique_ptr<BodyDistributor> create();
 		
@@ -95,7 +88,14 @@ namespace nbody
 		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 
 	private:
-		double static constexpr lambda = -1.5;
+		// exponential distribution function
+		double expDist(double lambda) const
+		{
+			return log(1 - get_rand(0, 1)) / lambda;
+		}
+
+	private:
+		double static constexpr lambda = -4.0;
 	};
 
 	class IsothermalDistributor : public BodyDistributor

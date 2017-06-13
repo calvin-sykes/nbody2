@@ -46,7 +46,7 @@ namespace nbody
 		// central mass
 		bodies.m_state[0].pos = pos_offset;
 		bodies.m_state[0].vel = vel_offset;
-		bodies.m_aux_state[0].mass = props.central_mass * 1E6 * Constants::SOLAR_MASS;
+		bodies.m_aux_state[0].mass = props.central_mass * Constants::SOLAR_MASS;
 
 		for (size_t i = 1; i < props.num; i++)
 		{
@@ -54,7 +54,7 @@ namespace nbody
 			auto radius = rad * expDist(lambda) + Constants::SOFTENING;
 			auto phi = get_rand(0, 2 * Constants::PI);
 			auto pos = Vector2d{ radius * cos(phi), radius * sin(phi) };
-			auto vel = vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS);
+			auto vel = vCirc(pos, props.central_mass * Constants::SOLAR_MASS);
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass;
@@ -82,7 +82,7 @@ namespace nbody
 		// central mass
 		bodies.m_state[0].pos = pos_offset;
 		bodies.m_state[0].vel = vel_offset;
-		bodies.m_aux_state[0].mass = props.central_mass * 1E6 * Constants::SOLAR_MASS;
+		bodies.m_aux_state[0].mass = props.central_mass * Constants::SOLAR_MASS;
 
 		for (size_t i = 1; i < props.num; i++)
 		{
@@ -90,7 +90,7 @@ namespace nbody
 			auto radius = get_rand(0, rad) + Constants::SOFTENING;
 			auto phi = get_rand(0, 2 * Constants::PI);
 			auto pos = Vector2d{ radius * cos(phi), radius * sin(phi) };
-			auto vel = vCirc(pos, props.central_mass * 1E6 * Constants::SOLAR_MASS);
+			auto vel = vCirc(pos, props.central_mass * Constants::SOLAR_MASS);
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass;
