@@ -65,7 +65,10 @@ namespace nbody
 		{
 			auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
 			auto stats = mod_bh_tree->getTreeRoot()->getStats();
+			auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
 			ImGui::Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
+			if (stats.m_num_calc)
+				ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
 			ImGui::Text("Total nodes in tree = %zu", stats.m_node_ct);
 			ImGui::Text("Level of deepest node = %zu", stats.m_max_level);
 		}
