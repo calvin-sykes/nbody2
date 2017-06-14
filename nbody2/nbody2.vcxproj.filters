@@ -126,11 +126,11 @@
     <ClCompile Include="ColourerSolid.cpp">
       <Filter>Source Files\colour</Filter>
     </ClCompile>
-    <ClCompile Include="ColourerVelocity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="imgui_additional.cpp">
       <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ColourerVelocity.cpp">
+      <Filter>Source Files\colour</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,11 +239,11 @@
     <ClInclude Include="ColourerSolid.h">
       <Filter>Header Files\colour</Filter>
     </ClInclude>
-    <ClInclude Include="ColourerVelocity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="imgui_additional.h">
       <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="ColourerVelocity.h">
+      <Filter>Header Files\colour</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

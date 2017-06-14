@@ -13,6 +13,7 @@ namespace nbody
 	{
 		size_t m_num_calc; // Number of calculations for force estimation
 		size_t m_node_ct; // Number of nodes in tree
+		size_t m_body_ct; // Number of bodies in tree
 		size_t m_max_level; // Deepest level in tree
 	};
 

@@ -71,6 +71,8 @@ namespace nbody
 				ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
 			ImGui::Text("Total nodes in tree = %zu", stats.m_node_ct);
 			ImGui::Text("Level of deepest node = %zu", stats.m_max_level);
+			ImGui::Text("Particles in tree = %zu", stats.m_body_ct);
+			ImGui::Text("Renegade particles = %zu", num_bodies - stats.m_body_ct);
 		}
 		ImGui::End();
 

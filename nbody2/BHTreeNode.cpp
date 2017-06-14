@@ -8,7 +8,7 @@
 namespace nbody
 {
 	std::vector<ParticleData> BHTreeNode::s_renegades;
-	DebugStats BHTreeNode::s_stat = { 0 };
+	DebugStats BHTreeNode::s_stat = { 0, 0, 0, 0 };
 	double BHTreeNode::s_bh_theta = 0.9;
 	//double BHTreeNode::s_bh_theta = 0;
 
@@ -55,8 +55,7 @@ namespace nbody
 		m_mass = 0;
 		m_centre_mass = {};
 
-		s_stat.m_max_level = 0;
-		s_stat.m_node_ct = 0;
+		treeStatReset();
 
 		s_renegades.clear();
 	}
@@ -136,6 +135,7 @@ namespace nbody
 			throw MAKE_ERROR("Non-root node attempted to reset statistics");
 
 		s_stat.m_node_ct = 0;
+		s_stat.m_body_ct = 0;
 		s_stat.m_max_level = 0;
 	}
 
@@ -151,7 +151,7 @@ namespace nbody
 
 	void BHTreeNode::insert(ParticleData const& new_body, size_t level)
 	{
-		ParticleState const& p1 = *(new_body.m_state);
+		auto const& p1 = *new_body.m_state;
 
 		// which daughter, would contain this body?
 		auto which_daughter = m_quad.whichDaughter(new_body.m_state->pos);
@@ -179,7 +179,7 @@ namespace nbody
 			{
 				assert(isExternal() || isRoot());
 
-				ParticleState const& p2 = *(m_body.m_state);
+				auto const& p2 = *(m_body.m_state);
 
 				// same coordinates - unphysical
 				// place in renegades vector
@@ -190,11 +190,12 @@ namespace nbody
 				else
 				{
 					// recursively add current body to correct daughter
-					Daughter current_daughter = m_quad.whichDaughter(p2.pos);
+					auto current_daughter = m_quad.whichDaughter(p2.pos);
 					m_daughters[static_cast<size_t>(current_daughter)] = createDaughter(m_quad.createDaughter(current_daughter));
 					m_daughters[static_cast<size_t>(current_daughter)]->insert(m_body, level + 1);
 					// node is no longer external
 					m_body.reset();
+					s_stat.m_body_ct--;
 				}
 			}
 			// create daughter for new body if it does not exist
@@ -207,6 +208,7 @@ namespace nbody
 		{
 			// store body in this node
 			m_body = new_body;
+			s_stat.m_body_ct++;
 
 		}
 
@@ -218,8 +220,8 @@ namespace nbody
 		if (m_num == 1)
 		{
 			assert(!m_body.isNull());
-			ParticleState * ps = m_body.m_state;
-			ParticleAuxState * pa = m_body.m_aux_state;
+			auto ps = m_body.m_state;
+			auto pa = m_body.m_aux_state;
 
 			m_mass = pa->mass;
 			m_centre_mass = ps->pos;
@@ -266,9 +268,9 @@ namespace nbody
 		if (p1 == p2)
 			return acc;
 
-		Vector2d const& r1 = p1.m_state->pos;
-		Vector2d const& r2 = p2.m_state->pos;
-		double m2 = p2.m_aux_state->mass;
+		auto const& r1 = p1.m_state->pos;
+		auto const& r2 = p2.m_state->pos;
+		auto m2 = p2.m_aux_state->mass;
 
 		auto rel_pos = r2 - r1; // relative position vector r
 		auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2

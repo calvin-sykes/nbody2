@@ -22,8 +22,6 @@ namespace nbody
 		double constexpr SOLAR_MASS = 1.98892E30;
 		size_t constexpr MAX_N = 20000;
 	}
-
-	double constexpr BH_THETA = 1;
 }
 
 #endif // CONSTANTS_H
