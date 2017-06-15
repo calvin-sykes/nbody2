@@ -7,6 +7,8 @@
 #include <Windows.h>
 #endif
 
+#include <iostream>
+
 // comment bunny //
 /*	   ()()		 */
 /*	   ('.')	 */
@@ -29,8 +31,9 @@ using namespace nbody;
 
 int main(int argc, char** argv)
 {
+#ifdef OS_WINDOWS
 	_putenv_s("OMP_WAIT_POLICY", "PASSIVE");
-	
+#endif
 	try
 	{
 		Sim sim;

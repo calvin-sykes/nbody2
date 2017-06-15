@@ -1,6 +1,8 @@
 #ifndef CIRCULAR_BUFFER_H
 #define CIRCULAR_BUFFER_H
 
+#include <cstddef>
+
 namespace nbody
 {
 	template<typename T>

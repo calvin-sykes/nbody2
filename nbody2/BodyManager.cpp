@@ -94,6 +94,6 @@ namespace nbody
 
 	float BodyManager::radiusFromMass(double mass) const
 	{
-		return std::min(static_cast<float>(s_MIN_SIZE * log10(mass / Constants::SOLAR_MASS)), s_MAX_SIZE);
+		return std::min(static_cast<float>(float(s_MIN_SIZE) * log10(mass / Constants::SOLAR_MASS)), float(s_MAX_SIZE));
 	}
 }
