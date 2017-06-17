@@ -27,6 +27,21 @@ namespace nbody
 
 	using ComboCallback = bool(*)(void*, int, char const**);
 
+	template<typename T>
+	ComboCallback callback = [](void * data, int idx, const char ** out_text)
+	{
+		auto& array = *static_cast<T*>(data);
+		if (idx < 0 || idx >= static_cast<int>(array.size()))
+		{
+			return false;
+		}
+		else
+		{
+			*out_text = array[idx].name;
+			return true;
+		}
+	};
+
 	class StartState : public IState
 	{
 	public:
@@ -71,61 +86,11 @@ namespace nbody
 		// Error message from file load operations
 		std::string m_err_string;
 
-		ComboCallback m_getDistributorName = [](void * data, int idx, const char ** out_text)
-		{
-			auto& array = *static_cast<DPArray*>(data);
-			if (idx < 0 || idx >= static_cast<int>(array.size()))
-			{
-				return false;
-			}
-			else
-			{
-				*out_text = array[idx].name;
-				return true;
-			}
-		};
-
-		ComboCallback m_getColourerName = [](void * data, int idx, const char ** out_text)
-		{
-			auto& array = *static_cast<CPArray*>(data);
-			if (idx < 0 || idx >= static_cast<int>(array.size()))
-			{
-				return false;
-			}
-			else
-			{
-				*out_text = array[idx].name;
-				return true;
-			}
-		};
-
-		ComboCallback m_getIntegratorName = [](void * data, int idx, const char ** out_text)
-		{
-			auto& array = *static_cast<IntArray*>(data);
-			if (idx < 0 || idx >= static_cast<int>(array.size()))
-			{
-				return false;
-			}
-			else
-			{
-				*out_text = array[idx].name;
-				return true;
-			}
-		};
-
-		ComboCallback m_getModelName = [](void * data, int idx, const char ** out_text)
-		{
-			auto& array = *static_cast<ModArray*>(data);
-			if (idx < 0 || idx >= static_cast<int>(array.size()))
-			{
-				return false;
-			}
-			else
-			{
-				*out_text = array[idx].name;
-				return true;
-			}
-		};
+		// Callback functions for drop-down menus
+		ComboCallback m_getDistributorName = callback<DPArray>;
+		ComboCallback m_getColourerName = callback<CPArray>;
+		ComboCallback m_getIntegratorName = callback <IntArray>;
+		ComboCallback m_getModelName = callback<ModArray>;
 	};
 
 	namespace fileio
