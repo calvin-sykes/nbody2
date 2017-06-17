@@ -15,7 +15,7 @@ namespace nbody
 
 	struct IntegratorProperties
 	{
-		IntegratorProperties(IntegratorType type, char const* name)
+		constexpr IntegratorProperties(IntegratorType const type, char const* name)
 			: type(type),
 			  name(name)
 		{
@@ -24,6 +24,19 @@ namespace nbody
 		IntegratorType const type;
 		char const* name;
 	};
+
+	using IntArray = std::array<IntegratorProperties, static_cast<size_t>(IntegratorType::N_INTEGRATORS)>;
+
+	constexpr IntArray integrator_infos = { {
+		{
+			IntegratorType::EULER,
+			"Euler"
+		},
+		{
+			IntegratorType::MODIFIED_EULER,
+			"Modified Euler"
+		}
+		} };
 
 	class IIntegrator
 	{

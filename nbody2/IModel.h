@@ -24,22 +24,44 @@ namespace nbody
 
 	struct ModelProperties
 	{
+		constexpr ModelProperties(ModelType const type, char const* name, char const* tooltip)
+			: type(type),
+			name(name),
+			tooltip(tooltip)
+		{
+		}
+
 		ModelType type;
 		char const* name;
 		char const* tooltip;
 	};
+
+	using ModArray = std::array<ModelProperties, static_cast<size_t>(ModelType::N_MODELS)>;
+
+	constexpr ModArray m_model_infos = { {
+		{
+			ModelType::BRUTE_FORCE,
+			"Brute-force",
+			"Forces between every pair of bodies are calculated directly"
+		},
+		{
+			ModelType::BARNES_HUT,
+			"Barnes-Hut",
+			"Long-range forces are approximated using a Barnes-Hut tree"
+		}
+		} };
 
 	class IModel
 	{
 	public:
 
 		explicit IModel(std::string name, bool has_tree = false, size_t dim = 1);
-		virtual ~IModel();	
-		
+		virtual ~IModel();
+
 		void init(size_t num_bodies, double step);
 		void addBodies(BodyDistributor const& dist, std::unique_ptr<IColourer> col, BodyGroupProperties const& bgp);
 		void updateColours(Vector2d const* all);
-		
+
 		virtual void eval(Vector2d * state, double time, Vector2d * deriv_in) = 0;
 		virtual BHTreeNode const* getTreeRoot() const = 0;
 
@@ -60,7 +82,7 @@ namespace nbody
 		ParticleState * m_initial_state;
 		ParticleAuxState * m_aux_state;
 		ParticleColourState * m_colour_state;
-		
+
 	protected:
 		double m_step;
 		size_t m_num_bodies;

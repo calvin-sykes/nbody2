@@ -1,6 +1,7 @@
 #ifndef DISTRIBUTOR_H
 #define DISTRIBUTOR_H
 
+#include <array>
 #include <functional>
 #include <memory>
 #include <random>
@@ -43,7 +44,7 @@ namespace nbody
 
 	struct DistributorProperties
 	{
-		DistributorProperties(DistributorType type, char const* name, char const* tooltip, bool has_central_mass)
+		constexpr DistributorProperties(DistributorType const type, char const* name, char const* tooltip, bool const has_central_mass)
 			: type(type),
 			  name(name),
 			  tooltip(tooltip),
@@ -56,6 +57,29 @@ namespace nbody
 		char const* tooltip;
 		bool const has_central_mass;
 	};
+
+	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
+
+	constexpr DPArray m_dist_infos = { {
+		{
+			DistributorType::EXPONENTIAL,
+			"Exponential",
+			"The density of bodies falls off exponentially with distance from a large central mass.",
+			true
+		},
+		{
+			DistributorType::ISOTHERMAL,
+			"Isothermal",
+			"The density of bodies falls off with the square of the distance from a large central mass.",
+			true
+		},
+		{
+			DistributorType::PLUMMER,
+			"Plummer",
+			"Bodies are distributed according to the Plummer globular cluster model.",
+			false
+		}
+		} };
 
 	class BodyDistributor
 	{

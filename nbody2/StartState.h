@@ -16,11 +16,6 @@
 
 namespace nbody
 {
-	using DPArray = std::array<DistributorProperties, static_cast<size_t>(DistributorType::N_DISTRIBUTIONS)>;
-	using CPArray = std::array<ColourerProperties, static_cast<size_t>(ColourerType::N_TYPES)>;
-	using IntArray = std::array<IntegratorProperties, static_cast<size_t>(IntegratorType::N_INTEGRATORS)>;
-	using ModArray = std::array<ModelProperties, static_cast<size_t>(ModelType::N_MODELS)>;
-
 	struct BodyGroupProperties;
 
 	enum class MenuState
@@ -51,7 +46,7 @@ namespace nbody
 		void makeCentralMassPopup(size_t const idx) const;
 		void makePosVelPopup(size_t const idx) const;
 		void makeRadiusPopup(size_t const idx) const;
-		void makeColourPopup(size_t const idx);
+		void makeColourPopup(size_t const idx) const;
 		void makeSavePopup();
 
 		void saveSettings(char const* filename);
@@ -76,28 +71,6 @@ namespace nbody
 		// Error message from file load operations
 		std::string m_err_string;
 
-		// Info on BodyDistributors
-		DPArray m_dist_infos = { { 
-			{
-				DistributorType::EXPONENTIAL,
-				"Exponential",
-				"The density of bodies falls off exponentially with distance from a large central mass.",
-				true
-			},
-			{
-				DistributorType::ISOTHERMAL,
-				"Isothermal",
-				"The density of bodies falls off with the square of the distance from a large central mass.",
-				true
-			},
-			{
-				DistributorType::PLUMMER,
-				"Plummer",
-				"Bodies are distributed according to the Plummer globular cluster model.",
-				false
-			}
-		} };
-
 		ComboCallback m_getDistributorName = [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<DPArray*>(data);
@@ -111,21 +84,6 @@ namespace nbody
 				return true;
 			}
 		};
-
-		CPArray m_colour_infos = { {
-			{
-				ColourerType::SOLID,
-				"Single",
-				"All bodies in this group are coloured the same",
-				1
-			},
-			{
-				ColourerType::VELOCITY,
-				"Velocity",
-				"Bodies in this group are coloured according to their velocity",
-				2
-			}
-		} };
 
 		ComboCallback m_getColourerName = [](void * data, int idx, const char ** out_text)
 		{
@@ -141,17 +99,6 @@ namespace nbody
 			}
 		};
 
-		IntArray m_integrator_infos = { {
-			{
-				IntegratorType::EULER,
-				"Euler"
-			},
-			{
-				IntegratorType::MODIFIED_EULER,
-				"Modified Euler"
-			}
-		} };
-
 		ComboCallback m_getIntegratorName = [](void * data, int idx, const char ** out_text)
 		{
 			auto& array = *static_cast<IntArray*>(data);
@@ -165,19 +112,6 @@ namespace nbody
 				return true;
 			}
 		};
-
-		ModArray m_model_infos = { {
-			{
-				ModelType::BRUTE_FORCE,
-				"Brute-force",
-				"Forces between every pair of bodies are calculated directly"
-			},
-			{
-				ModelType::BARNES_HUT,
-				"Barnes-Hut",
-				"Long-range forces are approximated using a Barnes-Hut tree"
-			}
-			} };
 
 		ComboCallback m_getModelName = [](void * data, int idx, const char ** out_text)
 		{

@@ -323,7 +323,7 @@ namespace nbody
 				PushItemWidth(GetContentRegionAvailWidth() - CalcTextSize("Distribution").x);
 				auto sel_dist = reinterpret_cast<int*>(&m_bg_props[i].dist);
 				if (Combo("Distribution", sel_dist, m_getDistributorName,
-					static_cast<void*>(m_dist_infos.data()), static_cast<int>(m_dist_infos.size())))
+					const_cast<DistributorProperties*>(m_dist_infos.data()), static_cast<int>(m_dist_infos.size())))
 				{
 					m_bg_props[i].has_central_mass = m_dist_infos[*sel_dist].has_central_mass;
 				}
@@ -421,12 +421,12 @@ namespace nbody
 			PushItemWidth(150);
 			auto sel_int = reinterpret_cast<int*>(&m_sim_props.int_type);
 			Combo("Integrator", sel_int, m_getIntegratorName,
-				static_cast<void*>(m_integrator_infos.data()), static_cast<int>(m_integrator_infos.size()));
+				const_cast<IntegratorProperties*>(integrator_infos.data()), static_cast<int>(integrator_infos.size()));
 
 			// Model combobox
 			auto sel_ev = reinterpret_cast<int*>(&m_sim_props.mod_type);
 			Combo("Algorithm", sel_ev, m_getModelName,
-				static_cast<void*>(m_model_infos.data()), static_cast<int>(m_model_infos.size()));
+				const_cast<ModelProperties*>(m_model_infos.data()), static_cast<int>(m_model_infos.size()));
 			if (IsItemHovered() && *sel_ev != -1)
 			{
 				BeginTooltip();
@@ -625,13 +625,13 @@ namespace nbody
 		}
 	}
 
-	void StartState::makeColourPopup(size_t const idx)
+	void StartState::makeColourPopup(size_t const idx) const
 	{
 		using namespace ImGui;
 		static bool share_values;
 		auto sel_col = reinterpret_cast<int*>(&m_bg_props[idx].colour);
 		if (Combo("Colour method", sel_col, m_getColourerName,
-			static_cast<void*>(m_colour_infos.data()), static_cast<int>(m_colour_infos.size())))
+			const_cast<ColourerProperties*>(m_colour_infos.data()), static_cast<int>(m_colour_infos.size())))
 		{
 			SetWindowSize({ 0, 0 });
 		}

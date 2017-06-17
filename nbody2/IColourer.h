@@ -17,7 +17,7 @@ namespace nbody
 
 	struct ColourerProperties
 	{
-		ColourerProperties(ColourerType type, char const* name, char const* tooltip, char cols_used)
+		constexpr ColourerProperties(ColourerType const type, char const* name, char const* tooltip, char const cols_used)
 			: type(type),
 			  name(name),
 			  tooltip(tooltip),
@@ -31,9 +31,24 @@ namespace nbody
 		char cols_used;
 	};
 
-	size_t constexpr MAX_COLS_PER_COLOURER = 2;
+	using CPArray = std::array<ColourerProperties, static_cast<size_t>(ColourerType::N_TYPES)>;
 
-	
+	constexpr CPArray m_colour_infos = { {
+		{
+			ColourerType::SOLID,
+			"Single",
+			"All bodies in this group are coloured the same",
+			1
+		},
+		{
+			ColourerType::VELOCITY,
+			"Velocity",
+			"Bodies in this group are coloured according to their velocity",
+			2
+		}
+		} };
+
+	size_t constexpr MAX_COLS_PER_COLOURER = 2;
 
 	class IColourer
 	{
