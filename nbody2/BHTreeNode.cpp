@@ -16,6 +16,7 @@ namespace nbody
 		: m_level(level),
 		m_body(),
 		m_mass(0),
+		m_rcrit_sq((q.getLength() / s_bh_theta) * (q.getLength() / s_bh_theta)),
 		m_centre_mass(),
 		m_quad(q),
 		m_parent(parent),
@@ -24,7 +25,7 @@ namespace nbody
 	{
 		m_daughters[0] = m_daughters[1] = m_daughters[2] = m_daughters[3] = nullptr;
 		s_stat.m_node_ct++;
-		if(level > s_stat.m_max_level)
+		if (level > s_stat.m_max_level)
 		{
 			s_stat.m_max_level++;
 		}
@@ -51,6 +52,7 @@ namespace nbody
 		}
 
 		m_quad = q;
+		m_rcrit_sq = (q.getLength() / s_bh_theta) * (q.getLength() / s_bh_theta);
 		m_num = 0;
 		m_mass = 0;
 		m_centre_mass = {};
@@ -292,12 +294,12 @@ namespace nbody
 			acc = calcAccel(p, m_body);
 			s_stat.m_num_calc++;
 		}
-		else
+		else // m_num > 1
 		{
 			auto rel_pos = m_centre_mass - p.m_state->pos;
-			auto quotient = m_quad.getLength() / rel_pos.mag();
+			auto rel_pos_mag_sq = rel_pos.mag_sq();
 			// if node is far enough, use BH approx
-			if (quotient <= s_bh_theta)
+			if (rel_pos_mag_sq > m_rcrit_sq)
 			{
 				m_subdivided = false;
 
@@ -307,9 +309,8 @@ namespace nbody
 				acc = calcAccel(p, { &combined_state, &combined_aux_state });
 
 				s_stat.m_num_calc++;
-			}
-			// try daughters
-			else
+			}	
+			else // try daughters
 			{
 				m_subdivided = true;
 

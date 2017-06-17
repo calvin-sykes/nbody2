@@ -60,6 +60,7 @@ namespace nbody
 		size_t m_level;
 		ParticleData m_body;
 		double m_mass;
+		double m_rcrit_sq;
 		Vector2d m_centre_mass;
 		Quad m_quad;
 		BHTreeNode const* m_parent;
