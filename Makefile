@@ -6,7 +6,7 @@ SFML_INCLUDE = $(SFML_HOME)/include
 SFML_LIB = $(SFML_HOME)/lib
 
 # INPUT
-IN_FILES = AssetManager.cpp Body2d.cpp BodyTrail.cpp Evolver.cpp imgui_demo.cpp imgui_sfml.cpp Quad.cpp Sim.cpp BHTree.cpp BodyDistributor.cpp Display.cpp imgui.cpp imgui_draw.cpp main.cpp RunState.cpp StartState.cpp
+IN_FILES = *.cpp
 
 LIBRARIES = -lsfml-graphics -lsfml-window -lsfml-system -lm -lGL -lpthread
 
