@@ -35,7 +35,7 @@ namespace nbody
 	{
 		m_model->eval(m_state, m_time, m_k1);
 
-		for (size_t i = 1; i < m_dim; i++)
+		for (size_t i = 0; i < m_dim; i++)
 			m_state[i] += m_step * m_k1[i];
 
 		m_time += m_step;
