@@ -34,12 +34,12 @@ namespace nbody
 		explicit Vector(T const val) noexcept : priv::Components<T, N>(val) {};
 
 		// Construct from an SFML vector (2D)
-		template <typename Tin, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 2)>::type>
+		template <typename Tin, int Dim = N, typename std::enable_if<(Dim == 2)>::type* = nullptr>
 		explicit Vector(sf::Vector2<Tin> const& source) :
 			priv::Components<T, 2>(static_cast<T>(source.x), static_cast<T>(source.y)) {};
 
 		// Construct from an SFML vector (3D)
-		template <typename Tin, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 3)>::type>
+		template <typename Tin, int Dim = N, typename std::enable_if<(Dim == 3)>::type* = nullptr>
 		explicit Vector(sf::Vector3<Tin> const& source) :
 			priv::Components<T, 3>( static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z)) {};
 
@@ -53,14 +53,14 @@ namespace nbody
 		~Vector() noexcept = default;
 
 		// Conversion to SFML vector (2D)
-		template <typename Tout, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 2)>::type>
+		template <typename Tout, int Dim = N, typename std::enable_if<(Dim == 2)>::type* = nullptr>
 		operator sf::Vector2<Tout>()
 		{
 			return { static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]) };
 		}
 
 		// Conversion to SFML vector (3D)
-		template <typename Tout, int Dim = N, typename Sfinae = typename std::enable_if<(Dim == 3)>::type>
+		template <typename Tout, int Dim = N, typename std::enable_if<(Dim == 3)>::type* = nullptr>
 		operator sf::Vector3<Tout>()
 		{
 			return { static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]), static_cast<Tout>(a_[2]) };
