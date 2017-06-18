@@ -2,8 +2,6 @@
 #include "Constants.h"
 #include "Vector.h"
 
-#include <chrono>
-
 namespace nbody
 {
 	namespace priv
@@ -19,6 +17,6 @@ namespace nbody
 	}
 
 	std::random_device dev{};
-	std::default_random_engine IDistributor::m_gen{ dev() /*static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())*/ };
+	std::default_random_engine IDistributor::m_gen{ dev() };
 	std::uniform_real_distribution<> IDistributor::m_dist{ 0, 1 };
 }

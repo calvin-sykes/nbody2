@@ -31,7 +31,7 @@ namespace nbody
 		bool view_dragging : 1;
 		bool tree_exists : 1;
 		bool grid_mode_complete : 1;
-	};
+	};	
 
 	class RunState : public IState
 	{

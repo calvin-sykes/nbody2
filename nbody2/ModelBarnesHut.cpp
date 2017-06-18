@@ -2,6 +2,7 @@
 #include "BodyGroupProperties.h"
 #include "Constants.h"
 #include "ModelBarnesHut.h"
+#include "Timings.h"
 #include "Types.h"
 
 #include <numeric>
@@ -32,9 +33,12 @@ namespace nbody
 		auto deriv_state{ reinterpret_cast<ParticleDerivState *>(deriv_out) };
 		ParticleData all{ state, m_aux_state };
 
+		timings[Timings::TREE_BUILD_START] = Clock::now();
 		calcBounds(all);
 		buildTree(all);
+		timings[Timings::TREE_BUILD_END] = Clock::now();
 
+		timings[Timings::FORCE_CALC_START] = Clock::now();
 #pragma omp parallel for schedule(static)
 		for (auto i = 1; i < m_num_bodies; i++)
 		{
@@ -51,6 +55,7 @@ namespace nbody
 
 		deriv_state[0].acc = m_root.calcForce(p);
 		deriv_state[0].vel = state[0].vel;
+		timings[Timings::FORCE_CALC_END] = Clock::now();
 	}
 
 	BHTreeNode const* ModelBarnesHut::getTreeRoot() const

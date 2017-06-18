@@ -275,6 +275,9 @@
     <ClInclude Include="IModel.h">
       <Filter>Header Files\model</Filter>
     </ClInclude>
+    <ClInclude Include="Timings.h">
+      <Filter>Header Files\sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="sfml-icon-small.ico">

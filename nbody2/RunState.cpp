@@ -4,6 +4,7 @@
 #include "ModelBarnesHut.h"
 #include "RunState.h"
 #include "Sim.h"
+#include "Timings.h"
 
 #include "imgui.h"
 #include "imgui_sfml.h"
@@ -11,7 +12,9 @@
 #include <SFML/Graphics.hpp>
 
 namespace nbody
-{
+{	
+	std::map<Timings, std::chrono::time_point<Clock>> timings;
+	
 	RunState::RunState(Sim * simIn) : m_highlighted(nullptr)
 	{
 		m_sim = simIn;
@@ -34,6 +37,7 @@ namespace nbody
 			m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getState());
 		}
 
+		timings[Timings::DRAW_BODIES_START] = Clock::now();
 		if (m_flags.show_bodies)
 		{
 			m_body_mgr.update(
@@ -42,7 +46,9 @@ namespace nbody
 				m_sim->m_mod_ptr->getColourState(),
 				m_sim->m_mod_ptr->getNumBodies());
 		}
+		timings[Timings::DRAW_BODIES_END] = Clock::now();
 
+		timings[Timings::DRAW_GRID_START] = Clock::now();
 		if (m_flags.tree_exists && m_flags.show_grid)
 		{
 			auto mouse_pos = sf::Mouse::getPosition(m_sim->m_window);
@@ -60,13 +66,16 @@ namespace nbody
 			auto mode = m_flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
 			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode, m_highlighted);
 		}
+		timings[Timings::DRAW_GRID_END] = Clock::now();
 
+		timings[Timings::DRAW_TRAILS_START] = Clock::now();
 		if (m_flags.show_trails)
 		{
 			m_trail_mgr.update(
 				m_sim->m_int_ptr->getState(),
 				m_sim->m_mod_ptr->getNumBodies());
 		}
+		timings[Timings::DRAW_TRAILS_END] = Clock::now();
 
 		using namespace ImGui;
 
@@ -76,9 +85,6 @@ namespace nbody
 
 		if (CollapsingHeader("Statistics"))
 		{
-			auto fps = 1000.f / dt.asMilliseconds();
-			Text("FPS = %f", fps);
-
 			if (m_flags.tree_exists)
 			{
 				auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
@@ -94,14 +100,32 @@ namespace nbody
 			}
 		}
 
+		if(CollapsingHeader("Timings"))
+		{
+			using namespace std::chrono;
+			
+			auto fps = 1000.f / dt.asMilliseconds();
+			auto t_tree = Dble_ms{ timings[Timings::TREE_BUILD_END] - timings[Timings::TREE_BUILD_START] };
+			auto t_eval = Dble_ms{ timings[Timings::FORCE_CALC_END] - timings[Timings::FORCE_CALC_START] };
+			auto t_body = Dble_ms{ timings[Timings::DRAW_BODIES_END] - timings[Timings::DRAW_BODIES_START] };
+			auto t_grid = Dble_ms{ timings[Timings::DRAW_GRID_END] - timings[Timings::DRAW_GRID_START] };
+			auto t_trail = Dble_ms{ timings[Timings::DRAW_TRAILS_END] - timings[Timings::DRAW_TRAILS_START] };
+			Text("FPS: %f", fps);
+			Text("Tree construction: %fms", t_tree.count());
+			Text("Force evaluation: %fms", t_eval.count());
+			Text("Draw bodies: %fms", t_body.count());
+			Text("Draw grid: %fms", t_grid.count());
+			Text("Draw trails: %fms", t_trail.count());
+		}
+
 		if (CollapsingHeader("Highlighted tree node"))
 		{
 			if (m_highlighted)
 			{
-				Text("Highlighted: N = %zu", m_highlighted->getNumBodies());
+				Text("Bodies contained: %zu", m_highlighted->getNumBodies());
 			}
 			else
-				Text("A tree node is not currently selected");
+				Text("Mouse over a tree node to see statistics");
 		}
 		End();
 

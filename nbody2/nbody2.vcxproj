@@ -389,6 +389,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="stb_rect_pack.h" />
     <ClInclude Include="stb_textedit.h" />
     <ClInclude Include="stb_truetype.h" />
+    <ClInclude Include="Timings.h" />
     <ClInclude Include="TrailManager.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Vector.h" />

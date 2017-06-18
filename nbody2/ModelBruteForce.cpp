@@ -2,6 +2,7 @@
 #include "BodyGroupProperties.h"
 #include "Constants.h"
 #include "ModelBruteForce.h"
+#include "Timings.h"
 #include "Types.h"
 
 namespace nbody
@@ -50,6 +51,7 @@ namespace nbody
 
 		m_centre_mass = {};
 
+		timings[Timings::FORCE_CALC_START] = Clock::now();
 #pragma omp parallel for schedule(static)
 		for (auto i = 0; i < m_num_bodies; i++)
 		{
@@ -67,6 +69,7 @@ namespace nbody
 				deriv_state[j].vel = state[j].vel;
 			}
 		}
+		timings[Timings::FORCE_CALC_END] = Clock::now();
 
 		for (size_t i = 0; i < m_num_bodies; i++)
 			m_centre_mass += state[i].pos * m_aux_state[i].mass;
