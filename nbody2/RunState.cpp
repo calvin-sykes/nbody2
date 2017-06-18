@@ -12,7 +12,7 @@
 
 namespace nbody
 {
-	RunState::RunState(Sim * simIn): m_highlighted(nullptr)
+	RunState::RunState(Sim * simIn) : m_highlighted(nullptr)
 	{
 		m_sim = simIn;
 		auto pos = sf::Vector2f(m_sim->m_window.getSize());
@@ -49,12 +49,14 @@ namespace nbody
 			auto mouse_world = Vector2d{ Display::screenToWorldX(static_cast<float>(mouse_pos.x)), Display::screenToWorldY(static_cast<float>(mouse_pos.y)) };
 			m_highlighted = m_sim->m_mod_ptr->getTreeRoot()->getHovered(mouse_world);
 
+			// if only drawing nodes used for force calculation
+			// walk highlight pointer up tree until it points to a node not recursed into
 			if (!m_flags.grid_mode_complete && m_highlighted)
 			{
 				while (!m_highlighted->getParent()->wasSubdivided())
 					m_highlighted = m_highlighted->getParent();
 			}
-			
+
 			auto mode = m_flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
 			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode, m_highlighted);
 		}
@@ -66,30 +68,44 @@ namespace nbody
 				m_sim->m_mod_ptr->getNumBodies());
 		}
 
-		ImGui::SFML::Update(m_sim->m_window, dt);
+		using namespace ImGui;
 
-		ImGui::Begin("Diagnostics");
-		auto fps = 1000.f / dt.asMilliseconds();
-		ImGui::Text("FPS = %f", fps);
-		if (m_sim->m_mod_ptr->getTreeRoot())
+		SFML::Update(m_sim->m_window, dt);
+
+		Begin("Diagnostics", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+
+		if (CollapsingHeader("Statistics"))
 		{
-			auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
-			auto stats = mod_bh_tree->getTreeRoot()->getStats();
-			auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
-			ImGui::Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
-			if (stats.m_num_calc)
-				ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
-			ImGui::Text("Total nodes in tree = %zu", stats.m_node_ct);
-			ImGui::Text("Level of deepest node = %zu", stats.m_max_level);
-			ImGui::Text("Particles in tree = %zu", stats.m_body_ct);
-			ImGui::Text("Renegade particles = %zu", num_bodies - stats.m_body_ct);
+			auto fps = 1000.f / dt.asMilliseconds();
+			Text("FPS = %f", fps);
 
-			if (m_highlighted)
-				ImGui::Text("Highlighted: N = %zu", m_highlighted->getNumBodies());
+			if (m_flags.tree_exists)
+			{
+				auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
+				auto stats = mod_bh_tree->getTreeRoot()->getStats();
+				auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
+				Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
+				if (stats.m_num_calc)
+					ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
+				Text("Total nodes in tree = %zu", stats.m_node_ct);
+				Text("Level of deepest node = %zu", stats.m_max_level);
+				Text("Particles in tree = %zu", stats.m_body_ct);
+				Text("Renegade particles = %zu", num_bodies - stats.m_body_ct);
+			}
 		}
-		ImGui::End();
 
-		ImGui::ShowTestWindow();
+		if (CollapsingHeader("Highlighted tree node"))
+		{
+			if (m_highlighted)
+			{
+				Text("Highlighted: N = %zu", m_highlighted->getNumBodies());
+			}
+			else
+				Text("A tree node is not currently selected");
+		}
+		End();
+
+		ShowTestWindow();
 	}
 
 	void RunState::draw(sf::Time const dt)
