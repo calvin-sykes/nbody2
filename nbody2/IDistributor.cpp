@@ -18,8 +18,7 @@ namespace nbody
 		}
 	}
 
-	using namespace priv;
-
-	std::default_random_engine IDistributor::m_gen{ static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()) };
+	std::random_device dev{};
+	std::default_random_engine IDistributor::m_gen{ dev() /*static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())*/ };
 	std::uniform_real_distribution<> IDistributor::m_dist{ 0, 1 };
 }

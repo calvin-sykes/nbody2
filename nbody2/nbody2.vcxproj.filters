@@ -55,6 +55,12 @@
     <Filter Include="Source Files\distributor">
       <UniqueIdentifier>{ea898aaf-9416-4116-914f-bfe8fd0d7e36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\model">
+      <UniqueIdentifier>{45659e5e-e004-4c0b-a95c-30ddae3299da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\model">
+      <UniqueIdentifier>{73622f97-8e6b-419c-8f2e-6a4df73f3fe8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -99,16 +105,7 @@
     <ClCompile Include="IntegratorEuler.cpp">
       <Filter>Source Files\integration</Filter>
     </ClCompile>
-    <ClCompile Include="ModelBruteForce.cpp">
-      <Filter>Source Files\integration</Filter>
-    </ClCompile>
     <ClCompile Include="IntegratorEulerImproved.cpp">
-      <Filter>Source Files\integration</Filter>
-    </ClCompile>
-    <ClCompile Include="IModel.cpp">
-      <Filter>Source Files\integration</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelBarnesHut.cpp">
       <Filter>Source Files\integration</Filter>
     </ClCompile>
     <ClCompile Include="BHTreeNode.cpp">
@@ -146,6 +143,15 @@
     </ClCompile>
     <ClCompile Include="DistributorPlummer.cpp">
       <Filter>Source Files\distributor</Filter>
+    </ClCompile>
+    <ClCompile Include="IModel.cpp">
+      <Filter>Source Files\model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBarnesHut.cpp">
+      <Filter>Source Files\model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBruteForce.cpp">
+      <Filter>Source Files\model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,22 +215,13 @@
     <ClInclude Include="IIntegrator.h">
       <Filter>Header Files\integration</Filter>
     </ClInclude>
-    <ClInclude Include="IModel.h">
-      <Filter>Header Files\integration</Filter>
-    </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IntegratorEuler.h">
       <Filter>Header Files\integration</Filter>
     </ClInclude>
-    <ClInclude Include="ModelBruteForce.h">
-      <Filter>Header Files\integration</Filter>
-    </ClInclude>
     <ClInclude Include="IntegratorEulerImproved.h">
-      <Filter>Header Files\integration</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelBarnesHut.h">
       <Filter>Header Files\integration</Filter>
     </ClInclude>
     <ClInclude Include="BHTreeNode.h">
@@ -268,6 +265,15 @@
     </ClInclude>
     <ClInclude Include="DistributorPlummer.h">
       <Filter>Header Files\distributor</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBruteForce.h">
+      <Filter>Header Files\model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBarnesHut.h">
+      <Filter>Header Files\model</Filter>
+    </ClInclude>
+    <ClInclude Include="IModel.h">
+      <Filter>Header Files\model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
