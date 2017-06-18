@@ -1,15 +1,18 @@
 #include "AssetManager.h"
-#include "BodyDistributor.h"
-#include "Error.h"
-#include "IModel.h"
-#include "ModelBruteForce.h"
-#include "ModelBarnesHut.h"
-#include "IIntegrator.h"
-#include "IntegratorEuler.h"
-#include "IntegratorEulerImproved.h"
 #include "IColourer.h"
 #include "ColourerSolid.h"
 #include "ColourerVelocity.h"
+#include "IDistributor.h"
+#include "DistributorExponential.h"
+#include "DistributorIsothermal.h"
+#include "DistributorPlummer.h"
+#include "Error.h"
+#include "IIntegrator.h"
+#include "IntegratorEuler.h"
+#include "IntegratorEulerImproved.h"
+#include "IModel.h"
+#include "ModelBruteForce.h"
+#include "ModelBarnesHut.h"
 
 #include "imgui.h"
 
@@ -63,9 +66,9 @@ namespace nbody
 
 	void AssetManager::loadDistributors()
 	{
-		m_distributors[DistributorType::EXPONENTIAL] = ExponentialDistributor::create;
-		m_distributors[DistributorType::ISOTHERMAL] = IsothermalDistributor::create;
-		m_distributors[DistributorType::PLUMMER] = PlummerDistributor::create;
+		m_distributors[DistributorType::EXPONENTIAL] = DistributorExponential::create;
+		m_distributors[DistributorType::ISOTHERMAL] = DistributorIsothermal::create;
+		m_distributors[DistributorType::PLUMMER] = DistributorPlummer::create;
 	}
 
 	void AssetManager::loadColourers()
@@ -89,7 +92,7 @@ namespace nbody
 		return m_models.at(type)();
 	}
 
-	std::unique_ptr<BodyDistributor> AssetManager::getDistributor(const DistributorType type)
+	std::unique_ptr<IDistributor> AssetManager::getDistributor(const DistributorType type)
 	{
 		return m_distributors.at(type)();
 	}

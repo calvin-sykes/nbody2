@@ -1,4 +1,4 @@
-#include "BodyDistributor.h"
+#include "IDistributor.h"
 #include "BodyGroupProperties.h"
 #include "Constants.h"
 #include "ModelBruteForce.h"
@@ -20,7 +20,7 @@ namespace nbody
 		return std::make_unique<ModelBruteForce>();
 	}
 
-	/*void ModelBruteForce::addBodies(BodyDistributor const & dist, BodyGroupProperties const & bgp)
+	/*void ModelBruteForce::addBodies(IDistributor const & dist, BodyGroupProperties const & bgp)
 	{
 		ParticleData empty(m_initial_state + m_num_added, m_aux_state + m_num_added);
 		dist.createDistribution(empty, bgp);

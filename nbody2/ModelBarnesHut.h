@@ -15,7 +15,7 @@ namespace nbody
 
 		static std::unique_ptr<IModel> create();
 
-		//void addBodies(BodyDistributor const& dist, BodyGroupProperties const& bgp) override;
+		//void addBodies(IDistributor const& m_dist, BodyGroupProperties const& bgp) override;
 		void eval(Vector2d * state_in, double time, Vector2d * deriv_out) override;
 		BHTreeNode const* getTreeRoot() const override;
 

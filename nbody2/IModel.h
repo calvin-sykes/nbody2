@@ -10,7 +10,7 @@
 namespace nbody
 {
 	struct BodyGroupProperties;
-	class BodyDistributor;
+	class IDistributor;
 	class BHTreeNode;
 	class IColourer;
 
@@ -59,7 +59,7 @@ namespace nbody
 		virtual ~IModel();
 
 		void init(size_t num_bodies, double step);
-		void addBodies(BodyDistributor const& dist, std::unique_ptr<IColourer> col, BodyGroupProperties const& bgp);
+		void addBodies(IDistributor const& dist, std::unique_ptr<IColourer> col, BodyGroupProperties const& bgp);
 		void updateColours(Vector2d const* all);
 
 		virtual void eval(Vector2d * state, double time, Vector2d * deriv_in) = 0;

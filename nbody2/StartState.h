@@ -1,7 +1,7 @@
 #ifndef START_STATE_H
 #define START_STATE_H
 
-#include "BodyDistributor.h"
+#include "IDistributor.h"
 #include "IColourer.h"
 #include "IModel.h"
 #include "IIntegrator.h"

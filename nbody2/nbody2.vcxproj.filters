@@ -49,6 +49,12 @@
     <Filter Include="Header Files\colour">
       <UniqueIdentifier>{fd85908a-de6f-4686-a473-3548a334c025}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\distributor">
+      <UniqueIdentifier>{d3575255-3fc7-4b92-aa4f-f8c1bf59864e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\distributor">
+      <UniqueIdentifier>{ea898aaf-9416-4116-914f-bfe8fd0d7e36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -77,9 +83,6 @@
     </ClCompile>
     <ClCompile Include="imgui_sfml.cpp">
       <Filter>Source Files\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="BodyDistributor.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Display.cpp">
       <Filter>Source Files\sys</Filter>
@@ -132,15 +135,24 @@
     <ClCompile Include="ColourerVelocity.cpp">
       <Filter>Source Files\colour</Filter>
     </ClCompile>
+    <ClCompile Include="IDistributor.cpp">
+      <Filter>Source Files\distributor</Filter>
+    </ClCompile>
+    <ClCompile Include="DistributorExponential.cpp">
+      <Filter>Source Files\distributor</Filter>
+    </ClCompile>
+    <ClCompile Include="DistributorIsothermal.cpp">
+      <Filter>Source Files\distributor</Filter>
+    </ClCompile>
+    <ClCompile Include="DistributorPlummer.cpp">
+      <Filter>Source Files\distributor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Quad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BodyDistributor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sim.h">
@@ -244,6 +256,18 @@
     </ClInclude>
     <ClInclude Include="ColourerVelocity.h">
       <Filter>Header Files\colour</Filter>
+    </ClInclude>
+    <ClInclude Include="IDistributor.h">
+      <Filter>Header Files\distributor</Filter>
+    </ClInclude>
+    <ClInclude Include="DistributorExponential.h">
+      <Filter>Header Files\distributor</Filter>
+    </ClInclude>
+    <ClInclude Include="DistributorIsothermal.h">
+      <Filter>Header Files\distributor</Filter>
+    </ClInclude>
+    <ClInclude Include="DistributorPlummer.h">
+      <Filter>Header Files\distributor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

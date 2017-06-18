@@ -2,8 +2,6 @@
 #define DISTRIBUTOR_H
 
 #include <array>
-#include <functional>
-#include <memory>
 #include <random>
 
 namespace nbody
@@ -81,65 +79,25 @@ namespace nbody
 		}
 		} };
 
-	class BodyDistributor
+	class IDistributor
 	{
 	public:
-		BodyDistributor()
+		IDistributor()
 		{
-			get_rand = [](double lower, double upper) -> double
+			getRand = [](double lower, double upper)
 			{
-				return dist(gen, param_t{ lower, upper });
+				return m_dist(m_gen, param_t{ lower, upper });
 			};
 		}
 
-		virtual ~BodyDistributor() = default;
+		virtual ~IDistributor() = default;
 
 		virtual void createDistribution(ParticleData & bodies, BodyGroupProperties const&) const = 0;
 
 	protected:
-		std::function<double(double, double)> get_rand;
-		static std::default_random_engine gen;
-		static std::uniform_real_distribution<> dist;
-	};
-
-	class ExponentialDistributor : public BodyDistributor
-	{
-	public:
-		static std::unique_ptr<BodyDistributor> create();
-		
-		ExponentialDistributor() : BodyDistributor() {}
-
-		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
-
-	private:
-		// exponential distribution function
-		double expDist(double lambda) const
-		{
-			return log(1 - get_rand(0, 1)) / lambda;
-		}
-
-	private:
-		double static constexpr lambda = -4.0;
-	};
-
-	class IsothermalDistributor : public BodyDistributor
-	{
-	public:
-		static std::unique_ptr<BodyDistributor> create();
-		
-		IsothermalDistributor() : BodyDistributor() {}
-
-		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
-	};
-
-	class PlummerDistributor : public BodyDistributor
-	{
-	public:
-		static std::unique_ptr<BodyDistributor> create();
-
-		PlummerDistributor() : BodyDistributor() {}
-
-		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
+		double (*getRand)(double, double);
+		static std::default_random_engine m_gen;
+		static std::uniform_real_distribution<> m_dist;
 	};
 }
 

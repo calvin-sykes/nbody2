@@ -1,5 +1,5 @@
 #include "BodyGroupProperties.h"
-#include "BodyDistributor.h"
+#include "IDistributor.h"
 #include "IColourer.h"
 #include "IModel.h"
 
@@ -32,7 +32,7 @@ namespace nbody
 		resetDim(num_bodies, step);
 	}
 
-	void IModel::addBodies(BodyDistributor const & dist, std::unique_ptr<IColourer> col, BodyGroupProperties const & bgp)
+	void IModel::addBodies(IDistributor const & dist, std::unique_ptr<IColourer> col, BodyGroupProperties const & bgp)
 	{
 		col->setup(m_num_added, bgp.num, bgp.cols);
 		m_colourers.emplace_back(std::move(col));

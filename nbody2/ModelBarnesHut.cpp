@@ -1,4 +1,4 @@
-#include "BodyDistributor.h"
+#include "IDistributor.h"
 #include "BodyGroupProperties.h"
 #include "Constants.h"
 #include "ModelBarnesHut.h"

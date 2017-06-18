@@ -14,13 +14,13 @@ namespace nbody
 	enum class IntegratorType;
 	class IModel;
 	enum class ModelType;
-	class BodyDistributor;
+	class IDistributor;
 	enum class DistributorType;
 
 	typedef std::unique_ptr<IColourer>(*ColourerFactory)();
 	typedef std::unique_ptr<IIntegrator>(*IntegratorFactory)(IModel *, double);
 	typedef std::unique_ptr<IModel>(*ModelFactory)();
-	typedef std::unique_ptr<BodyDistributor>(*DistributorFactory)();
+	typedef std::unique_ptr<IDistributor>(*DistributorFactory)();
 
 	class AssetManager
 	{
@@ -37,7 +37,7 @@ namespace nbody
 		sf::Texture& getTextureRef(std::string const& name);
 		std::unique_ptr<IIntegrator> getIntegrator(IntegratorType const type, IModel * model, double step);
 		std::unique_ptr<IModel> getModel(ModelType const type);
-		std::unique_ptr<BodyDistributor> getDistributor(DistributorType const type);
+		std::unique_ptr<IDistributor> getDistributor(DistributorType const type);
 		std::unique_ptr<IColourer> getColourer(ColourerType const type);
 
 	private:

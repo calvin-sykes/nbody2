@@ -1,7 +1,7 @@
 #ifndef BODY_GROUP_PROPERTIES_H
 #define BODY_GROUP_PROPERTIES_H
 
-#include "BodyDistributor.h"
+#include "IDistributor.h"
 #include "IColourer.h"
 #include "Vector.h"
 
