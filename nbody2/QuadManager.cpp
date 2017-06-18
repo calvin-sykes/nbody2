@@ -19,12 +19,12 @@ namespace nbody
 	{
 
 	}
-	void QuadManager::update(BHTreeNode const* root, GridDrawMode mode)
+	void QuadManager::update(BHTreeNode const* root, GridDrawMode mode, BHTreeNode const* highlighted)
 	{
 		m_vtx_array.clear();
 		m_highlight_array.clear();
 
-		drawNode(root, mode);
+		drawNode(root, mode, highlighted);
 	}
 
 	void QuadManager::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -33,9 +33,10 @@ namespace nbody
 		target.draw(m_highlight_array);
 	}
 
-	void QuadManager::drawNode(BHTreeNode const* node, GridDrawMode mode)
+	void QuadManager::drawNode(BHTreeNode const* node, GridDrawMode mode, BHTreeNode const* highlighted)
 	{
 		assert(node);
+
 		auto const& quad = node->getQuad();
 		auto world_len = quad.getLength();
 		auto world_pos = quad.getPos();
@@ -49,11 +50,10 @@ namespace nbody
 			&& (screen_y + half_length > 0)
 			&& (screen_y - half_length < Display::screen_size.y);
 
-		auto mouse_pos = sf::Mouse::getPosition();
-		auto mouse_world = Vector2d{ Display::screenToWorldX(static_cast<float>(mouse_pos.x)), Display::screenToWorldY(static_cast<float>(mouse_pos.y)) };
-
 		auto col{ (mode == GridDrawMode::COMPLETE) ? sf::Color::Green : sf::Color::Red };
 
+		// If complete grid is being drawn, then as long as the node is on screen it needs drawing
+		// If force approx. grid is being drawn, don't draw nodes which were recursed into to calculate forces
 		if (is_visible && (mode == GridDrawMode::COMPLETE || (mode == GridDrawMode::APPROX && !node->wasSubdivided())))
 		{
 			// left edge
@@ -68,18 +68,8 @@ namespace nbody
 			// bottom edge
 			m_vtx_array.append({ { screen_x + half_length, screen_y + half_length }, col });
 			m_vtx_array.append({ { screen_x - half_length, screen_y + half_length }, col });
-
-			// first pass: is mouse in this quad?
-			auto do_highlight = quad.contains(mouse_world);
-			// second pass
-			if (mode == GridDrawMode::COMPLETE)
-				// highlight only if there is not a daughter node which also contains mouse
-				do_highlight &= !node->m_daughters[static_cast<size_t>(quad.whichDaughter(mouse_world))];
-			else
-				// highlight only if node is being rendered
-				do_highlight &= !node->wasSubdivided();
 			
-			if (do_highlight)
+			if (node == highlighted)
 			{
 				// top left
 				m_highlight_array.append({ { screen_x - half_length, screen_y - half_length }, s_highlight_colour });
@@ -92,13 +82,14 @@ namespace nbody
 			}
 		}
 
+		// If force approx. grid is being drawn, don't draw daughters if they weren't recursed into to calculate forces
 		if (mode == GridDrawMode::APPROX && !node->wasSubdivided())
 			return;
 
 		for (auto d : node->m_daughters)
 		{
 			if (d)
-				drawNode(d, mode);
+				drawNode(d, mode, highlighted);
 		}
 	}
 }

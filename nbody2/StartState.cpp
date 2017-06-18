@@ -426,12 +426,12 @@ namespace nbody
 			// Model combobox
 			auto sel_ev = reinterpret_cast<int*>(&m_sim_props.mod_type);
 			Combo("Algorithm", sel_ev, m_getModelName,
-				const_cast<ModelProperties*>(m_model_infos.data()), static_cast<int>(m_model_infos.size()));
+				const_cast<ModelProperties*>(model_infos.data()), static_cast<int>(model_infos.size()));
 			if (IsItemHovered() && *sel_ev != -1)
 			{
 				BeginTooltip();
 				PushTextWrapPos(200);
-				TextWrapped(m_model_infos[*sel_ev].tooltip);
+				TextWrapped(model_infos[*sel_ev].tooltip);
 				PopTextWrapPos();
 				EndTooltip();
 			}

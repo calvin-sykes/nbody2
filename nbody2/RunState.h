@@ -10,7 +10,6 @@
 
 namespace nbody
 {
-	class BHTree;
 	class Quad;
 	class Sim;
 
@@ -23,7 +22,7 @@ namespace nbody
 			tree_exists(false), grid_mode_complete(true) {}
 
 		bool running : 1;
-		
+
 		bool show_bodies : 1;
 		bool show_trails : 1;
 		bool show_grid : 1;
@@ -36,6 +35,13 @@ namespace nbody
 
 	class RunState : public IState
 	{
+	public:
+		void draw(sf::Time const dt) override;
+		void update(sf::Time const dt) override;
+		void handleInput() override;
+
+		explicit RunState(Sim * sim);
+		virtual ~RunState() = default;
 	private:
 		sf::View m_main_view;
 		sf::View m_gui_view;
@@ -45,14 +51,7 @@ namespace nbody
 		QuadManager m_quad_mgr;
 
 		Flags m_flags;
-
-	public:
-		void draw(sf::Time const dt) override;
-		void update(sf::Time const dt) override;
-		void handleInput() override;
-
-		explicit RunState(Sim * sim);
-		virtual ~RunState() = default;
+		BHTreeNode const* m_highlighted;
 	};
 }
 

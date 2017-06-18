@@ -151,6 +151,41 @@ namespace nbody
 		return m_centre_mass;
 	}
 
+	BHTreeNode const* BHTreeNode::getHovered(Vector2d const & pos) const
+	{
+		if (isRoot() && !m_quad.contains(pos))
+			return nullptr;
+		
+		assert(m_quad.contains(pos));
+		
+		auto which = m_daughters[static_cast<size_t>(m_quad.whichDaughter(pos))];
+		
+		return which ? which->getHovered(pos) : this;
+	
+		/*BHTreeNode const* ret = nullptr;
+		
+		if ( && !m_daughters[static_cast<size_t>(m_quad.whichDaughter(pos))])
+			ret = this;
+		else
+		{
+			for (auto const& d : m_daughters)
+			{
+				if (d)
+				{
+					ret = d->getHovered(pos);
+					if (ret) break;
+				}
+			}
+		}
+
+		return ret;*/
+	}
+
+	BHTreeNode const * BHTreeNode::getParent() const
+	{
+		return m_parent;
+	}
+
 	BHTreeNode * BHTreeNode::createDaughter(Quad const& q) const
 	{
 		return new BHTreeNode(q, m_level + 1, this);

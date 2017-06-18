@@ -12,7 +12,7 @@
 
 namespace nbody
 {
-	RunState::RunState(Sim * simIn)
+	RunState::RunState(Sim * simIn): m_highlighted(nullptr)
 	{
 		m_sim = simIn;
 		auto pos = sf::Vector2f(m_sim->m_window.getSize());
@@ -45,8 +45,18 @@ namespace nbody
 
 		if (m_flags.tree_exists && m_flags.show_grid)
 		{
+			auto mouse_pos = sf::Mouse::getPosition(m_sim->m_window);
+			auto mouse_world = Vector2d{ Display::screenToWorldX(static_cast<float>(mouse_pos.x)), Display::screenToWorldY(static_cast<float>(mouse_pos.y)) };
+			m_highlighted = m_sim->m_mod_ptr->getTreeRoot()->getHovered(mouse_world);
+
+			if (!m_flags.grid_mode_complete && m_highlighted)
+			{
+				while (!m_highlighted->getParent()->wasSubdivided())
+					m_highlighted = m_highlighted->getParent();
+			}
+			
 			auto mode = m_flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
-			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode);
+			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode, m_highlighted);
 		}
 
 		if (m_flags.show_trails)
@@ -73,6 +83,9 @@ namespace nbody
 			ImGui::Text("Level of deepest node = %zu", stats.m_max_level);
 			ImGui::Text("Particles in tree = %zu", stats.m_body_ct);
 			ImGui::Text("Renegade particles = %zu", num_bodies - stats.m_body_ct);
+
+			if (m_highlighted)
+				ImGui::Text("Highlighted: N = %zu", m_highlighted->getNumBodies());
 		}
 		ImGui::End();
 

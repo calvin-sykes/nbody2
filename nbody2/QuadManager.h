@@ -18,11 +18,11 @@ namespace nbody
 		QuadManager();
 		~QuadManager();
 
-		void update(BHTreeNode const* root, GridDrawMode mode);
+		void update(BHTreeNode const* root, GridDrawMode mode, BHTreeNode const* highlighted = nullptr);
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	private:
-		void drawNode(BHTreeNode const* node, GridDrawMode mode);
+		void drawNode(BHTreeNode const* node, GridDrawMode mode, BHTreeNode const* highlighted = nullptr);
 
 		sf::VertexArray m_vtx_array;
 		sf::VertexArray m_highlight_array;

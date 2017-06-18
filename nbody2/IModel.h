@@ -38,7 +38,7 @@ namespace nbody
 
 	using ModArray = std::array<ModelProperties, static_cast<size_t>(ModelType::N_MODELS)>;
 
-	constexpr ModArray m_model_infos = { {
+	constexpr ModArray model_infos = { {
 		{
 			ModelType::BRUTE_FORCE,
 			"Brute-force",

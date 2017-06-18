@@ -44,7 +44,10 @@ namespace nbody
 		void treeStatReset() const;
 
 		void computeMassDistribution();
-		const Vector2d & getCentreMass() const;
+		Vector2d const& getCentreMass() const;
+
+		BHTreeNode const* getHovered(Vector2d const& pos) const;
+		BHTreeNode const* getParent() const;
 
 		void insert(ParticleData const& new_body, size_t level);
 
