@@ -25,6 +25,9 @@ namespace nbody
 		void drawNode(BHTreeNode const* node, GridDrawMode mode);
 
 		sf::VertexArray m_vtx_array;
+		sf::VertexArray m_highlight_array;
+
+		static const sf::Color s_highlight_colour;
 	};
 }
 

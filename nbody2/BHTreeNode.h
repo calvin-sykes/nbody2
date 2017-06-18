@@ -28,7 +28,7 @@ namespace nbody
 		bool isRoot() const;
 		bool isExternal() const;
 
-		bool wasTooClose() const;
+		bool wasSubdivided() const;
 
 		size_t getNumBodies() const;
 		static size_t getNumRenegades();
@@ -37,6 +37,7 @@ namespace nbody
 
 		static double getTheta();
 		static void setTheta(double theta);
+		size_t getLevel() const;
 
 		static DebugStats const& getStats();
 		void forceCalcStatReset() const;

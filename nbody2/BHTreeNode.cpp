@@ -75,7 +75,7 @@ namespace nbody
 			&& m_daughters[3] == nullptr;
 	}
 
-	bool BHTreeNode::wasTooClose() const
+	bool BHTreeNode::wasSubdivided() const
 	{
 		return m_subdivided;
 	}
@@ -103,6 +103,11 @@ namespace nbody
 	void BHTreeNode::setTheta(double theta)
 	{
 		s_bh_theta = theta;
+	}
+
+	size_t BHTreeNode::getLevel() const
+	{
+		return m_level;
 	}
 
 	DebugStats const& BHTreeNode::getStats()
@@ -265,10 +270,8 @@ namespace nbody
 	// accel caused by p2 on p1
 	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2) const
 	{
-		Vector2d acc = {};
-
 		if (p1 == p2)
-			return acc;
+			return {};
 
 		auto const& r1 = p1.m_state->pos;
 		auto const& r2 = p2.m_state->pos;
@@ -277,11 +280,9 @@ namespace nbody
 		auto rel_pos = r2 - r1; // relative position vector r
 		auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2
 		auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // rhat = r/|r|
-															  // F = (G m1 m2 / (|r|**2 + eps**2) * r_hat
-															  // a = F / m1
-		acc = (Constants::G * m2 / (rel_pos_mag_sq + Constants::SOFTENING * Constants::SOFTENING)) * unit_vec;
-
-		return acc;
+		rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
+															  // F = (G m1 m2 / (|r|**2) * r_hat
+		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;// a = F / m1
 	}
 
 	Vector2d BHTreeNode::calcTreeForce(ParticleData const& p)
