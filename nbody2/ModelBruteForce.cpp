@@ -59,11 +59,12 @@ namespace nbody
 			{
 				auto rel_pos = state[j].pos - state[i].pos; // relative position vector r
 				auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2
+				rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
 				auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // rhat = r/|r|
 				// F = (G m1 m2 / (|r|**2 + eps**2) * r_hat
 				// a = F / m1
-				deriv_state[i].acc += (Constants::G * m_aux_state[j].mass / (rel_pos_mag_sq + Constants::SOFTENING * Constants::SOFTENING)) * unit_vec;
-				deriv_state[j].acc -= (Constants::G * m_aux_state[i].mass / (rel_pos_mag_sq + Constants::SOFTENING * Constants::SOFTENING)) * unit_vec;
+				deriv_state[i].acc += (Constants::G * m_aux_state[j].mass / rel_pos_mag_sq) * unit_vec;
+				deriv_state[j].acc -= (Constants::G * m_aux_state[i].mass / rel_pos_mag_sq) * unit_vec;
 
 				deriv_state[i].vel = state[i].vel;
 				deriv_state[j].vel = state[j].vel;
