@@ -34,12 +34,12 @@ namespace nbody
 		explicit Vector(T const val) noexcept : priv::Components<T, N>(val) {};
 
 		// Construct from an SFML vector (2D)
-		template <typename Tin, int Dim = N, typename std::enable_if<(Dim == 2)>::type* = nullptr>
+		template <typename Tin, int Dim = N, std::enable_if_t<(Dim == 2)>* = nullptr>
 		explicit Vector(sf::Vector2<Tin> const& source) :
 			priv::Components<T, 2>(static_cast<T>(source.x), static_cast<T>(source.y)) {};
 
 		// Construct from an SFML vector (3D)
-		template <typename Tin, int Dim = N, typename std::enable_if<(Dim == 3)>::type* = nullptr>
+		template <typename Tin, int Dim = N, std::enable_if_t<(Dim == 3)>* = nullptr>
 		explicit Vector(sf::Vector3<Tin> const& source) :
 			priv::Components<T, 3>( static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z)) {};
 
@@ -53,14 +53,14 @@ namespace nbody
 		~Vector() noexcept = default;
 
 		// Conversion to SFML vector (2D)
-		template <typename Tout, int Dim = N, typename std::enable_if<(Dim == 2)>::type* = nullptr>
+		template <typename Tout, int Dim = N, std::enable_if_t<(Dim == 2)>* = nullptr>
 		operator sf::Vector2<Tout>()
 		{
 			return { static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]) };
 		}
 
 		// Conversion to SFML vector (3D)
-		template <typename Tout, int Dim = N, typename std::enable_if<(Dim == 3)>::type* = nullptr>
+		template <typename Tout, int Dim = N, std::enable_if_t<(Dim == 3)>* = nullptr>
 		operator sf::Vector3<Tout>()
 		{
 			return { static_cast<Tout>(a_[0]), static_cast<Tout>(a_[1]), static_cast<Tout>(a_[2]) };
@@ -160,7 +160,7 @@ namespace nbody
 			return !operator==(rhs);
 		}
 
-		// Element access (read only)
+		// Element access
 		T operator[](size_t index) const
 		{
 			return a_[index];
@@ -189,21 +189,21 @@ namespace nbody
 		return lhs;
 	}
 
-	template <typename T, typename F, size_t N, typename std::enable_if<std::is_convertible<F, T>::value>::type* = nullptr>
+	template <typename T, typename F, size_t N, std::enable_if_t<std::is_convertible<F, T>::value>* = nullptr>
 	Vector<T, N> operator*(Vector<T, N> v, F const f)
 	{
 		v *= static_cast<T>(f);
 		return v;
 	}
 
-	template <typename T, typename F, size_t N, typename std::enable_if<std::is_convertible<F, T>::value>::type* = nullptr>
+	template <typename T, typename F, size_t N, std::enable_if_t<std::is_convertible<F, T>::value>* = nullptr>
 	Vector<T, N> operator*(F const f, Vector<T, N> v)
 	{
 		v *= static_cast<T>(f);
 		return v;
 	}
 
-	template <typename T, typename F, size_t N, typename std::enable_if<std::is_convertible<F, T>::value>::type* = nullptr>
+	template <typename T, typename F, size_t N, std::enable_if_t<std::is_convertible<F, T>::value>* = nullptr>
 	Vector<T, N> operator/(Vector<T, N> v, F const f)
 	{
 		v /= static_cast<T>(f);
