@@ -12,9 +12,9 @@
 #include <SFML/Graphics.hpp>
 
 namespace nbody
-{	
+{
 	std::map<Timings, std::chrono::time_point<Clock>> timings;
-	
+
 	RunState::RunState(Sim * simIn) : m_highlighted(nullptr)
 	{
 		m_sim = simIn;
@@ -66,6 +66,8 @@ namespace nbody
 			auto mode = m_flags.grid_mode_complete ? GridDrawMode::COMPLETE : GridDrawMode::APPROX;
 			m_quad_mgr.update(m_sim->m_mod_ptr->getTreeRoot(), mode, m_highlighted);
 		}
+		else
+			m_highlighted = nullptr;
 		timings[Timings::DRAW_GRID_END] = Clock::now();
 
 		timings[Timings::DRAW_TRAILS_START] = Clock::now();
@@ -81,15 +83,43 @@ namespace nbody
 
 		SFML::Update(m_sim->m_window, dt);
 
-		Begin("Diagnostics", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+		constexpr auto h_sz = 400.f;
 
-		if (CollapsingHeader("Statistics"))
+		SetNextWindowSize({ h_sz, 0.0f }, ImGuiSetCond_FirstUseEver);
+		SetNextWindowPos({ 10.f, 10.f }, ImGuiSetCond_FirstUseEver);
+		SetNextWindowSizeConstraints({ h_sz, 0.f }, { h_sz, FLT_MAX });
+		Begin("Diagnostics", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
+		Spacing();
+
+		if (CollapsingHeader("Timings"))
 		{
-			if (m_flags.tree_exists)
+			using namespace std::chrono;
+
+			auto fps = 1000.f / dt.asMilliseconds();
+			auto t_tree = Dble_ms{ timings[Timings::TREE_BUILD_END] - timings[Timings::TREE_BUILD_START] };
+			auto t_eval = Dble_ms{ timings[Timings::FORCE_CALC_END] - timings[Timings::FORCE_CALC_START] };
+			auto t_body = Dble_ms{ timings[Timings::DRAW_BODIES_END] - timings[Timings::DRAW_BODIES_START] };
+			auto t_grid = Dble_ms{ timings[Timings::DRAW_GRID_END] - timings[Timings::DRAW_GRID_START] };
+			auto t_trail = Dble_ms{ timings[Timings::DRAW_TRAILS_END] - timings[Timings::DRAW_TRAILS_START] };
+
+			Text("FPS: %f", fps);
+			Text("Tree construction: %fms", t_tree.count());
+			Text("Force evaluation: %fms", t_eval.count());
+			Text("Draw bodies: %fms", t_body.count());
+			Text("Draw grid: %fms", t_grid.count());
+			Text("Draw trails: %fms", t_trail.count());
+			Spacing();
+		}
+
+		if (m_flags.tree_exists)
+		{
+			if (CollapsingHeader("Tree statistics"))
 			{
+
 				auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
 				auto stats = mod_bh_tree->getTreeRoot()->getStats();
 				auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
+				
 				Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
 				if (stats.m_num_calc)
 					ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
@@ -97,39 +127,34 @@ namespace nbody
 				Text("Level of deepest node = %zu", stats.m_max_level);
 				Text("Particles in tree = %zu", stats.m_body_ct);
 				Text("Renegade particles = %zu", num_bodies - stats.m_body_ct);
+				Spacing();
 			}
-		}
-
-		if(CollapsingHeader("Timings"))
-		{
-			using namespace std::chrono;
-			
-			auto fps = 1000.f / dt.asMilliseconds();
-			auto t_tree = Dble_ms{ timings[Timings::TREE_BUILD_END] - timings[Timings::TREE_BUILD_START] };
-			auto t_eval = Dble_ms{ timings[Timings::FORCE_CALC_END] - timings[Timings::FORCE_CALC_START] };
-			auto t_body = Dble_ms{ timings[Timings::DRAW_BODIES_END] - timings[Timings::DRAW_BODIES_START] };
-			auto t_grid = Dble_ms{ timings[Timings::DRAW_GRID_END] - timings[Timings::DRAW_GRID_START] };
-			auto t_trail = Dble_ms{ timings[Timings::DRAW_TRAILS_END] - timings[Timings::DRAW_TRAILS_START] };
-			Text("FPS: %f", fps);
-			Text("Tree construction: %fms", t_tree.count());
-			Text("Force evaluation: %fms", t_eval.count());
-			Text("Draw bodies: %fms", t_body.count());
-			Text("Draw grid: %fms", t_grid.count());
-			Text("Draw trails: %fms", t_trail.count());
 		}
 
 		if (CollapsingHeader("Highlighted tree node"))
 		{
 			if (m_highlighted)
 			{
+				auto const& quad = m_highlighted->getQuad();
+				auto const& centre = quad.getPos();
+				auto const len = quad.getLength();
+				auto const& centre_mass = m_highlighted->getCentreMass();
+				
+				Text("Node: BHTreeNode@%p", static_cast<const void*>(m_highlighted));
+				Text("Centre: (%em, %em)", centre.x, centre.y);
+				Text("Side length: %em", len);
+				Text("Centre of mass: (%em, %em)", centre_mass.x, centre_mass.y);
+				Text("Level: %zu", m_highlighted->getLevel());
 				Text("Bodies contained: %zu", m_highlighted->getNumBodies());
+				Spacing();
 			}
 			else
 				Text("Mouse over a tree node to see statistics");
 		}
+
 		End();
 
-		ShowTestWindow();
+		//ShowTestWindow();
 	}
 
 	void RunState::draw(sf::Time const dt)
