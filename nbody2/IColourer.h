@@ -56,7 +56,7 @@ namespace nbody
 		explicit IColourer(size_t n_cols = MAX_COLS_PER_COLOURER);
 		virtual ~IColourer();
 
-		void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols);
+		virtual void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols, ParticleState const* = nullptr);
 		
 		void apply(ParticleState const* state, ParticleAuxState const* aux_state, ParticleColourState * colours);
 		virtual void applyImpl(ParticleData const* state, ParticleColourState * colour) = 0;

@@ -34,12 +34,11 @@ namespace nbody
 
 	void IModel::addBodies(IDistributor const & dist, std::unique_ptr<IColourer> col, BodyGroupProperties const & bgp)
 	{
-		col->setup(m_num_added, bgp.num, bgp.cols);
-		m_colourers.emplace_back(std::move(col));
-		
-		
-		ParticleData empty(m_initial_state + m_num_added, m_aux_state + m_num_added);
+		ParticleData empty{ m_initial_state + m_num_added, m_aux_state + m_num_added };
 		dist.createDistribution(empty, bgp);
+
+		col->setup(m_num_added, bgp.num, bgp.cols, m_initial_state);
+		m_colourers.emplace_back(std::move(col));
 
 		for (auto i = m_num_added; i < m_num_added + bgp.num; i++)
 		{
@@ -116,7 +115,7 @@ namespace nbody
 		m_step = step;
 	}
 
-	Vector2d * IModel::getInitialState() const
+	Vector2d * IModel::getInitialStateVector() const
 	{
 		return reinterpret_cast<Vector2d *>(m_initial_state);
 	}

@@ -116,7 +116,7 @@ namespace nbody
 			m_mod_ptr->addBodies(*dist, std::move(col), bgp);
 		}
 
-		m_int_ptr->setInitialState(m_mod_ptr->getInitialState());
+		m_int_ptr->setInitialState(m_mod_ptr->getInitialStateVector());
 	}
 
 	void Sim::simLoop()

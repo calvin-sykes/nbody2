@@ -72,7 +72,7 @@ namespace nbody
 		size_t getDim() const;
 		void setDim(size_t const dim);
 
-		Vector2d * getInitialState() const;
+		Vector2d * getInitialStateVector() const;
 		ParticleAuxState const* getAuxState() const;
 		ParticleColourState const* getColourState() const;
 		Vector2d getCentreMass() const;
@@ -83,7 +83,6 @@ namespace nbody
 		ParticleAuxState * m_aux_state;
 		ParticleColourState * m_colour_state;
 
-	protected:
 		double m_step;
 		size_t m_num_bodies;
 		size_t m_num_added;
