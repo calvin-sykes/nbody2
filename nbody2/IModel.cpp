@@ -34,10 +34,10 @@ namespace nbody
 
 	void IModel::addBodies(IDistributor const & dist, std::unique_ptr<IColourer> col, BodyGroupProperties const & bgp)
 	{
-		ParticleData empty{ m_initial_state + m_num_added, m_aux_state + m_num_added };
-		dist.createDistribution(empty, bgp);
+		ParticleData bodies{ m_initial_state + m_num_added, m_aux_state + m_num_added };
+		dist.createDistribution(bodies, bgp);
 
-		col->setup(m_num_added, bgp.num, bgp.cols, m_initial_state);
+		col->setup(m_num_added, bgp.num, bgp.cols, &bodies);
 		m_colourers.emplace_back(std::move(col));
 
 		for (auto i = m_num_added; i < m_num_added + bgp.num; i++)

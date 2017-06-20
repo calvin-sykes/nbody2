@@ -13,7 +13,7 @@ namespace nbody
 
 		static std::unique_ptr<IColourer> create();
 
-		void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols, ParticleState const* state) override;
+		void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols, const ParticleData* state) override;
 
 		void applyImpl(ParticleData const* state, ParticleColourState * colour) override;
 

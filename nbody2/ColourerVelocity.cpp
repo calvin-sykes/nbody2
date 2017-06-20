@@ -1,5 +1,4 @@
 #include "ColourerVelocity.h"
-#include "Constants.h"
 #include "Types.h"
 #include "Vector.h"
 
@@ -20,11 +19,14 @@ namespace nbody
 		return std::make_unique<ColourerVelocity>();
 	}
 
-	void ColourerVelocity::setup(size_t const offset, size_t const num_bodies, sf::Color const * cols, ParticleState const* state)
+	void ColourerVelocity::setup(size_t const offset, size_t const num_bodies, sf::Color const * cols, const ParticleData* state)
 	{
 		IColourer::setup(offset, num_bodies, cols);
 
-		auto fastest = std::max_element(state, state + num_bodies, [](ParticleState const& a, ParticleState const& b) { return a.vel.mag() < b.vel.mag(); });
+		auto fastest = std::max_element(
+			&state->m_state[0],
+			&state->m_state[num_bodies - 1],
+			[](ParticleState const& a, ParticleState const& b) { return a.vel.mag() < b.vel.mag(); });
 
 		m_max_vel = fastest->vel.mag();
 	}

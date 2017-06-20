@@ -11,6 +11,7 @@ namespace nbody
 	{
 		SOLID,
 		VELOCITY,
+		REALISTIC,
 		N_TYPES,
 		INVALID = -1
 	};
@@ -45,6 +46,12 @@ namespace nbody
 			"Velocity",
 			"Bodies in this group are coloured according to their velocity",
 			2
+		},
+		{
+			ColourerType::REALISTIC,
+			"Realistic",
+			"Bodies are coloured by the peak wavelength of the light they would emit, based on their mass",
+			0
 		}
 		} };
 
@@ -56,7 +63,7 @@ namespace nbody
 		explicit IColourer(size_t n_cols = MAX_COLS_PER_COLOURER);
 		virtual ~IColourer();
 
-		virtual void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols, ParticleState const* = nullptr);
+		virtual void setup(size_t const offset, size_t const num_bodies, sf::Color const* cols, const ParticleData* = nullptr);
 		
 		void apply(ParticleState const* state, ParticleAuxState const* aux_state, ParticleColourState * colours);
 		virtual void applyImpl(ParticleData const* state, ParticleColourState * colour) = 0;

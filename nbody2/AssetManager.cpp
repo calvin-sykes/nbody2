@@ -1,6 +1,7 @@
 #include "AssetManager.h"
 #include "IColourer.h"
 #include "ColourerSolid.h"
+#include "ColourerRealistic.h"
 #include "ColourerVelocity.h"
 #include "IDistributor.h"
 #include "DistributorExponential.h"
@@ -75,6 +76,7 @@ namespace nbody
 	{
 		m_colourers[ColourerType::SOLID] = ColourerSolid::create;
 		m_colourers[ColourerType::VELOCITY] = ColourerVelocity::create;
+		m_colourers[ColourerType::REALISTIC] = ColourerRealistic::create;
 	}
 
 	sf::Texture & AssetManager::getTextureRef(const std::string & name)

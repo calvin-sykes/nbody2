@@ -11,7 +11,7 @@ namespace nbody
 	{
 	}
 
-	void IColourer::setup(size_t const offset, size_t const num_bodies, sf::Color const * cols, ParticleState const* state)
+	void IColourer::setup(size_t const offset, size_t const num_bodies, sf::Color const * cols, const ParticleData* state)
 	{
 		m_offset = offset;
 		m_num_bodies = num_bodies;

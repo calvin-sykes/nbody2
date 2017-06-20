@@ -31,7 +31,7 @@ namespace nbody
 		void drawBody(ParticleState const& p, ParticleColourState const& c, size_t const idx);
 		float radiusFromMass(double mass) const;
 
-		float static constexpr s_MIN_SIZE = 2;
+		float static constexpr s_MIN_SIZE = 1;
 		float static constexpr s_MAX_SIZE = 5;
 		size_t static constexpr s_VERTICES = 20;
 		float static constexpr s_THETA = (2 * Constants::PI) / s_VERTICES;

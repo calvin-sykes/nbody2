@@ -67,7 +67,7 @@ namespace nbody
 	{
 		auto avg_dist_from_centre = std::accumulate(
 			&all.m_state[0].pos,
-			&all.m_state[m_num_bodies].pos,
+			&all.m_state[m_num_bodies - 1].pos,
 			0.,
 			[this](double a, Vector2d const& b) { return a + (b - this->m_centre_mass).mag(); }
 		);
