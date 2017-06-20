@@ -321,6 +321,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BHTreeNode.cpp" />
+    <ClCompile Include="ColourerRealistic.cpp" />
     <ClCompile Include="DistributorExponential.cpp" />
     <ClCompile Include="DistributorIsothermal.cpp" />
     <ClCompile Include="DistributorPlummer.cpp" />
@@ -346,6 +347,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="QuadManager.cpp" />
     <ClCompile Include="RunState.cpp" />
     <ClCompile Include="Sim.cpp" />
+    <ClCompile Include="specrend.cpp" />
     <ClCompile Include="StartState.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="TrailManager.cpp" />
@@ -353,6 +355,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BHTreeNode.h" />
+    <ClInclude Include="ColourerRealistic.h" />
     <ClInclude Include="DistributorExponential.h" />
     <ClInclude Include="DistributorIsothermal.h" />
     <ClInclude Include="DistributorPlummer.h" />
@@ -384,6 +387,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="RunState.h" />
     <ClInclude Include="Sim.h" />
     <ClInclude Include="IState.h" />
+    <ClInclude Include="specrend.h" />
     <ClInclude Include="StartState.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="stb_rect_pack.h" />

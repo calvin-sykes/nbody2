@@ -26,6 +26,7 @@ namespace specrend
 	void spectrum_to_xyz(double(*spec_intens)(double wavelength), double *x, double *y, double *z);
 	extern void xyz_to_rgb(struct colourSystem *cs, double xc, double yc, double zc, double *r, double *g, double *b);
 	extern double bb_spectrum(double wavelength);
+	extern int constrain_rgb(double *r, double *g, double *b);
 	extern void norm_rgb(double *r, double *g, double *b);
 	extern double bb_spectrum(double wavelength);
 }
