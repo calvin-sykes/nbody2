@@ -12,15 +12,10 @@ namespace nbody
 	class DistributorExponential : public IDistributor
 	{
 	public:
+		DistributorExponential();
+		virtual ~DistributorExponential();
+		
 		static std::unique_ptr<IDistributor> create();
-
-		DistributorExponential() : IDistributor()
-		{
-			getExpRand = []()
-			{
-				return m_exp_dist(m_gen);
-			};
-		}
 
 		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 

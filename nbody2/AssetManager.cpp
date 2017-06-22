@@ -7,6 +7,7 @@
 #include "DistributorExponential.h"
 #include "DistributorIsothermal.h"
 #include "DistributorPlummer.h"
+#include "DistributorRealistic.h"
 #include "Error.h"
 #include "IIntegrator.h"
 #include "IntegratorEuler.h"
@@ -70,6 +71,7 @@ namespace nbody
 		m_distributors[DistributorType::EXPONENTIAL] = DistributorExponential::create;
 		m_distributors[DistributorType::ISOTHERMAL] = DistributorIsothermal::create;
 		m_distributors[DistributorType::PLUMMER] = DistributorPlummer::create;
+		m_distributors[DistributorType::REALISTIC] = DistributorRealistic::create;
 	}
 
 	void AssetManager::loadColourers()

@@ -6,12 +6,24 @@ namespace nbody
 {
 	std::exponential_distribution<> DistributorExponential::m_exp_dist{ s_lambda };
 
+	DistributorExponential::DistributorExponential() : IDistributor()
+	{
+		getExpRand = []()
+		{
+			return m_exp_dist(m_gen);
+		};
+	}
+
+	DistributorExponential::~DistributorExponential()
+	{
+	}
+
 	std::unique_ptr<IDistributor> DistributorExponential::create()
 	{
 		return std::make_unique<DistributorExponential>();
 	}
 
-	void nbody::DistributorExponential::createDistribution(ParticleData & bodies, BodyGroupProperties const & props) const
+	void DistributorExponential::createDistribution(ParticleData & bodies, BodyGroupProperties const & props) const
 	{
 		auto pos_offset = props.pos;
 		auto vel_offset = props.vel;

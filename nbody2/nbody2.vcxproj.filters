@@ -153,11 +153,14 @@
     <ClCompile Include="ModelBruteForce.cpp">
       <Filter>Source Files\model</Filter>
     </ClCompile>
-    <ClCompile Include="ColourerRealistic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="specrend.cpp">
       <Filter>Source Files\colour</Filter>
+    </ClCompile>
+    <ClCompile Include="ColourerRealistic.cpp">
+      <Filter>Source Files\colour</Filter>
+    </ClCompile>
+    <ClCompile Include="DistributorRealistic.cpp">
+      <Filter>Source Files\distributor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -284,11 +287,14 @@
     <ClInclude Include="Timings.h">
       <Filter>Header Files\sys</Filter>
     </ClInclude>
-    <ClInclude Include="ColourerRealistic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="specrend.h">
       <Filter>Header Files\colour</Filter>
+    </ClInclude>
+    <ClInclude Include="ColourerRealistic.h">
+      <Filter>Header Files\colour</Filter>
+    </ClInclude>
+    <ClInclude Include="DistributorRealistic.h">
+      <Filter>Header Files\distributor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

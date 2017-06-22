@@ -325,6 +325,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="DistributorExponential.cpp" />
     <ClCompile Include="DistributorIsothermal.cpp" />
     <ClCompile Include="DistributorPlummer.cpp" />
+    <ClCompile Include="DistributorRealistic.cpp" />
     <ClCompile Include="IDistributor.cpp" />
     <ClCompile Include="BodyManager.cpp" />
     <ClCompile Include="ColourerSolid.cpp" />
@@ -359,6 +360,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="DistributorExponential.h" />
     <ClInclude Include="DistributorIsothermal.h" />
     <ClInclude Include="DistributorPlummer.h" />
+    <ClInclude Include="DistributorRealistic.h" />
     <ClInclude Include="IDistributor.h" />
     <ClInclude Include="BodyManager.h" />
     <ClInclude Include="CircularBuffer.h" />

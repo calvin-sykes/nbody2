@@ -4,7 +4,7 @@
 
 namespace nbody
 {
-	ColourerRealistic::ColourerRealistic() : IColourer()
+	ColourerRealistic::ColourerRealistic() : IColourer(), m_mapping(nullptr)
 	{
 	}
 

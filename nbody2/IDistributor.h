@@ -2,6 +2,7 @@
 #define DISTRIBUTOR_H
 
 #include <array>
+//#include <memory>
 #include <random>
 
 namespace nbody
@@ -36,6 +37,7 @@ namespace nbody
 		EXPONENTIAL,
 		ISOTHERMAL,
 		PLUMMER,
+		REALISTIC,
 		N_DISTRIBUTIONS,
 		INVALID = -1
 	};
@@ -76,6 +78,12 @@ namespace nbody
 			"Plummer",
 			"Bodies are distributed according to the Plummer globular cluster model.",
 			false
+		},
+		{
+			DistributorType::REALISTIC,
+			"Realistic",
+			"Bodies are distributed using the density-wave theory for spiral arms.",
+			true
 		}
 		} };
 
