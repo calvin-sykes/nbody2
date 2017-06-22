@@ -18,7 +18,7 @@ namespace nbody
 		struct Components<T, 2>
 		{
 			using impl_type = std::array<T, 2>;
-			union
+			__declspec(align(16)) union
 			{
 				struct
 				{
@@ -36,7 +36,7 @@ namespace nbody
 		struct Components<T, 3>
 		{
 			using impl_type = std::array<T, 3>;
-			union
+			__declspec(align(16)) union
 			{
 				struct
 				{
