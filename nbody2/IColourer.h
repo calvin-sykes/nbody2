@@ -70,9 +70,10 @@ namespace nbody
 
 	protected:
 		sf::Color m_cols[MAX_COLS_PER_COLOURER];
+		size_t m_num_bodies;
 
 	private:
-		size_t m_offset, m_num_bodies;
+		size_t m_offset;
 		size_t m_n_cols;
 
 	};
