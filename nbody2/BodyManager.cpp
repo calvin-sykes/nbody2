@@ -32,7 +32,7 @@ namespace nbody
 			m_first_update = false;
 		}
 
-		m_scl = std::max(static_cast<float>(-std::log2(Display::screen_scale)), 1.f);
+		m_scl = Display::bodyScalingFunc(Display::screen_scale);
 
 		m_vtx_array.clear();
 

@@ -12,11 +12,16 @@ namespace nbody
 		Vector2f extern screen_size;
 		Vector2f extern screen_offset;
 
+		float extern scaling_cross;
+		float extern scaling_smooth;
+
 		float worldToScreenX(double world_x);
 		float worldToScreenY(double world_y);
 		float worldToScreenLength(double world_length);
 		double screenToWorldX(float screen_x);
 		double screenToWorldY(float screen_y);
+
+		float bodyScalingFunc(float rad);
 	}
 }
 

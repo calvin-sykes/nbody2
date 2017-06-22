@@ -32,7 +32,7 @@ namespace nbody
 		float radiusFromMass(double mass) const;
 
 		float static constexpr s_MIN_SIZE = 1;
-		float static constexpr s_MAX_SIZE = 5;
+		float static constexpr s_MAX_SIZE = 3;
 		size_t static constexpr s_VERTICES = 20;
 		float static constexpr s_THETA = (2 * Constants::PI) / s_VERTICES;
 

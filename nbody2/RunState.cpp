@@ -119,7 +119,7 @@ namespace nbody
 				auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
 				auto stats = mod_bh_tree->getTreeRoot()->getStats();
 				auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
-				
+
 				Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
 				if (stats.m_num_calc)
 					ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
@@ -139,7 +139,7 @@ namespace nbody
 				auto const& centre = quad.getPos();
 				auto const len = quad.getLength();
 				auto const& centre_mass = m_highlighted->getCentreMass();
-				
+
 				Text("Node: BHTreeNode@%p", static_cast<const void*>(m_highlighted));
 				Text("Centre: (%em, %em)", centre.x, centre.y);
 				Text("Side length: %em", len);
@@ -152,9 +152,23 @@ namespace nbody
 				Text("Mouse over a tree node to see statistics");
 		}
 
+		Text("Screen scale: %f", Display::screen_scale);
+		Text("Body scale: %f", Display::bodyScalingFunc(Display::screen_scale));
+		SliderFloat("Scaling crossover", &Display::scaling_cross, 0.001, 1, "%.4f", 10);
+		SliderFloat("Scaling smoothing", &Display::scaling_smooth, 0.001, 1, "%.4f", 10);
+
+		struct Helper
+		{
+			static float Scl(void*, int i)
+			{
+				return static_cast<float>(Display::bodyScalingFunc(i * 0.01));
+			}
+		};
+		PlotLines("Scaling function", &Helper::Scl, nullptr, 100, 0, nullptr, 0.5f, 5.f, { 0, 80 });
+
 		End();
 
-		//ShowTestWindow();
+		ShowTestWindow();
 	}
 
 	void RunState::draw(sf::Time const dt)
