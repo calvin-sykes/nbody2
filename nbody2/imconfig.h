@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "Vector.h"
+
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 
@@ -65,6 +67,11 @@ namespace ImGui
     template <typename T>                                               \
     operator sf::Vector2<T>() const {                                   \
         return sf::Vector2<T>(x, y);                                    \
+    }                                                                   \
+                                                                        \
+	ImVec2(const nbody::Vector2f& v) {                                  \
+        x = v.x;                                                        \
+        y = v.y;                                                        \
     }
 
 #define IM_VEC4_CLASS_EXTRA                                             \

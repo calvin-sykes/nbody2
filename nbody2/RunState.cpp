@@ -152,19 +152,67 @@ namespace nbody
 				Text("Mouse over a tree node to see statistics");
 		}
 
+		if (CollapsingHeader("Body editor"))
+		{
+			/*    This is naughty   */
+			auto state = const_cast<ParticleState*>(reinterpret_cast<ParticleState const *>(m_sim->m_int_ptr->getState()));
+			auto aux_state = const_cast<ParticleAuxState*>(m_sim->m_mod_ptr->getAuxState());
+
+			static auto idx = 0;
+			static auto pos = &state[0].pos;
+			static auto vel = &state[0].vel;
+			static auto mass = &aux_state[0].mass;
+			static auto draw_line = false;
+
+			InputInt("Index", &idx);
+			if (idx < 0)
+				idx = 0;
+			if (idx > m_sim->m_mod_ptr->getNumBodies())
+				idx = static_cast<int>(m_sim->m_mod_ptr->getNumBodies());
+
+			pos = &state[idx].pos;
+			vel = &state[idx].vel;
+			mass = &aux_state[idx].mass;
+
+			InputDoubleScientific2("Position", reinterpret_cast<double*>(pos));
+			SameLine();
+			auto start = GetCursorScreenPos();
+			Checkbox("Show", &draw_line);
+
+			if (draw_line)
+			{
+				auto draw_list = GetWindowDrawList();
+				auto end = Vector2f{ Display::worldToScreenX(pos->x), Display::worldToScreenY(pos->y) };
+				draw_list->PushClipRectFullScreen();
+				auto sz = 5.f * Display::bodyScalingFunc(Display::screen_scale);
+				auto tl = ImVec2{ end + Vector2f{ -sz, -sz } };
+				auto tr = ImVec2{ end + Vector2f{  sz, -sz } };
+				auto bl = ImVec2{ end + Vector2f{ -sz,  sz } };
+				auto br = ImVec2{ end + Vector2f{  sz,  sz } };
+				draw_list->AddQuad(tl, tr, br, bl, IM_COL32_WHITE);
+				draw_list->AddLine(start, tl, IM_COL32_WHITE);
+				draw_list->PopClipRect();
+			}
+
+			InputDoubleScientific2("Velocity", reinterpret_cast<double*>(vel));
+
+			if (InputDoubleScientific("Mass", mass))
+			{
+				// need to update cached radius
+				m_body_mgr.setDirty();
+			}
+		}
+
 		Text("Screen scale: %f", Display::screen_scale);
 		Text("Body scale: %f", Display::bodyScalingFunc(Display::screen_scale));
 		SliderFloat("Scaling crossover", &Display::scaling_cross, 0.001, 1, "%.4f", 10);
 		SliderFloat("Scaling smoothing", &Display::scaling_smooth, 0.001, 1, "%.4f", 10);
 
-		struct Helper
+		float(*scl)(void*, int) = [](void*, int i)
 		{
-			static float Scl(void*, int i)
-			{
-				return static_cast<float>(Display::bodyScalingFunc(i * 0.01));
-			}
+			return static_cast<float>(Display::bodyScalingFunc(i * 0.01f));
 		};
-		PlotLines("Scaling function", &Helper::Scl, nullptr, 100, 0, nullptr, 0.5f, 5.f, { 0, 80 });
+		PlotLines("Scaling function", scl, nullptr, 100, 0, nullptr, 0.5f, 5.f, { 0, 80 });
 
 		End();
 

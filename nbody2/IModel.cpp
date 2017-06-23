@@ -68,11 +68,6 @@ namespace nbody
 		return m_num_bodies;
 	}
 
-	size_t IModel::getNumAdded() const
-	{
-		return m_num_added;
-	}
-
 	ParticleAuxState const* IModel::getAuxState() const
 	{
 		return m_aux_state;

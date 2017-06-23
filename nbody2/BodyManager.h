@@ -27,12 +27,15 @@ namespace nbody
 		void update(Vector2d const* state, ParticleAuxState const* aux_state, ParticleColourState const* colour_state, size_t const num_bodies);
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
+		void setDirty();
+
 	private:
 		void drawBody(ParticleState const& p, ParticleColourState const& c, size_t const idx);
 		float radiusFromMass(double mass) const;
 
 		float static constexpr s_MIN_SIZE = 1;
-		float static constexpr s_MAX_SIZE = 3;
+		float static constexpr s_MAX_SIZE = 5;
+		float static constexpr s_BH_SIZE = 8;
 		size_t static constexpr s_VERTICES = 20;
 		float static constexpr s_THETA = (2 * Constants::PI) / s_VERTICES;
 

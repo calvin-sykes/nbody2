@@ -20,7 +20,7 @@ namespace nbody
 	void nbody::BodyManager::update(Vector2d const* state, ParticleAuxState const* aux_state, ParticleColourState const* colour_state, size_t const num_bodies)
 	{
 		auto bodies = reinterpret_cast<ParticleState const*>(state);
-		
+
 		if (m_first_update)
 		{
 			// on first step, cache all (screen-coordinate) radii
@@ -45,12 +45,12 @@ namespace nbody
 	void BodyManager::drawBody(ParticleState const & p, ParticleColourState const& c, size_t const idx)
 	{
 		auto world_pos = p.pos;
-		
+
 		auto screen_x = Display::worldToScreenX(world_pos.x);
 		auto screen_y = Display::worldToScreenY(world_pos.y);
 
 		auto is_visible = screen_x < Display::screen_size.x && screen_x > 0 && screen_y < Display::screen_size.y && screen_y > 0;
-		
+
 		if (is_visible)
 		{
 			auto pos = sf::Vector2f{ screen_x, screen_y };
@@ -92,8 +92,17 @@ namespace nbody
 		target.draw(m_vtx_array);
 	}
 
+	void BodyManager::setDirty()
+	{
+		m_first_update = true;
+	}
+
 	float BodyManager::radiusFromMass(double mass) const
 	{
-		return std::min(static_cast<float>(float(s_MIN_SIZE) * log10(mass / Constants::SOLAR_MASS)), float(s_MAX_SIZE));
+		if (mass < Constants::SOLAR_MASS * 1e5)
+			return std::max(float(s_MIN_SIZE), std::min(static_cast<float>(1 + log10(mass / Constants::SOLAR_MASS)), float(s_MAX_SIZE)));
+		
+		// special case for black holes
+			return s_BH_SIZE;
 	}
 }

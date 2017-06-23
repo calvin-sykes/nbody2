@@ -68,7 +68,6 @@ namespace nbody
 		bool hasTree() const;
 
 		size_t getNumBodies() const;
-		size_t getNumAdded() const;
 		size_t getDim() const;
 		void setDim(size_t const dim);
 
