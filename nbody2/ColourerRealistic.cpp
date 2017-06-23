@@ -61,6 +61,10 @@ namespace nbody
 			auto col_idx = static_cast<size_t>((temp - MIN_TEMP) / TEMP_STEP);
 
 			m_mapping[i] = colours[col_idx];
+
+			// special case for black hole
+			if(state->m_aux_state[i].mass / Constants::SOLAR_MASS > 1e5)
+				m_mapping[i] = {70, 70, 70};
 		}
 	}
 

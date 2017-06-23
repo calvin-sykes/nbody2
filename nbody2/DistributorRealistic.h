@@ -20,7 +20,7 @@ namespace nbody
 		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 
 	private:
-
+		double salpeterIMF(double const alpha, double const k, double const lb) const;
 		// stuff
 	};
 }
