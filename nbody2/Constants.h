@@ -20,7 +20,7 @@ namespace nbody
 		double constexpr PARSEC = 3.08567758e16;
 		double constexpr SOFTENING = 100 * PARSEC;
 		double constexpr SOLAR_MASS = 1.98892E30;
-		size_t constexpr MAX_N = 20000;
+		size_t constexpr MAX_N = 50000;
 	}
 }
 

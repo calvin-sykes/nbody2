@@ -23,6 +23,9 @@ namespace nbody
 		void createDistribution(ParticleData & bodies, BodyGroupProperties const& props) const override;
 
 	private:
+
+		static std::pair<double, double> constrainMasses(std::pair<double, double> const mass_limits, double const rad, double const core_rad, double const galaxy_rad);
+		
 		/**
 		* \brief Computes a random mass using the Salpeter initial mass function
 		* \param alpha Slope of the power law

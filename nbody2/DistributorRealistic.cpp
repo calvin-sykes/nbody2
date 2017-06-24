@@ -29,7 +29,6 @@ namespace nbody
 
 		// Initial mass function
 		constexpr auto pow_alpha = 2.35;
-		auto k = (1 - pow_alpha) / (pow(props.max_mass, 1 - pow_alpha) - pow(props.min_mass, 1 - pow_alpha));
 
 		// central mass
 		bodies.m_state[0].pos = pos_offset;
@@ -43,8 +42,6 @@ namespace nbody
 
 		for (auto i = 1; i < props.num; i++)
 		{
-			auto mass = salpeterIMF(pow_alpha, k, props.min_mass);
-
 			auto picked_rad = m_cdf.valFromProbability(getRand(0, 1)) + Constants::SOFTENING / Constants::PARSEC;
 			auto a = picked_rad;
 			auto e = eccentricity(a, core_rad, galaxy_rad);
@@ -68,6 +65,10 @@ namespace nbody
 								e,
 								beta);
 			
+			auto mass_lims = constrainMasses({ props.min_mass, props.max_mass }, picked_rad, core_rad, galaxy_rad);
+			auto k = (1 - pow_alpha) / (pow(mass_lims.second, 1 - pow_alpha) - pow(mass_lims.first, 1 - pow_alpha));
+			auto mass = salpeterIMF(pow_alpha, k, mass_lims.first);
+
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass  * Constants::SOLAR_MASS;
@@ -77,6 +78,20 @@ namespace nbody
 				bodies.m_state[i].pos *= Constants::PARSEC;
 			}
 		}
+	}
+
+	std::pair<double, double> DistributorRealistic::constrainMasses(std::pair<double, double> const limits, double const rad, double const core_rad, double const galaxy_rad)
+	{
+		auto constexpr core_max = 2.5;
+		auto constexpr gal_min = 1.0;
+		
+		if (rad < core_rad)
+			return std::make_pair(limits.first, core_max + (limits.second - core_max) * rad / core_rad);
+
+		if (rad < galaxy_rad)
+			return std::make_pair(gal_min, limits.second + (gal_min - limits.second) / (galaxy_rad - core_rad) * (rad - core_rad));
+
+		return std::make_pair(limits.first, 2.0);
 	}
 
 	double DistributorRealistic::salpeterIMF(double const alpha, double const k, double const lb) const
