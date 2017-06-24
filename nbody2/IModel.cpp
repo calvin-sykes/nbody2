@@ -9,6 +9,7 @@ namespace nbody
 		: m_initial_state(nullptr),
 		m_aux_state(nullptr),
 		m_colour_state(nullptr),
+		m_masked(nullptr),
 		m_step(1),
 		m_num_bodies(0),
 		m_num_added(0),
@@ -22,9 +23,11 @@ namespace nbody
 
 	IModel::~IModel()
 	{
-		delete m_initial_state;
-		delete m_aux_state;
-		delete m_colour_state;
+		delete[] m_initial_state;
+		delete[] m_aux_state;
+		delete[] m_colour_state;
+		delete[] m_masked;
+
 	}
 
 	void IModel::init(size_t num_bodies, double step)
@@ -106,6 +109,10 @@ namespace nbody
 		m_initial_state = new ParticleState[num_bodies];
 		m_aux_state = new ParticleAuxState[num_bodies];
 		m_colour_state = new ParticleColourState[num_bodies];
+		m_masked = new bool[num_bodies];
+
+		for (auto i = 0; i < num_bodies; i++)
+			m_masked[i] = false;
 
 		m_step = step;
 	}

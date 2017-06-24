@@ -216,7 +216,7 @@ namespace nbody
 					if (i == idx)
 						continue;
 					auto rel_pos_mag = (*pos - state[i].pos).mag();
-					auto x = pe += -aux_state[i].mass * (*mass) * Constants::G / rel_pos_mag;
+					pe += -aux_state[i].mass * (*mass) * Constants::G / rel_pos_mag;
 				}
 				energy = pe + ke;
 			}
@@ -287,8 +287,8 @@ namespace nbody
 			auto tmp = Vector2d{ r * cos(theta),
 								 r * sin(theta) };
 
-			/*tmp += {r / damp * sin(theta * 2 * nump),
-				    r / damp * cos(theta * 2 * nump) };*/
+			tmp += {r / damp * sin(theta * 2 * nump),
+				    r / damp * cos(theta * 2 * nump) };
 
 			points[i] = ImVec2{ Display::worldToScreenX(tmp.x), Display::worldToScreenY(tmp.y) };
 		}

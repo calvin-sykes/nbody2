@@ -81,6 +81,7 @@ namespace nbody
 		ParticleState * m_initial_state;
 		ParticleAuxState * m_aux_state;
 		ParticleColourState * m_colour_state;
+		bool * m_masked;
 
 		double m_step;
 		size_t m_num_bodies;

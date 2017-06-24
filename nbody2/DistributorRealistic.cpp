@@ -74,8 +74,8 @@ namespace nbody
 			auto pos = Vector2d{ r * cos(alpha), r * sin(alpha) };
 			
 			// perturbations
-			/*pos += {r / s_PERT_DAMP * sin(alpha * 2 * s_NUM_PERTS),
-					r / s_PERT_DAMP * cos(alpha * 2 * s_NUM_PERTS) };*/
+			pos += {r / s_PERT_DAMP * sin(alpha * 2 * s_NUM_PERTS),
+					r / s_PERT_DAMP * cos(alpha * 2 * s_NUM_PERTS) };
 
 			auto vel = velocity(pos * Constants::PARSEC,
 								a * Constants::PARSEC,

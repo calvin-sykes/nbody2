@@ -161,24 +161,6 @@ namespace nbody
 		auto which = m_daughters[static_cast<size_t>(m_quad.whichDaughter(pos))];
 		
 		return which ? which->getHovered(pos) : this;
-	
-		/*BHTreeNode const* ret = nullptr;
-		
-		if ( && !m_daughters[static_cast<size_t>(m_quad.whichDaughter(pos))])
-			ret = this;
-		else
-		{
-			for (auto const& d : m_daughters)
-			{
-				if (d)
-				{
-					ret = d->getHovered(pos);
-					if (ret) break;
-				}
-			}
-		}
-
-		return ret;*/
 	}
 
 	BHTreeNode const * BHTreeNode::getParent() const
@@ -195,7 +177,7 @@ namespace nbody
 	{
 		auto const& p1 = *new_body.m_state;
 
-		// which daughter, would contain this body?
+		// which daughter would contain this body?
 		auto which_daughter = m_quad.whichDaughter(new_body.m_state->pos);
 		if (which_daughter == Daughter::NONE)
 		{
