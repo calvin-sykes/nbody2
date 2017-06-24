@@ -1,8 +1,6 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#include <cstddef>
-
 namespace nbody
 {
 	/*template <typename T>
@@ -19,8 +17,8 @@ namespace nbody
 	{
 		double constexpr PI = 3.141592;
 		double constexpr G = 6.67E-11;
-		double constexpr RADIUS = 1E19;
-		double constexpr SOFTENING = 0.01 * RADIUS;
+		double constexpr PARSEC = 3.08567758e16;
+		double constexpr SOFTENING = 100 * PARSEC;
 		double constexpr SOLAR_MASS = 1.98892E30;
 		size_t constexpr MAX_N = 20000;
 	}

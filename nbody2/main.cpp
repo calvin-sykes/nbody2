@@ -61,5 +61,12 @@ int main(int argc, char** argv)
 		std::cout << "UNCAUGHT ERROR! " << e.what() << std::endl;
 #endif
 	}
+	catch(...)
+	{
+#ifdef OS_WINDOWS
+		MessageBox(nullptr, L"UNCAUGHT ERROR!", nullptr, MB_ICONERROR);
+#endif
+		return 1;
+	}
 	return 0;
 }

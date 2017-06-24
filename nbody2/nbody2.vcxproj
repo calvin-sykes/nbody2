@@ -266,7 +266,7 @@ xcopy media "$(OutDir)media" /S/E/Y/D/E/I</Command>
       <UseIntelOptimizedHeaders>false</UseIntelOptimizedHeaders>
       <Mtune>Haswell</Mtune>
       <Parallelization>true</Parallelization>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AssemblerOutput>NoListing</AssemblerOutput>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -322,6 +322,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
   <ItemGroup>
     <ClCompile Include="BHTreeNode.cpp" />
     <ClCompile Include="ColourerRealistic.cpp" />
+    <ClCompile Include="ComplexCDF.cpp" />
     <ClCompile Include="DistributorExponential.cpp" />
     <ClCompile Include="DistributorIsothermal.cpp" />
     <ClCompile Include="DistributorPlummer.cpp" />
@@ -357,6 +358,7 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
   <ItemGroup>
     <ClInclude Include="BHTreeNode.h" />
     <ClInclude Include="ColourerRealistic.h" />
+    <ClInclude Include="ComplexCDF.h" />
     <ClInclude Include="DistributorExponential.h" />
     <ClInclude Include="DistributorIsothermal.h" />
     <ClInclude Include="DistributorPlummer.h" />

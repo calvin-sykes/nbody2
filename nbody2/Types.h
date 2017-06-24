@@ -42,7 +42,7 @@ namespace nbody
 		bool operator==(ParticleData const& other) const;
 
 		void reset();
-		bool isNull() const;
+		bool isNotNull() const;
 
 		ParticleState * m_state;
 		ParticleAuxState * m_aux_state;

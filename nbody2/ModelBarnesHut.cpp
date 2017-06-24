@@ -12,7 +12,7 @@ namespace nbody
 	ModelBarnesHut::ModelBarnesHut()
 		: IModel("Barnes-Hut N-body simulation", true),
 		m_root(m_bounds),
-		m_bounds({ 0, 0 }, Constants::RADIUS)
+		m_bounds({ 0, 0 }, 0)
 	{
 	}
 
@@ -65,16 +65,20 @@ namespace nbody
 
 	void ModelBarnesHut::calcBounds(ParticleData const & all)
 	{
-		auto avg_dist_from_centre = std::accumulate(
+		auto static len_mult_fact = 4;
+
+ 		auto avg_dist_from_centre = std::accumulate(
 			&all.m_state[0].pos,
 			&all.m_state[m_num_bodies - 1].pos,
 			0.,
-			[this](double a, Vector2d const& b) { return a + (b - this->m_centre_mass).mag(); }
-		);
+			[this](double a, Vector2d const& b) { return a + (b - this->m_centre_mass).mag(); });
 		avg_dist_from_centre /= m_num_bodies;
 
-		auto len{ 4 * avg_dist_from_centre };
+		// many renegades -> enlarge tree
+		if (static_cast<double>(m_root.getNumRenegades()) / static_cast<double>(m_root.getNumBodies()) > 0.01)
+			len_mult_fact++;
 
+		auto len = len_mult_fact * avg_dist_from_centre;
 		m_bounds = Quad{ m_centre_mass, len };
 	}
 

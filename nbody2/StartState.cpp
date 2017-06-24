@@ -575,10 +575,10 @@ namespace nbody
 	{
 		using namespace ImGui;
 		static bool share_values = false;
-		Checkbox("Use relative coordinates", &m_bg_props[idx].use_relative_coords);
+		Checkbox("Use parsecs", &m_bg_props[idx].use_parsecs);
 		SameLine();
-		ShowHelpMarker("If checked, the entered position will be interpreted as a fraction of the universe radius %.0em",
-			Constants::RADIUS);
+		ShowHelpMarker("If checked, the entered position will be interpreted as a number of parsecs (1pc = %.0em)",
+			Constants::PARSEC);
 		PushItemWidth(2 * (80.f + m_style.ItemInnerSpacing.x));
 		InputDoubleScientific2("Position", &m_bg_props[idx].pos.x);
 		InputDoubleScientific2("Velocity", &m_bg_props[idx].vel.x);
@@ -603,10 +603,10 @@ namespace nbody
 	{
 		using namespace ImGui;
 		static bool share_values = false;
-		Checkbox("Use relative coordinates", &m_bg_props[idx].use_relative_coords);
+		Checkbox("Use parsecs", &m_bg_props[idx].use_parsecs);
 		SameLine();
-		ShowHelpMarker("If checked, the radius entered will be interpreted as a fraction of the universe radius %.0em",
-			Constants::RADIUS);
+		ShowHelpMarker("If checked, the entered position will be interpreted as a number of parsecs (1pc = %.0em)",
+			Constants::PARSEC);
 		PushItemWidth(80.0f);
 		InputDoubleScientific("Radius", &m_bg_props[idx].radius);
 		PopItemWidth();
@@ -734,7 +734,7 @@ namespace nbody
 				writeValue(bgp.pos);
 				writeValue(bgp.vel);
 				writeValue(bgp.radius);
-				writeValue(bgp.use_relative_coords);
+				writeValue(bgp.use_parsecs);
 				writeValue(bgp.min_mass);
 				writeValue(bgp.max_mass);
 				writeValue(bgp.has_central_mass);
@@ -817,7 +817,7 @@ namespace nbody
 				good &= readValue(bgp.pos);
 				good &= readValue(bgp.vel);
 				good &= readValue(bgp.radius);
-				good &= readValue(bgp.use_relative_coords);
+				good &= readValue(bgp.use_parsecs);
 				good &= readValue(bgp.min_mass);
 				good &= readValue(bgp.max_mass);
 				good &= readValue(bgp.has_central_mass);

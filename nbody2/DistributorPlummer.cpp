@@ -14,11 +14,10 @@ namespace nbody
 		auto pos_offset = props.pos;
 		auto vel_offset = props.vel;
 		auto rad = props.radius;
-		if (props.use_relative_coords)
+		if (props.use_parsecs)
 		{
-			pos_offset *= Constants::RADIUS;
-			vel_offset *= Constants::RADIUS;
-			rad *= Constants::RADIUS;
+			pos_offset *= Constants::PARSEC;
+			rad *= Constants::PARSEC;
 		}
 		auto plummer_rad = 0.1 * rad;
 		auto m_avg = 0.5 * (props.min_mass + props.max_mass) * Constants::SOLAR_MASS;

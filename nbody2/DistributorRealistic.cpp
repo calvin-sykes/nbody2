@@ -4,6 +4,9 @@
 
 namespace nbody
 {
+	int DistributorRealistic::nl = 0;
+	int DistributorRealistic::nr = 0;
+	
 	DistributorRealistic::DistributorRealistic()
 	{
 	}
@@ -16,37 +19,79 @@ namespace nbody
 	{
 		return std::make_unique<DistributorRealistic>();
 	}
+
 	void DistributorRealistic::createDistribution(ParticleData & bodies, BodyGroupProperties const & props) const
 	{
-		auto pos_offset = props.pos;
-		auto vel_offset = props.vel;
-		auto rad = props.radius;
-		auto core_rad = rad * 0.3;
-		if (props.use_relative_coords)
-		{
-			pos_offset *= Constants::RADIUS;
-			vel_offset *= Constants::RADIUS;
-			rad *= Constants::RADIUS;
-		}
+		auto const pos_offset = props.pos;
+		auto const vel_offset = props.vel;
+		auto const galaxy_rad = props.radius;
+		auto const core_rad = galaxy_rad * 0.3;
+		auto const delta_ang = 2 * Constants::PI / galaxy_rad;
 
-		constexpr auto alpha = 2.35;
-		auto k = (1 - alpha) / (pow(props.max_mass, 1 - alpha) - pow(props.min_mass, 1 - alpha));
+		m_cdf.setup(1.0, 0.02, galaxy_rad / 3.0, core_rad, 0, galaxy_rad * 2, 1000);
+
+		// Initial mass function
+		constexpr auto pow_alpha = 2.35;
+		auto k = (1 - pow_alpha) / (pow(props.max_mass, 1 - pow_alpha) - pow(props.min_mass, 1 - pow_alpha));
 
 		// central mass
 		bodies.m_state[0].pos = pos_offset;
 		bodies.m_state[0].vel = vel_offset;
 		bodies.m_aux_state[0].mass = props.central_mass * Constants::SOLAR_MASS;
 
-		for (size_t i = 1; i < props.num; i++)
+		if (props.use_parsecs)
 		{
-			auto mass = salpeterIMF(alpha, k, props.min_mass) * Constants::SOLAR_MASS;
-			auto radius = getRand(0, rad) + Constants::SOFTENING;
-			auto phi = getRand(0, 2 * Constants::PI);
-			auto pos = Vector2d{ radius * cos(phi), radius * sin(phi) };
-			auto vel = vCirc(pos, props.central_mass * Constants::SOLAR_MASS);
+			bodies.m_state[0].pos *= Constants::PARSEC;
+		}
+
+		for (auto i = 1; i < props.num; i++)
+		{
+			auto mass = salpeterIMF(pow_alpha, k, props.min_mass);
+
+			auto picked_rad = m_cdf.valFromProbability(getRand(0, 1)) + Constants::SOFTENING / Constants::PARSEC;
+			auto a = picked_rad;
+			auto e = eccentricity(a, core_rad, galaxy_rad);
+
+			auto angle = a * delta_ang;
+			auto alpha = getRand(0, 2 * Constants::PI);
+			auto beta = -angle;
+
+			double randomise_focus;
+			if(getRand(0, 1) < 0.5)
+			{
+				nl++;
+				randomise_focus = alpha - beta;
+
+			}
+			else
+			{
+				nr++;
+				randomise_focus = alpha - beta - Constants::PI;
+			}
+
+			auto r = a * (1 - e * e) / (1 + e * cos(randomise_focus));
+			
+			auto pos = Vector2d{ r * cos(alpha), r * sin(alpha) };
+			
+			// perturbations
+			/*pos += {r / s_PERT_DAMP * sin(alpha * 2 * s_NUM_PERTS),
+					r / s_PERT_DAMP * cos(alpha * 2 * s_NUM_PERTS) };*/
+
+			auto vel = velocity(pos * Constants::PARSEC,
+								a * Constants::PARSEC,
+								props.central_mass * Constants::SOLAR_MASS,
+								e,
+								-1 * randomise_focus + alpha); 
+			
+			//vCirc(pos * Constants::PARSEC, props.central_mass * Constants::SOLAR_MASS);
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
-			bodies.m_aux_state[i].mass = mass;
+			bodies.m_aux_state[i].mass = mass  * Constants::SOLAR_MASS;
+
+			if (props.use_parsecs)
+			{
+				bodies.m_state[i].pos *= Constants::PARSEC;
+			}
 		}
 	}
 
@@ -54,5 +99,33 @@ namespace nbody
 	{
 		auto x = getRand(0, 1);
 		return pow(x * (1 - alpha) / k + pow(lb, 1 - alpha), 1 / (1 - alpha));
+	}
+
+	double DistributorRealistic::eccentricity(double const rad, double const core_rad, double const galaxy_rad)
+	{
+		if (rad < core_rad)
+			return rad / core_rad * s_ECC_CORE;
+
+		if (rad < galaxy_rad)
+			return s_ECC_CORE + (rad - core_rad) / (galaxy_rad - core_rad) * (s_ECC_DISK - s_ECC_CORE);
+
+		if (rad < 2 * galaxy_rad)
+			return s_ECC_DISK + (rad - galaxy_rad) / galaxy_rad * (0.0 - s_ECC_DISK);
+
+		return 0;
+	}
+
+	Vector2d DistributorRealistic::velocity(Vector2d const & pos, double const a, double const m, double const e, double const phi)
+	{
+		auto p = 2.0 * Constants::PI / sqrt(Constants::G * m) * pow(a, 3.0 / 2.0);
+		auto theta = atan2(pos.y, pos.x);
+
+		auto vr = 2.0 * Constants::PI * a * e * sin(theta - phi) / (p * sqrt(1 - e * e));
+		auto vtheta = 2.0 * Constants::PI * a * (1.0 + e * cos(theta - phi)) / (p * sqrt(1 - e * e));
+
+		auto vx = vr * cos(theta) - vtheta * sin(theta);
+		auto vy = vr * sin(theta) + vtheta * cos(theta);
+		
+		return{ vx, vy };
 	}
 }

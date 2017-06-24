@@ -43,8 +43,8 @@ namespace nbody
 		m_aux_state = nullptr;
 	}
 
-	bool ParticleData::isNull() const
+	bool ParticleData::isNotNull() const
 	{
-		return !(m_state && m_aux_state);
+		return (m_state && m_aux_state);
 	}
 }

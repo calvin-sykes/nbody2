@@ -12,7 +12,7 @@ namespace nbody
 	struct BodyGroupProperties
 	{
 		BodyGroupProperties() :
-			dist(DistributorType::INVALID), num(0), pos(), vel(), radius(0), use_relative_coords(true),
+			dist(DistributorType::INVALID), num(0), pos(), vel(), radius(0), use_parsecs(true),
 			min_mass(0), max_mass(0), has_central_mass(false), central_mass(0),
 			colour(ColourerType::INVALID), cols{} {}
 
@@ -21,7 +21,7 @@ namespace nbody
 		Vector2d pos;
 		Vector2d vel;
 		double radius;
-		bool use_relative_coords;
+		bool use_parsecs;
 		double min_mass;
 		double max_mass;
 		bool has_central_mass;

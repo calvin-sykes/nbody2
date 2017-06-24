@@ -162,6 +162,9 @@
     <ClCompile Include="DistributorRealistic.cpp">
       <Filter>Source Files\distributor</Filter>
     </ClCompile>
+    <ClCompile Include="ComplexCDF.cpp">
+      <Filter>Source Files\distributor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector.h">
@@ -294,6 +297,9 @@
       <Filter>Header Files\colour</Filter>
     </ClInclude>
     <ClInclude Include="DistributorRealistic.h">
+      <Filter>Header Files\distributor</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexCDF.h">
       <Filter>Header Files\distributor</Filter>
     </ClInclude>
   </ItemGroup>

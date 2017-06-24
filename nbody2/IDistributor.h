@@ -14,15 +14,27 @@ namespace nbody
 	
 	namespace priv
 	{
-		// Calculate the sign of a value
-		// Returns -1 if val < 0, +1 if val > 0, and 0 if val == 0 
+
+		/**
+		 * \brief Calculate the sign of a value
+		 * \tparam T The type of the value being tested
+		 * \param val The value to test
+		 * \return -1 if val < 0, +1 if val > 0, and 0 if val == 0
+		 */
 		template <typename T>
 		int sgn(T val)
 		{
+			static_assert(std::is_arithmetic<T>::value, "Cannot calculate sign of non-numerical value");
 			return (T(0) < val) - (val < T(0));
 		}
 
-		// Calculate the circular velocity at radius r around a mass central_mass
+		// 
+		/**
+		 * \brief Calculate the velocity needed for a circular orbit
+		 * \param r The radius of the orbit
+		 * \param central_mass The mass being orbited
+		 * \return 
+		 */
 		Vector2d vCirc(Vector2d const& r, double const central_mass);
 	}
 

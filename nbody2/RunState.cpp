@@ -10,9 +10,13 @@
 #include "imgui_sfml.h"
 
 #include <SFML/Graphics.hpp>
+#include "DistributorRealistic.h"
 
 namespace nbody
 {
+	void drawEllipse(double const a, double const b, double const angle);
+	double eccentricity(double const r);
+
 	std::map<Timings, std::chrono::time_point<Clock>> timings;
 
 	RunState::RunState(Sim * simIn) : m_highlighted(nullptr)
@@ -163,6 +167,7 @@ namespace nbody
 			static auto vel = &state[0].vel;
 			static auto mass = &aux_state[0].mass;
 			static auto draw_line = false;
+			static auto energy = 0.0;
 
 			InputInt("Index", &idx);
 			if (idx < 0)
@@ -201,6 +206,23 @@ namespace nbody
 				// need to update cached radius
 				m_body_mgr.setDirty();
 			}
+
+			if (Button("Energy"))
+			{
+				auto ke = 0.5 * (*mass) * vel->mag_sq();
+				auto pe = 0.0;
+				for (auto i = 0; i < m_sim->m_mod_ptr->getNumBodies(); i++)
+				{
+					if (i == idx)
+						continue;
+					auto rel_pos_mag = (*pos - state[i].pos).mag();
+					auto x = pe += -aux_state[i].mass * (*mass) * Constants::G / rel_pos_mag;
+				}
+				energy = pe + ke;
+			}
+			SameLine();
+			Text("%.3g", energy);
+
 		}
 
 		Text("Screen scale: %f", Display::screen_scale);
@@ -214,9 +236,85 @@ namespace nbody
 		};
 		PlotLines("Scaling function", scl, nullptr, 100, 0, nullptr, 0.5f, 5.f, { 0, 80 });
 
-		End();
+		static auto show_ellipses_l = false;
+		static auto show_ellipses_r = false;
 
-		ShowTestWindow();
+		Text("Show ellipses");
+		SameLine();
+		Checkbox("Left focus", &show_ellipses_l);
+		SameLine();
+		Checkbox("Right focus", &show_ellipses_r);
+
+		Text("nl = %d, nr = %d", DistributorRealistic::nl, DistributorRealistic::nr);
+
+		auto constexpr num = 100;
+		auto constexpr rad = 13000 * Constants::PARSEC;
+		auto constexpr dr = rad / num;
+
+		for (auto i = 0; i < num; i++)
+		{
+			auto r = (i + 1) * dr;
+			if (show_ellipses_l)
+				drawEllipse(r, eccentricity(r), 2 * Constants::PI * r / rad);
+			if (show_ellipses_r)
+				drawEllipse(r, eccentricity(r), 2 * Constants::PI * r / rad - Constants::PI);
+		}
+		//ShowTestWindow();	
+
+		End();
+	}
+
+	void drawEllipse(double const a, double const ecc, double const angle)
+	{
+		using namespace ImGui;
+
+		constexpr auto N_PTS = 100;
+		constexpr auto delta_ang = 2 * Constants::PI / N_PTS;
+
+		auto damp = 40;
+		auto nump = 2;
+
+		ImVec2 points[N_PTS];
+
+		auto draw_list = GetWindowDrawList();
+		draw_list->PushClipRectFullScreen();
+		for (auto i = 0; i < N_PTS; i++)
+		{
+			auto beta = -angle;
+			auto theta = i * delta_ang;
+			auto r = a * (1 - ecc * ecc) / (1 + ecc * cos(theta - beta));
+
+			auto tmp = Vector2d{ r * cos(theta),
+								 r * sin(theta) };
+
+			/*tmp += {r / damp * sin(theta * 2 * nump),
+				    r / damp * cos(theta * 2 * nump) };*/
+
+			points[i] = ImVec2{ Display::worldToScreenX(tmp.x), Display::worldToScreenY(tmp.y) };
+		}
+		draw_list->AddPolyline(points, N_PTS, IM_COL32_WHITE, true, 1, true);
+		draw_list->PopClipRect();
+	}
+
+	double eccentricity(double const r)
+	{
+		auto rad = r / Constants::PARSEC;
+
+		auto galaxy_rad = 13000;
+		auto core_rad = 0.3 * galaxy_rad;
+		auto s_ECC_CORE = 0.35;
+		auto s_ECC_DISK = 0.2;
+
+		if (rad < core_rad)
+			return rad / core_rad * s_ECC_CORE;
+
+		if (rad < galaxy_rad)
+			return s_ECC_CORE + (rad - core_rad) / (galaxy_rad - core_rad) * (s_ECC_DISK - s_ECC_CORE);
+
+		if (rad < 2 * galaxy_rad)
+			return s_ECC_DISK + (rad - galaxy_rad) / galaxy_rad * (0.0 - s_ECC_DISK);
+
+		return 0;
 	}
 
 	void RunState::draw(sf::Time const dt)

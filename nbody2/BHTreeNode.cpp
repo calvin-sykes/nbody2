@@ -261,7 +261,7 @@ namespace nbody
 	{
 		if (m_num == 1)
 		{
-			assert(!m_body.isNull());
+			assert(m_body.isNotNull());
 			auto ps = m_body.m_state;
 			auto pa = m_body.m_aux_state;
 
