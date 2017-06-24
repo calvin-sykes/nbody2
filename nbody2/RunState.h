@@ -52,6 +52,8 @@ namespace nbody
 
 		Flags m_flags;
 		BHTreeNode const* m_highlighted;
+
+		double m_energy;
 	};
 }
 

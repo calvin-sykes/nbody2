@@ -1,6 +1,5 @@
 #include "BodyGroupProperties.h"
 #include "Display.h"
-#include "IColourer.h"
 #include "IState.h"
 #include "Sim.h"
 

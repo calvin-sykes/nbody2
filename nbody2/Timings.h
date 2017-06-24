@@ -11,6 +11,7 @@ namespace nbody
 
 	enum class Timings
 	{
+		RUN_START,
 		TREE_BUILD_START,
 		TREE_BUILD_END,
 		FORCE_CALC_START,
@@ -20,7 +21,9 @@ namespace nbody
 		DRAW_GRID_START,
 		DRAW_GRID_END,
 		DRAW_TRAILS_START,
-		DRAW_TRAILS_END
+		DRAW_TRAILS_END,
+		ENERGY_CALC_START,
+		ENERGY_CALC_END
 	};
 
 	extern std::map<Timings, std::chrono::time_point<Clock>> timings;

@@ -12,7 +12,7 @@ namespace nbody
 
 	class DistributorRealistic : public IDistributor
 	{
-		friend class RunState;
+		//friend class RunState;
 
 	public:
 		DistributorRealistic();
@@ -43,15 +43,24 @@ namespace nbody
 		static double eccentricity(double const rad, double const core_rad, double const galaxy_rad);
 		
 		
+		/**
+		 * \brief Determine the orbital velocity of a body following an
+		 *		  elliptical orbit specified by the arguments to this function
+		 * \param pos The position of the body
+		 * \param a The semi-major axis of the orbit
+		 * \param m The mass of the orbited body
+		 * \param e The eccentricity of the orbit
+		 * \param phi The polar angle to the empty focus of the ellipse
+		 *			  (i.e. the focus not occupied by the central mass)
+		 * \return The computed orbital velocity vector
+		 */
 		static Vector2d velocity(Vector2d const& pos, double const a, double const m, double const e, double const phi);
 
 		mutable ComplexCDF m_cdf;
 
-		static int nl, nr;
-
 		constexpr static double s_ECC_CORE = 0.35;
 		constexpr static double s_ECC_DISK = 0.2;
-		constexpr static int s_NUM_PERTS = 2;
+		constexpr static int s_NUM_PERTS = 3;
 		constexpr static double s_PERT_DAMP = 40;
 	};
 }

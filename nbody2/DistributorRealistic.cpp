@@ -4,9 +4,6 @@
 
 namespace nbody
 {
-	int DistributorRealistic::nl = 0;
-	int DistributorRealistic::nr = 0;
-	
 	DistributorRealistic::DistributorRealistic()
 	{
 	}
@@ -54,36 +51,23 @@ namespace nbody
 
 			auto angle = a * delta_ang;
 			auto alpha = getRand(0, 2 * Constants::PI);
-			auto beta = -angle;
+			
+			
+			auto beta = getRand(0, 1) < 0.5  ? angle : angle + Constants::PI;
 
-			double randomise_focus;
-			if(getRand(0, 1) < 0.5)
-			{
-				nl++;
-				randomise_focus = alpha - beta;
+			auto r = a * (1 - e * e) / (1 + e * cos(alpha - beta));
 
-			}
-			else
-			{
-				nr++;
-				randomise_focus = alpha - beta - Constants::PI;
-			}
-
-			auto r = a * (1 - e * e) / (1 + e * cos(randomise_focus));
+			// smudging
+			alpha += getRand(-0.1, 0.1);
 			
 			auto pos = Vector2d{ r * cos(alpha), r * sin(alpha) };
-			
-			// perturbations
-			pos += {r / s_PERT_DAMP * sin(alpha * 2 * s_NUM_PERTS),
-					r / s_PERT_DAMP * cos(alpha * 2 * s_NUM_PERTS) };
 
 			auto vel = velocity(pos * Constants::PARSEC,
 								a * Constants::PARSEC,
 								props.central_mass * Constants::SOLAR_MASS,
 								e,
-								-1 * randomise_focus + alpha); 
+								beta);
 			
-			//vCirc(pos * Constants::PARSEC, props.central_mass * Constants::SOLAR_MASS);
 			bodies.m_state[i].pos = pos + pos_offset;
 			bodies.m_state[i].vel = vel + vel_offset;
 			bodies.m_aux_state[i].mass = mass  * Constants::SOLAR_MASS;

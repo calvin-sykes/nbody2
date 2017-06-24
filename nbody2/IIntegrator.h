@@ -46,8 +46,8 @@ namespace nbody
 		void setStepSize(double step);
 
 		double getStepSize() const;
+		size_t getNumSteps() const;
 		double getTime() const;
-		double getError() const;
 
 		void setModel(IModel* model);
 		IModel* getModel() const;
@@ -57,11 +57,12 @@ namespace nbody
 
 		virtual void singleStep() = 0;
 		virtual void setInitialState(Vector2d* state) = 0;
-		virtual Vector2d const* getState() const = 0;
+		virtual Vector2d const* getStateVector() const = 0;
 
 	protected:
 		IModel* m_model;
-		double m_step, m_time, m_err;
+		double m_step, m_time;
+		size_t m_n_steps;
 		size_t const m_dim;
 		std::string m_name;
 

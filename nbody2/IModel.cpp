@@ -1,7 +1,9 @@
 #include "BodyGroupProperties.h"
+#include "Constants.h"
 #include "IDistributor.h"
 #include "IColourer.h"
 #include "IModel.h"
+#include "Timings.h"
 
 namespace nbody
 {
@@ -84,6 +86,31 @@ namespace nbody
 	Vector2d IModel::getCentreMass() const
 	{
 		return m_centre_mass;
+	}
+
+	double IModel::getTotalEnergy(Vector2d const * all) const
+	{
+		auto ke = 0.0, pe = 0.0;
+		auto ps = reinterpret_cast<ParticleState const *>(all);
+
+		timings[Timings::ENERGY_CALC_START] = Clock::now();
+#pragma omp parallel for schedule(static) reduction(+:pe,ke)
+		for (int i = 0; i < m_num_bodies; i++)
+		{
+			ke += 0.5 * m_aux_state[i].mass * ps[i].vel.mag_sq();
+
+			for (auto j = 0; j < m_num_bodies; j++)
+			{
+				if (j == i)
+					continue;
+				auto rel_pos_mag = (ps[j].pos - ps[i].pos).mag();
+				pe += -m_aux_state[j].mass * m_aux_state[i].mass * Constants::G / rel_pos_mag;
+			}
+
+		}
+		timings[Timings::ENERGY_CALC_END] = Clock::now();
+
+		return ke + pe;
 	}
 
 	size_t IModel::getDim() const

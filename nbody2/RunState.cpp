@@ -10,16 +10,17 @@
 #include "imgui_sfml.h"
 
 #include <SFML/Graphics.hpp>
-#include "DistributorRealistic.h"
 
 namespace nbody
 {
-	void drawEllipse(double const a, double const b, double const angle);
-	double eccentricity(double const r);
+	//void drawEllipse(double const a, double const b, double const angle);
+	//double eccentricity(double const r);
 
 	std::map<Timings, std::chrono::time_point<Clock>> timings;
 
-	RunState::RunState(Sim * simIn) : m_highlighted(nullptr)
+	RunState::RunState(Sim * simIn) :
+		m_highlighted(nullptr),
+		m_energy(0.0)
 	{
 		m_sim = simIn;
 		auto pos = sf::Vector2f(m_sim->m_window.getSize());
@@ -30,7 +31,9 @@ namespace nbody
 
 		m_flags.tree_exists = m_sim->m_mod_ptr->hasTree();
 
-		m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getState());
+		m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getStateVector());
+
+		timings[Timings::RUN_START] = Clock::now();
 	}
 
 	void RunState::update(sf::Time const dt)
@@ -38,14 +41,14 @@ namespace nbody
 		if (m_flags.running)
 		{
 			m_sim->m_int_ptr->singleStep();
-			m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getState());
+			m_sim->m_mod_ptr->updateColours(m_sim->m_int_ptr->getStateVector());
 		}
 
 		timings[Timings::DRAW_BODIES_START] = Clock::now();
 		if (m_flags.show_bodies)
 		{
 			m_body_mgr.update(
-				m_sim->m_int_ptr->getState(),
+				m_sim->m_int_ptr->getStateVector(),
 				m_sim->m_mod_ptr->getAuxState(),
 				m_sim->m_mod_ptr->getColourState(),
 				m_sim->m_mod_ptr->getNumBodies());
@@ -78,7 +81,7 @@ namespace nbody
 		if (m_flags.show_trails)
 		{
 			m_trail_mgr.update(
-				m_sim->m_int_ptr->getState(),
+				m_sim->m_int_ptr->getStateVector(),
 				m_sim->m_mod_ptr->getNumBodies());
 		}
 		timings[Timings::DRAW_TRAILS_END] = Clock::now();
@@ -95,6 +98,31 @@ namespace nbody
 		Begin("Diagnostics", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
 		Spacing();
 
+		if (CollapsingHeader("Simulation statistics"))
+		{
+			using namespace std::chrono;
+			
+			auto constexpr SECS_IN_YEAR = 86400 * 365;
+
+			Text("Number of steps: %zu", m_sim->m_int_ptr->getNumSteps());
+			
+			auto m_time_yrs = m_sim->m_int_ptr->getTime() / SECS_IN_YEAR;
+			Text("Simulation time: %.3g yrs", m_time_yrs);
+
+			auto elapsed = Clock::now() - timings[Timings::RUN_START];
+			auto minutes = duration_cast<std::chrono::minutes>(elapsed);
+			auto seconds = duration_cast<std::chrono::seconds>(elapsed);
+			Text("Elapsed run time: %d:%.2zu", minutes.count(), seconds.count() % 60);
+			//AlignFirstTextHeightToWidgets();
+			Text("System energy: %.3g J", m_energy);
+			SameLine();
+			if(SmallButton("Recalculate"))
+			{
+				m_energy = m_sim->m_mod_ptr->getTotalEnergy(m_sim->m_int_ptr->getStateVector());
+			}
+			Spacing();
+		}
+
 		if (CollapsingHeader("Timings"))
 		{
 			using namespace std::chrono;
@@ -105,13 +133,15 @@ namespace nbody
 			auto t_body = Dble_ms{ timings[Timings::DRAW_BODIES_END] - timings[Timings::DRAW_BODIES_START] };
 			auto t_grid = Dble_ms{ timings[Timings::DRAW_GRID_END] - timings[Timings::DRAW_GRID_START] };
 			auto t_trail = Dble_ms{ timings[Timings::DRAW_TRAILS_END] - timings[Timings::DRAW_TRAILS_START] };
+			auto t_energy = Dble_ms{ timings[Timings::ENERGY_CALC_END] - timings[Timings::ENERGY_CALC_START] };
 
 			Text("FPS: %f", fps);
-			Text("Tree construction: %fms", t_tree.count());
-			Text("Force evaluation: %fms", t_eval.count());
-			Text("Draw bodies: %fms", t_body.count());
-			Text("Draw grid: %fms", t_grid.count());
-			Text("Draw trails: %fms", t_trail.count());
+			Text("Tree construction: %f ms", t_tree.count());
+			Text("Force evaluation: %f ms", t_eval.count());
+			Text("Draw bodies: %f ms", t_body.count());
+			Text("Draw grid: %f ms", t_grid.count());
+			Text("Draw trails: %f ms", t_trail.count());
+			Text("Last total energy calculation: %f ms", t_energy.count());
 			Spacing();
 		}
 
@@ -120,7 +150,7 @@ namespace nbody
 			if (CollapsingHeader("Tree statistics"))
 			{
 
-				auto mod_bh_tree = reinterpret_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
+				auto mod_bh_tree = dynamic_cast<ModelBarnesHut *>(m_sim->m_mod_ptr.get());
 				auto stats = mod_bh_tree->getTreeRoot()->getStats();
 				auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
 
@@ -145,9 +175,9 @@ namespace nbody
 				auto const& centre_mass = m_highlighted->getCentreMass();
 
 				Text("Node: BHTreeNode@%p", static_cast<const void*>(m_highlighted));
-				Text("Centre: (%em, %em)", centre.x, centre.y);
-				Text("Side length: %em", len);
-				Text("Centre of mass: (%em, %em)", centre_mass.x, centre_mass.y);
+				Text("Centre: (%.4e m, %.4e m)", centre.x, centre.y);
+				Text("Side length: %.4e m", len);
+				Text("Centre of mass: (%.4e m, %.4e m)", centre_mass.x, centre_mass.y);
 				Text("Level: %zu", m_highlighted->getLevel());
 				Text("Bodies contained: %zu", m_highlighted->getNumBodies());
 				Spacing();
@@ -158,22 +188,22 @@ namespace nbody
 
 		if (CollapsingHeader("Body editor"))
 		{
-			/*    This is naughty   */
-			auto state = const_cast<ParticleState*>(reinterpret_cast<ParticleState const *>(m_sim->m_int_ptr->getState()));
+						 /*    This is naughty   */
+			auto state = const_cast<ParticleState*>(reinterpret_cast<ParticleState const *>(m_sim->m_int_ptr->getStateVector()));
 			auto aux_state = const_cast<ParticleAuxState*>(m_sim->m_mod_ptr->getAuxState());
 
-			static auto idx = 0;
-			static auto pos = &state[0].pos;
-			static auto vel = &state[0].vel;
-			static auto mass = &aux_state[0].mass;
-			static auto draw_line = false;
-			static auto energy = 0.0;
+			auto static idx = 0;
+			auto static pos = &state[0].pos;
+			auto static vel = &state[0].vel;
+			auto static mass = &aux_state[0].mass;
+			auto static draw_line = false;
+			auto static energy = 0.0;
 
 			InputInt("Index", &idx);
 			if (idx < 0)
 				idx = 0;
-			if (idx > m_sim->m_mod_ptr->getNumBodies())
-				idx = static_cast<int>(m_sim->m_mod_ptr->getNumBodies());
+			if (idx >= m_sim->m_mod_ptr->getNumBodies())
+				idx = static_cast<int>(m_sim->m_mod_ptr->getNumBodies() - 1);
 
 			pos = &state[idx].pos;
 			vel = &state[idx].vel;
@@ -222,10 +252,10 @@ namespace nbody
 			}
 			SameLine();
 			Text("%.3g", energy);
-
+			Spacing();
 		}
 
-		Text("Screen scale: %f", Display::screen_scale);
+		/*Text("Screen scale: %f", Display::screen_scale);
 		Text("Body scale: %f", Display::bodyScalingFunc(Display::screen_scale));
 		SliderFloat("Scaling crossover", &Display::scaling_cross, 0.001, 1, "%.4f", 10);
 		SliderFloat("Scaling smoothing", &Display::scaling_smooth, 0.001, 1, "%.4f", 10);
@@ -234,37 +264,38 @@ namespace nbody
 		{
 			return static_cast<float>(Display::bodyScalingFunc(i * 0.01f));
 		};
-		PlotLines("Scaling function", scl, nullptr, 100, 0, nullptr, 0.5f, 5.f, { 0, 80 });
+		PlotLines("Scaling function", scl, nullptr, 100, 0, nullptr, 0.5f, 5.f, { 0, 80 });*/
 
-		static auto show_ellipses_l = false;
-		static auto show_ellipses_r = false;
+		/*auto static show_ellipses_l = false;
+		auto static show_ellipses_r = false;
 
+		auto constexpr num = 100;
+		auto constexpr galaxy_rad = 13000 * Constants::PARSEC;
+		auto constexpr dr = galaxy_rad / num;
+		auto static delta_angle = 2 * Constants::PI * Constants::PARSEC / galaxy_rad;
+
+		InputDouble("Angle increment", &delta_angle);
 		Text("Show ellipses");
 		SameLine();
 		Checkbox("Left focus", &show_ellipses_l);
 		SameLine();
 		Checkbox("Right focus", &show_ellipses_r);
 
-		Text("nl = %d, nr = %d", DistributorRealistic::nl, DistributorRealistic::nr);
-
-		auto constexpr num = 100;
-		auto constexpr rad = 13000 * Constants::PARSEC;
-		auto constexpr dr = rad / num;
-
 		for (auto i = 0; i < num; i++)
 		{
 			auto r = (i + 1) * dr;
 			if (show_ellipses_l)
-				drawEllipse(r, eccentricity(r), 2 * Constants::PI * r / rad);
+				drawEllipse(r, eccentricity(r), r / Constants::PARSEC * delta_angle);
 			if (show_ellipses_r)
-				drawEllipse(r, eccentricity(r), 2 * Constants::PI * r / rad - Constants::PI);
-		}
+				drawEllipse(r, eccentricity(r), r / Constants::PARSEC * delta_angle - Constants::PI);
+		}*/
+		
 		//ShowTestWindow();	
 
 		End();
 	}
 
-	void drawEllipse(double const a, double const ecc, double const angle)
+	/*void drawEllipse(double const a, double const ecc, double const beta)
 	{
 		using namespace ImGui;
 
@@ -280,17 +311,10 @@ namespace nbody
 		draw_list->PushClipRectFullScreen();
 		for (auto i = 0; i < N_PTS; i++)
 		{
-			auto beta = -angle;
-			auto theta = i * delta_ang;
-			auto r = a * (1 - ecc * ecc) / (1 + ecc * cos(theta - beta));
+			auto alpha = i * delta_ang;
+			auto r = a * (1 - ecc * ecc) / (1 + ecc * cos(alpha - beta));
 
-			auto tmp = Vector2d{ r * cos(theta),
-								 r * sin(theta) };
-
-			tmp += {r / damp * sin(theta * 2 * nump),
-				    r / damp * cos(theta * 2 * nump) };
-
-			points[i] = ImVec2{ Display::worldToScreenX(tmp.x), Display::worldToScreenY(tmp.y) };
+			points[i] = ImVec2{ Display::worldToScreenX(r * cos(alpha)), Display::worldToScreenY(r * sin(alpha)) };
 		}
 		draw_list->AddPolyline(points, N_PTS, IM_COL32_WHITE, true, 1, true);
 		draw_list->PopClipRect();
@@ -315,7 +339,7 @@ namespace nbody
 			return s_ECC_DISK + (rad - galaxy_rad) / galaxy_rad * (0.0 - s_ECC_DISK);
 
 		return 0;
-	}
+	}*/
 
 	void RunState::draw(sf::Time const dt)
 	{

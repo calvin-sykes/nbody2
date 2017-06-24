@@ -52,6 +52,7 @@ namespace nbody
 			m_state[i] += (m_step / 2.0) * (m_k1[i] + m_k2[i]);
 
 		m_time += m_step;
+		m_n_steps++;
 	}
 
 	void IntegratorEulerImproved::setInitialState(Vector2d * state)
@@ -62,7 +63,7 @@ namespace nbody
 		m_time = 0;
 	}
 
-	Vector2d const* IntegratorEulerImproved::getState() const
+	Vector2d const* IntegratorEulerImproved::getStateVector() const
 	{
 		return m_state;
 	}

@@ -1,13 +1,16 @@
 #include "Error.h"
 #include "IIntegrator.h"
-#include "Vector.h"
 
 namespace nbody
 {
 	IIntegrator::IIntegrator(IModel * model, double step)
-		: m_model(model), m_step(step), m_time(0), m_err(0), m_dim(model ? model->getDim() : 0)
+		: m_model(model),
+		m_step(step),
+		m_time(0),
+		m_n_steps(0),
+		m_dim(model ? model->getDim() : 0)
 	{
-		if(!model)
+		if (!model)
 			throw MAKE_ERROR("Model was nullptr");
 
 		if (step <= 0)
@@ -28,14 +31,14 @@ namespace nbody
 		return m_step;
 	}
 
+	size_t IIntegrator::getNumSteps() const
+	{
+		return m_n_steps;
+	}
+
 	double IIntegrator::getTime() const
 	{
 		return m_time;
-	}
-
-	double IIntegrator::getError() const
-	{
-		return m_err;
 	}
 
 	void IIntegrator::setModel(IModel * model)

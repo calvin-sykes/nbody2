@@ -58,6 +58,8 @@ namespace nbody
 		explicit IModel(std::string name, bool has_tree = false, size_t dim = 1);
 		virtual ~IModel();
 
+		std::string const& getName() const;
+
 		void init(size_t num_bodies, double step);
 		void addBodies(IDistributor const& dist, std::unique_ptr<IColourer> col, BodyGroupProperties const& bgp);
 		void updateColours(Vector2d const* all);
@@ -66,6 +68,10 @@ namespace nbody
 		virtual BHTreeNode const* getTreeRoot() const = 0;
 
 		bool hasTree() const;
+		
+		Vector2d getCentreMass() const;
+
+		double getTotalEnergy(Vector2d const* all) const;
 
 		size_t getNumBodies() const;
 		size_t getDim() const;
@@ -74,8 +80,6 @@ namespace nbody
 		Vector2d * getInitialStateVector() const;
 		ParticleAuxState const* getAuxState() const;
 		ParticleColourState const* getColourState() const;
-		Vector2d getCentreMass() const;
-		std::string const& getName() const;
 
 	protected:
 		ParticleState * m_initial_state;
