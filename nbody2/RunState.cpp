@@ -312,7 +312,7 @@ namespace nbody
 		Begin("Scale", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 		auto draw_list = GetWindowDrawList();
 		auto cursor_pos = GetCursorScreenPos();
-		auto begin = ImVec2{ cursor_pos.x + (scale_overlay_width - scale_sl) / 2.f, cursor_pos.y };
+		auto begin = ImVec2{ scale_overlay_pos.x + (scale_overlay_width - scale_sl) / 2.f, cursor_pos.y };
 		auto end = ImVec2{ begin.x + scale_sl, begin.y };
 		draw_list->AddLine(begin, end, IM_COL32_WHITE, 3);
 		Spacing();
@@ -325,7 +325,7 @@ namespace nbody
 		sprintf(scale_text, "%.0f pc", num_pc);
 #endif
 		auto text_len = CalcTextSize(scale_text).x;
-		SetCursorPos({ cursor_pos.x + GetWindowWidth() / 2.f - text_len / 2.f, cursor_pos.y });
+		SetCursorPos({ GetWindowWidth() / 2.f - text_len / 2.f, cursor_pos.y });
 		Text(scale_text);
 		End();
 	}
