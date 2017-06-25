@@ -6,14 +6,6 @@ namespace nbody
 {
 	std::exponential_distribution<> DistributorExponential::m_exp_dist{ s_lambda };
 
-	DistributorExponential::DistributorExponential() : IDistributor()
-	{
-		getExpRand = []()
-		{
-			return m_exp_dist(m_gen);
-		};
-	}
-
 	DistributorExponential::~DistributorExponential()
 	{
 	}

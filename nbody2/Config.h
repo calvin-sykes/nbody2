@@ -10,6 +10,12 @@
 // Visual Studio
 #ifdef _MSC_VER
 #define SAFE_STRFN
+#define MSVC_ALIGN __declspec()
+#endif
+
+// GCC
+#ifdef __GNUG__
+#define GCC_ALIGN
 #endif
 
 #endif

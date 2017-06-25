@@ -12,7 +12,14 @@ namespace nbody
 	class DistributorExponential : public IDistributor
 	{
 	public:
-		DistributorExponential();
+		DistributorExponential()
+		{
+			getExpRand = []()
+			{
+				return m_exp_dist(m_gen);
+			};
+		}
+
 		virtual ~DistributorExponential();
 		
 		static std::unique_ptr<IDistributor> create();

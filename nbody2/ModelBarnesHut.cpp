@@ -5,6 +5,7 @@
 #include "Timings.h"
 #include "Types.h"
 
+#include <algorithm>
 #include <numeric>
 
 namespace nbody

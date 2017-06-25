@@ -1,6 +1,7 @@
 #ifndef COMPLEX_CDF_H
 #define COMPLEX_CDF_H
 
+#include <cstddef> // for size_t under GCC
 #include <vector>
 
 namespace nbody
