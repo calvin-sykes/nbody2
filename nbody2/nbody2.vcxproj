@@ -255,7 +255,8 @@ xcopy media "$(OutDir)media" /S/E/Y/D/E/I</Command>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalOptions>/Qoverride-limits</AdditionalOptions>
+      <AdditionalOptions>
+      </AdditionalOptions>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <Cpp0xSupport>false</Cpp0xSupport>
@@ -267,6 +268,7 @@ xcopy media "$(OutDir)media" /S/E/Y/D/E/I</Command>
       <Mtune>Haswell</Mtune>
       <Parallelization>true</Parallelization>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

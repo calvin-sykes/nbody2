@@ -1,4 +1,5 @@
 #include "BHTreeNode.h"
+#include "Config.h"
 #include "Display.h"
 #include "IState.h"
 #include "ModelBarnesHut.h"
@@ -96,16 +97,14 @@ namespace nbody
 		SetNextWindowPos({ 10.f, 10.f }, ImGuiSetCond_FirstUseEver);
 		SetNextWindowSizeConstraints({ h_sz, 0.f }, { h_sz, FLT_MAX });
 		Begin("Diagnostics", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove);
-		Spacing();
-
 		if (CollapsingHeader("Simulation statistics"))
 		{
 			using namespace std::chrono;
-			
+
 			auto constexpr SECS_IN_YEAR = 86400 * 365;
 
 			Text("Number of steps: %zu", m_sim->m_int_ptr->getNumSteps());
-			
+
 			auto m_time_yrs = m_sim->m_int_ptr->getTime() / SECS_IN_YEAR;
 			Text("Simulation time: %.3g yrs", m_time_yrs);
 
@@ -116,7 +115,7 @@ namespace nbody
 			//AlignFirstTextHeightToWidgets();
 			Text("System energy: %.3g J", m_energy);
 			SameLine();
-			if(SmallButton("Recalculate"))
+			if (SmallButton("Recalculate"))
 			{
 				m_energy = m_sim->m_mod_ptr->getTotalEnergy(m_sim->m_int_ptr->getStateVector());
 			}
@@ -188,7 +187,7 @@ namespace nbody
 
 		if (CollapsingHeader("Body editor"))
 		{
-						 /*    This is naughty   */
+			/*    This is naughty   */
 			auto state = const_cast<ParticleState*>(reinterpret_cast<ParticleState const *>(m_sim->m_int_ptr->getStateVector()));
 			auto aux_state = const_cast<ParticleAuxState*>(m_sim->m_mod_ptr->getAuxState());
 
@@ -289,9 +288,45 @@ namespace nbody
 			if (show_ellipses_r)
 				drawEllipse(r, eccentricity(r), r / Constants::PARSEC * delta_angle - Constants::PI);
 		}*/
-		
-		//ShowTestWindow();	
 
+		End();
+
+		//ShowTestWindow();
+
+		auto constexpr scale_overlay_width = 300.f;
+		auto constexpr scale_overlay_height = 50.f;
+		auto const scale_overlay_pos = Display::screen_size - Vector2f{ scale_overlay_width + 10, scale_overlay_height + 10 };
+
+		// get world length that fits in overlay
+		auto const max_wl = Display::screenToWorldLength(scale_overlay_width);
+		// find nearest power of ten
+		auto const log_wl_pc = static_cast<int>(floor(log10(max_wl / Constants::PARSEC)));
+		// corresponding number of parsecs
+		auto const num_pc = pow(10.0, log_wl_pc);
+		// get corresponding screen length
+		auto const scale_sl = Display::worldToScreenLength(num_pc * Constants::PARSEC);
+
+		SetNextWindowPos(scale_overlay_pos);
+		SetNextWindowSize({ scale_overlay_width, scale_overlay_height });
+
+		Begin("Scale", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+		auto draw_list = GetWindowDrawList();
+		auto cursor_pos = GetCursorScreenPos();
+		auto begin = ImVec2{ cursor_pos.x + (scale_overlay_width - scale_sl) / 2.f, cursor_pos.y };
+		auto end = ImVec2{ begin.x + scale_sl, begin.y };
+		draw_list->AddLine(begin, end, IM_COL32_WHITE, 3);
+		Spacing();
+		cursor_pos = GetCursorPos();
+
+		char scale_text[32];
+#ifdef SAFE_STRFN
+		sprintf_s(scale_text, "%.0f pc", num_pc);
+#else
+		sprintf(scale_text, "%.0f pc", num_pc);
+#endif
+		auto text_len = CalcTextSize(scale_text).x;
+		SetCursorPos({ cursor_pos.x + GetWindowWidth() / 2.f - text_len / 2.f, cursor_pos.y });
+		Text(scale_text);
 		End();
 	}
 

@@ -40,6 +40,11 @@ namespace nbody
 			return static_cast<double>(-1 * ((screen_y)-0.5* screen_size.y + screen_offset.y) * (2 * screen_scale * RADIUS) / screen_size.y);
 		}
 
+		double screenToWorldLength(float screen_length)
+		{
+			return static_cast<double>(screen_length * RADIUS * 2 * screen_scale / screen_size.y);
+		}
+
 		float bodyScalingFunc(float rad)
 		{
 			auto blend = [](auto x, auto cross, auto smooth) { return 0.5 + 0.5 * tanh((x - cross) / smooth); };

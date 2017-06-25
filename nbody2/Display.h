@@ -20,6 +20,7 @@ namespace nbody
 		float worldToScreenLength(double world_length);
 		double screenToWorldX(float screen_x);
 		double screenToWorldY(float screen_y);
+		double screenToWorldLength(float screen_length);
 
 		float bodyScalingFunc(float rad);
 	}
