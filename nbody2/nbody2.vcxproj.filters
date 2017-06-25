@@ -303,14 +303,4 @@
       <Filter>Header Files\distributor</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="sfml-icon-small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="segoeui.ttf">
-      <Filter>Resource Files</Filter>
-    </Font>
-  </ItemGroup>
 </Project>

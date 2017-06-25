@@ -97,7 +97,8 @@ namespace nbody
 
 	void Sim::loadFonts() const
 	{
-		m_asset_mgr.loadFont("droid_sans", 16.f, "media/DroidSans.ttf");
+		//m_asset_mgr.loadFont("droid_sans", 16.f, "media/DroidSans.ttf");
+		m_asset_mgr.loadFont("fira_sans", 16.f, "media/FiraSans-Regular.ttf");
 	}
 
 	void Sim::setProperties(SimProperties const& props)
