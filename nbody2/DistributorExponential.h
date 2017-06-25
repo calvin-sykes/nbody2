@@ -30,7 +30,7 @@ namespace nbody
 		static std::exponential_distribution<> m_exp_dist;
 		double(*getExpRand)();
 
-		double static constexpr s_lambda = 4.0;
+		double static constexpr s_LAMBDA = 4.0;
 	};
 }
 

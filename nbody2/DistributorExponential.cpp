@@ -4,7 +4,9 @@
 
 namespace nbody
 {
-	std::exponential_distribution<> DistributorExponential::m_exp_dist{ s_lambda };
+	double constexpr DistributorExponential::s_LAMBDA;
+	
+	std::exponential_distribution<> DistributorExponential::m_exp_dist{ s_LAMBDA };
 
 	DistributorExponential::~DistributorExponential()
 	{
