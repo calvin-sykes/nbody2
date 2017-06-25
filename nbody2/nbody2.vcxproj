@@ -256,7 +256,7 @@ xcopy media "$(OutDir)media" /S/E/Y/D/E/I</Command>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/Qoverride-limits</AdditionalOptions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <Cpp0xSupport>false</Cpp0xSupport>
       <GenerateAlternateCodePaths>AVX2</GenerateAlternateCodePaths>
@@ -266,7 +266,7 @@ xcopy media "$(OutDir)media" /S/E/Y/D/E/I</Command>
       <UseIntelOptimizedHeaders>false</UseIntelOptimizedHeaders>
       <Mtune>Haswell</Mtune>
       <Parallelization>true</Parallelization>
-      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
