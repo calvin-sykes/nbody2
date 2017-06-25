@@ -59,6 +59,9 @@ namespace nbody
 		 */
 		static Vector2d velocity(Vector2d const& pos, double const a, double const m, double const e, double const phi);
 
+		int(*getIntRand)(int, int);
+		static std::uniform_int_distribution<> m_int_dist;
+		
 		mutable ComplexCDF m_cdf;
 
 		constexpr static double s_ECC_CORE = 0.35;

@@ -4,8 +4,14 @@
 
 namespace nbody
 {
+	std::uniform_int_distribution<> DistributorRealistic::m_int_dist{};
+
 	DistributorRealistic::DistributorRealistic()
 	{
+		getIntRand = [](int lower, int upper)
+		{
+			return m_int_dist(m_gen, std::uniform_int_distribution<>::param_type{ lower, upper });
+		};
 	}
 
 	DistributorRealistic::~DistributorRealistic()
@@ -35,6 +41,10 @@ namespace nbody
 		bodies.m_state[0].vel = vel_offset;
 		bodies.m_aux_state[0].mass = props.central_mass * Constants::SOLAR_MASS;
 
+		// random distribution properties
+		auto const n_arms = getIntRand(2, 4);
+		auto const arm_sep = 2 * Constants::PI / n_arms;
+
 		if (props.use_parsecs)
 		{
 			bodies.m_state[0].pos *= Constants::PARSEC;
@@ -50,12 +60,12 @@ namespace nbody
 			auto alpha = getRand(0, 2 * Constants::PI);
 			
 			
-			auto beta = getRand(0, 1) < 0.5  ? angle : angle + Constants::PI;
+			auto beta = angle + arm_sep * getIntRand(0, n_arms - 1);
 
 			auto r = a * (1 - e * e) / (1 + e * cos(alpha - beta));
 
 			// smudging
-			alpha += getRand(-0.1, 0.1);
+			alpha += getRand(-0.05, 0.05);
 			
 			auto pos = Vector2d{ r * cos(alpha), r * sin(alpha) };
 
