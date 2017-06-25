@@ -1,6 +1,7 @@
 #include "ComplexCDF.h"
 #include "Error.h"
 #include <cassert>
+#include <cmath> // for size_t under GCC
 
 namespace nbody
 {

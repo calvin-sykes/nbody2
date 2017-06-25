@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cstddef> // for size_t under GCC
+
 namespace nbody
 {
 	/*template <typename T>
