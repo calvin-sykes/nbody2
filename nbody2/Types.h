@@ -39,8 +39,6 @@ namespace nbody
 		ParticleData(ParticleData const& src);
 		ParticleData & operator=(ParticleData const& src);
 
-		bool operator==(ParticleData const& other) const;
-
 		void reset();
 		bool isNotNull() const;
 

@@ -287,19 +287,22 @@ namespace nbody
 	// accel caused by p2 on p1
 	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2) const
 	{
-		if (p1 == p2)
+		auto const& s1 = *p1.m_state;
+		auto const& s2 = *p2.m_state;
+		
+		if (s1.pos == s2.pos)
 			return {};
 
-		auto const& r1 = p1.m_state->pos;
-		auto const& r2 = p2.m_state->pos;
+		auto const& r1 = s1.pos;
+		auto const& r2 = s2.pos;
 		auto m2 = p2.m_aux_state->mass;
 
 		auto rel_pos = r2 - r1; // relative position vector r
 		auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2
 		auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // rhat = r/|r|
 		rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
-															  // F = (G m1 m2 / (|r|**2) * r_hat
-		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;// a = F / m1
+																// F = (G m1 m2 / (|r|**2) * r_hat
+		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;	// a = F / m1
 	}
 
 	Vector2d BHTreeNode::calcTreeForce(ParticleData const& p)

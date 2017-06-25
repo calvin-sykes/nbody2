@@ -32,11 +32,6 @@ namespace nbody
 		return *this;
 	}
 
-	bool ParticleData::operator==(ParticleData const& other) const
-	{
-		return m_state == other.m_state && m_aux_state == other.m_aux_state;
-	}
-
 	void ParticleData::reset()
 	{
 		m_state = nullptr;

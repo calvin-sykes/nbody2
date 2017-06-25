@@ -41,11 +41,8 @@ namespace nbody
 
 		timings[Timings::FORCE_CALC_START] = Clock::now();
 #pragma omp parallel for schedule(static)
-		for (auto i = 1; i < m_num_bodies; i++)
+		for (int i = 1; i < m_num_bodies; i++)
 		{
-			if (m_masked[i])
-				continue;
-
 			ParticleData p{ &state[i], &m_aux_state[i] };
 
 			deriv_state[i].acc = m_root.calcForce(p);
