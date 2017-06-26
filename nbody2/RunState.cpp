@@ -7,6 +7,8 @@
 #include "Sim.h"
 #include "Timings.h"
 
+#include "specrend.h"
+
 #include "imgui.h"
 #include "imgui_sfml.h"
 
@@ -253,6 +255,22 @@ namespace nbody
 			Text("%.3g", energy);
 			Spacing();
 		}
+
+		using namespace specrend;
+
+		static double x, y, z;
+		static double col[3];
+		static auto cs = &SMPTEsystem;
+		static auto temp = 1000;
+
+		SliderInt("Temperature", &temp, 1000, 50000);
+		bbTemp = static_cast<double>(temp);
+		spectrum_to_xyz(bb_spectrum, &x, &y, &z);
+		xyz_to_rgb(cs, x, y, z, col, col + 1, col + 2);
+		constrain_rgb(col, col + 1, col + 2);
+		norm_rgb(col, col + 1, col + 2);
+		SameLine();
+		ColorButton({ static_cast<float>(col[0]), static_cast<float>(col[1]), static_cast<float>(col[2]), 1 });
 
 		/*Text("Screen scale: %f", Display::screen_scale);
 		Text("Body scale: %f", Display::bodyScalingFunc(Display::screen_scale));

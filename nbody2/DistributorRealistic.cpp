@@ -92,7 +92,7 @@ namespace nbody
 
 	std::pair<double, double> DistributorRealistic::constrainMasses(std::pair<double, double> const limits, double const rad, double const core_rad, double const galaxy_rad)
 	{
-		auto constexpr core_max = 2.5;
+		auto constexpr core_max = 2.0;
 		auto constexpr gal_min = 1.0;
 		
 		if (rad < core_rad)
