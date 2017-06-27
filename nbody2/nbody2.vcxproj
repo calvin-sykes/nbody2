@@ -325,6 +325,8 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
     <ClCompile Include="IModel.cpp" />
+    <ClCompile Include="IntegratorADB2.cpp" />
+    <ClCompile Include="IntegratorADB6.cpp" />
     <ClCompile Include="IntegratorEuler.cpp" />
     <ClCompile Include="IntegratorEulerImproved.cpp" />
     <ClCompile Include="main.cpp" />
@@ -367,6 +369,8 @@ xcopy "$(ProjectDir)"media "$(OutDir)media" /S/E/Y/D/I</Command>
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_internal.h" />
     <ClInclude Include="IModel.h" />
+    <ClInclude Include="IntegratorADB2.h" />
+    <ClInclude Include="IntegratorADB6.h" />
     <ClInclude Include="IntegratorEuler.h" />
     <ClInclude Include="IntegratorEulerImproved.h" />
     <ClInclude Include="ModelBarnesHut.h" />

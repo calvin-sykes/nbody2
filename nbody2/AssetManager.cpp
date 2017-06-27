@@ -12,6 +12,8 @@
 #include "IIntegrator.h"
 #include "IntegratorEuler.h"
 #include "IntegratorEulerImproved.h"
+#include "IntegratorADB2.h"
+#include "IntegratorADB6.h"
 #include "IModel.h"
 #include "ModelBruteForce.h"
 #include "ModelBarnesHut.h"
@@ -58,6 +60,8 @@ namespace nbody
 	{
 		m_integrators[IntegratorType::EULER] = IntegratorEuler::create;
 		m_integrators[IntegratorType::MODIFIED_EULER] = IntegratorEulerImproved::create;
+		m_integrators[IntegratorType::ADB2] = IntegratorADB2::create;
+		m_integrators[IntegratorType::ADB6] = IntegratorADB6::create;
 	}
 
 	void AssetManager::loadModels()

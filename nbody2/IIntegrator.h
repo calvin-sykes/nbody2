@@ -9,6 +9,8 @@ namespace nbody
 	{
 		EULER,
 		MODIFIED_EULER,
+		ADB2,
+		ADB6, 
 		N_INTEGRATORS,
 		INVALID = -1
 	};
@@ -35,6 +37,14 @@ namespace nbody
 		{
 			IntegratorType::MODIFIED_EULER,
 			"Modified Euler"
+		},
+		{
+			IntegratorType::ADB2,
+			"Adams-Bashforth 2 step"
+		},
+		{
+			IntegratorType::ADB6,
+			"Adams-Bashforth 6 step"
 		}
 		} };
 

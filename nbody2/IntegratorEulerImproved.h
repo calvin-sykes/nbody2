@@ -3,8 +3,6 @@
 
 #include "IIntegrator.h"
 
-#include <memory>
-
 namespace nbody
 {
 	class IntegratorEulerImproved :	public IIntegrator

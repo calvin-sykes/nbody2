@@ -165,6 +165,12 @@
     <ClCompile Include="ComplexCDF.cpp">
       <Filter>Source Files\distributor</Filter>
     </ClCompile>
+    <ClCompile Include="IntegratorADB2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IntegratorADB6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vector.h">
@@ -301,6 +307,12 @@
     </ClInclude>
     <ClInclude Include="ComplexCDF.h">
       <Filter>Header Files\distributor</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegratorADB2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegratorADB6.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

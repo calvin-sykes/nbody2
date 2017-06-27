@@ -10,15 +10,12 @@ namespace nbody
 		: IIntegrator(model, step),
 		m_state(nullptr)
 	{
-		if (!model)
-			throw MAKE_ERROR("Model was nullptr");
-
 		m_state = new Vector2d[model->getDim()];
 		m_k1 = new Vector2d[model->getDim()];
 
 		std::stringstream ss;
 		ss << "Euler (dt =" << step << ")";
-		this->setName(ss.str());
+		setName(ss.str());
 	}
 
 	IntegratorEuler::~IntegratorEuler()

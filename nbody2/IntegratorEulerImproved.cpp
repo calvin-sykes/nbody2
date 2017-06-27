@@ -18,9 +18,6 @@ namespace nbody
 		m_k1(nullptr),
 		m_k2(nullptr)
 	{
-		if (!model)
-			throw MAKE_ERROR("Model was nullptr");
-
 		m_state = new Vector2d[model->getDim()];
 		m_tmp = new Vector2d[model->getDim()];
 		m_k1 = new Vector2d[model->getDim()];
@@ -28,7 +25,7 @@ namespace nbody
 
 		std::stringstream ss;
 		ss << "Modified Euler (dt =" << step << ")";
-		this->setName(ss.str());
+		setName(ss.str());
 	}
 
 	IntegratorEulerImproved::~IntegratorEulerImproved()
