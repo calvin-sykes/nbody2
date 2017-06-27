@@ -37,7 +37,8 @@ namespace nbody
 		float static constexpr s_MAX_SIZE = 5;
 		float static constexpr s_BH_SIZE = 8;
 		size_t static constexpr s_VERTICES = 20;
-		float static constexpr s_THETA = (2 * Constants::PI) / s_VERTICES;
+		size_t static constexpr s_VERTICES_SMALL = 10;
+		float static constexpr s_THETA = static_cast<float>(2 * Constants::PI) / s_VERTICES;
 
 		sf::Vector2f m_unit_circle[s_VERTICES];
 		sf::Vector2f m_scratch[s_VERTICES];

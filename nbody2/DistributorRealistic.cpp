@@ -58,23 +58,23 @@ namespace nbody
 
 			auto angle = a * delta_ang;
 			auto alpha = getRand(0, 2 * Constants::PI);
-			
-			
+
+
 			auto beta = angle + arm_sep * getIntRand(0, n_arms - 1);
 
 			auto r = a * (1 - e * e) / (1 + e * cos(alpha - beta));
 
 			// smudging
 			alpha += getRand(-0.05, 0.05);
-			
+
 			auto pos = Vector2d{ r * cos(alpha), r * sin(alpha) };
 
 			auto vel = velocity(pos * Constants::PARSEC,
-								a * Constants::PARSEC,
-								props.central_mass * Constants::SOLAR_MASS,
-								e,
-								beta);
-			
+				a * Constants::PARSEC,
+				props.central_mass * Constants::SOLAR_MASS,
+				e,
+				beta);
+
 			auto mass_lims = constrainMasses({ props.min_mass, props.max_mass }, picked_rad, core_rad, galaxy_rad);
 			auto k = (1 - pow_alpha) / (pow(mass_lims.second, 1 - pow_alpha) - pow(mass_lims.first, 1 - pow_alpha));
 			auto mass = salpeterIMF(pow_alpha, k, mass_lims.first);
@@ -94,7 +94,7 @@ namespace nbody
 	{
 		auto constexpr core_max = 2.0;
 		auto constexpr gal_min = 1.0;
-		
+
 		if (rad < core_rad)
 			return std::make_pair(limits.first, core_max + (limits.second - core_max) * rad / core_rad);
 
@@ -134,7 +134,7 @@ namespace nbody
 
 		auto vx = vr * cos(theta) - vtheta * sin(theta);
 		auto vy = vr * sin(theta) + vtheta * cos(theta);
-		
-		return{ vx, vy };
+
+		return { vx, vy };
 	}
 }

@@ -17,7 +17,7 @@ namespace nbody
 	{
 	}
 
-	void nbody::BodyManager::update(Vector2d const* state, ParticleAuxState const* aux_state, ParticleColourState const* colour_state, size_t const num_bodies)
+	void BodyManager::update(Vector2d const* state, ParticleAuxState const* aux_state, ParticleColourState const* colour_state, size_t const num_bodies)
 	{
 		auto bodies = reinterpret_cast<ParticleState const*>(state);
 
@@ -56,25 +56,18 @@ namespace nbody
 			auto pos = sf::Vector2f{ screen_x, screen_y };
 			auto radius = m_radii[idx] * m_scl;
 
-			// WIP
-			/*auto v_mag = p.vel.mag();
-			auto phase = min(Constants::PI / 2., (v_mag * 1e-5) * (Constants::PI / 2.));
-			auto red = static_cast<int>(254 * sin(phase));
-			auto blue = static_cast<int>(254 * cos(phase));
-			auto green = 0;
-			auto col = sf::Color(red, green, blue);*/
-
 			auto col = c.colour;
+			auto count = radius > 5 ? s_VERTICES : s_VERTICES_SMALL;
 
 			// Calculate positions of vertices around the edge of the body
-			for (size_t i = 0; i < s_VERTICES; i++)
+			for (size_t i = 0; i < count; i++)
 			{
-				m_scratch[i] = m_unit_circle[i] * radius;
+				m_scratch[i] = m_unit_circle[radius > 5 ? i : i * 2] * radius;
 				m_scratch[i] += pos;
 			}
 
 			// put into vertex array
-			for (size_t i = 0; i < s_VERTICES - 1; i++)
+			for (size_t i = 0; i < count - 1; i++)
 			{
 				m_vtx_array.append({ pos, col });
 				m_vtx_array.append({ m_scratch[i], col });
@@ -82,7 +75,7 @@ namespace nbody
 			}
 			// last point reconnects to first
 			m_vtx_array.append({ pos, col });
-			m_vtx_array.append({ m_scratch[s_VERTICES - 1], col });
+			m_vtx_array.append({ m_scratch[count - 1], col });
 			m_vtx_array.append({ m_scratch[0], col });
 		}
 	}
