@@ -86,10 +86,14 @@ namespace nbody
 		if (mode == GridDrawMode::APPROX && !node->wasSubdivided())
 			return;
 
-		for (auto d : node->m_daughters)
+		// no need to recurse if this node was already too small to be drawn
+		if (screen_length > 5)
 		{
-			if (d)
-				drawNode(d, mode, highlighted);
+			for (auto d : node->m_daughters)
+			{
+				if (d)
+					drawNode(d, mode, highlighted);
+			}
 		}
 	}
 }
