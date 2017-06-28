@@ -166,10 +166,10 @@
       <Filter>Source Files\distributor</Filter>
     </ClCompile>
     <ClCompile Include="IntegratorADB2.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\integration</Filter>
     </ClCompile>
     <ClCompile Include="IntegratorADB6.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\integration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -309,10 +309,10 @@
       <Filter>Header Files\distributor</Filter>
     </ClInclude>
     <ClInclude Include="IntegratorADB2.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\integration</Filter>
     </ClInclude>
     <ClInclude Include="IntegratorADB6.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\integration</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
