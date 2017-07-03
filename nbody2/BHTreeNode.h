@@ -60,7 +60,7 @@ namespace nbody
 		void insert(ParticleData const& new_body, size_t level);
 		void threadTree(BHTreeNode * next = nullptr);
 
-		Vector2d calcForce(ParticleData const& p);
+		Vector2d calcForce(ParticleData const& p) const;
 
 		BHTreeNode *m_daughters[NUM_DAUGHTERS];
 		BHTreeNode *m_more, *m_next;
@@ -68,8 +68,8 @@ namespace nbody
 	private:
 		BHTreeNode * createDaughter(Quad const& q) const;
 
-		Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2) const;
-		Vector2d calcTreeForce(ParticleData const& p);
+		static Vector2d calcTreeForce(ParticleData const& p, BHTreeNode const* root);
+		static Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2);
 
 		size_t m_level;
 		ParticleData m_body;

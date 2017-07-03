@@ -246,7 +246,7 @@ namespace nbody
 	void BHTreeNode::threadTree(BHTreeNode * next)
 	{
 		m_next = next;
-		
+
 		if (!isExternal())
 		{
 			auto n_daughters = 0;
@@ -293,9 +293,11 @@ namespace nbody
 		}
 	}
 
-	Vector2d BHTreeNode::calcForce(ParticleData const & p)
+	Vector2d BHTreeNode::calcForce(ParticleData const & p) const
 	{
-		auto acc = calcTreeForce(p);
+		assert(isRoot());
+
+		auto acc = calcTreeForce(p, this);
 
 		if (s_renegades.size())
 		{
@@ -308,8 +310,47 @@ namespace nbody
 		return acc;
 	}
 
+	Vector2d BHTreeNode::calcTreeForce(ParticleData const& p, BHTreeNode const* root)
+	{
+		Vector2d acc = {};
+
+		for (auto q = root; q != nullptr; )
+		{
+			// if this node is leaf, use direct calculation
+			if (q->m_num == 1)
+			{
+				acc += calcAccel(p, q->m_body);
+				q = q->m_next;
+				s_stat.m_num_calc++;
+			}
+			else // m_num > 1
+			{
+				auto rel_pos = q->m_centre_mass - p.m_state->pos;
+				auto rel_pos_mag_sq = rel_pos.mag_sq();
+				// if node is far enough, use BH approx
+				if (rel_pos_mag_sq > q->m_rcrit_sq)
+				{
+					q->m_subdivided = false;
+					// construct 'combined particle'
+					auto combined_state = ParticleState{ q->m_centre_mass, { 0, 0 } };
+					auto combined_aux_state = ParticleAuxState{ q->m_mass };
+					acc += calcAccel(p, { &combined_state, &combined_aux_state });
+					q = q->m_next;
+					s_stat.m_num_calc++;
+				}
+				else // try daughters
+				{
+					q->m_subdivided = true;
+					q = q->m_more;
+				}
+			}
+		}
+
+		return acc;
+	}
+
 	// accel caused by p2 on p1
-	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2) const
+	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2)
 	{
 		auto const& s1 = *p1.m_state;
 		auto const& s2 = *p2.m_state;
@@ -327,46 +368,5 @@ namespace nbody
 		rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
 		// F = (G m1 m2 / (|r|**2) * r_hat
 		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;	// a = F / m1
-	}
-
-	Vector2d BHTreeNode::calcTreeForce(ParticleData const& p)
-	{
-		Vector2d acc;
-
-		// if this node is leaf, use direct calculation
-		if (m_num == 1)
-		{
-			acc = calcAccel(p, m_body);
-			s_stat.m_num_calc++;
-		}
-		else // m_num > 1
-		{
-			auto rel_pos = m_centre_mass - p.m_state->pos;
-			auto rel_pos_mag_sq = rel_pos.mag_sq();
-			// if node is far enough, use BH approx
-			if (rel_pos_mag_sq > m_rcrit_sq)
-			{
-				m_subdivided = false;
-
-				// construct 'combined particle'
-				auto combined_state = ParticleState{ m_centre_mass, {0, 0} };
-				auto combined_aux_state = ParticleAuxState{ m_mass };
-				acc = calcAccel(p, { &combined_state, &combined_aux_state });
-
-				s_stat.m_num_calc++;
-			}
-			else // try daughters
-			{
-				m_subdivided = true;
-
-				for (auto d : m_daughters)
-				{
-					if (d)
-						acc += d->calcTreeForce(p);
-				}
-			}
-		}
-
-		return acc;
 	}
 }
