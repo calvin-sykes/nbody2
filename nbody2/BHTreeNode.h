@@ -17,6 +17,14 @@ namespace nbody
 		size_t m_max_level; // Deepest level in tree
 	};
 
+	class BHTreeNode;
+
+	enum class TreeObjectType
+	{
+		BODY,
+		NODE
+	};
+
 	class BHTreeNode
 	{
 	public:
@@ -50,14 +58,16 @@ namespace nbody
 		BHTreeNode const* getParent() const;
 
 		void insert(ParticleData const& new_body, size_t level);
+		void threadTree(BHTreeNode * next = nullptr);
 
 		Vector2d calcForce(ParticleData const& p);
 
-		BHTreeNode * m_daughters[NUM_DAUGHTERS];
+		BHTreeNode *m_daughters[NUM_DAUGHTERS];
+		BHTreeNode *m_more, *m_next;
 
 	private:
 		BHTreeNode * createDaughter(Quad const& q) const;
-		
+
 		Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2) const;
 		Vector2d calcTreeForce(ParticleData const& p);
 

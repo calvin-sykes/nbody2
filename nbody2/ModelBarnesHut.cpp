@@ -37,7 +37,20 @@ namespace nbody
 		timings[Timings::TREE_BUILD_START] = Clock::now();
 		calcBounds(all);
 		buildTree(all);
+		m_root.threadTree();
 		timings[Timings::TREE_BUILD_END] = Clock::now();
+
+		/*auto nbodies3 = 0;
+		for(auto q = m_root.m_more; q != nullptr; )
+		{
+			if (q->isExternal())
+			{
+				nbodies3++;
+				q = q->m_next;
+			}
+			else
+				q = q->m_more;
+		}*/
 
 		timings[Timings::FORCE_CALC_START] = Clock::now();
 #pragma omp parallel for schedule(static)

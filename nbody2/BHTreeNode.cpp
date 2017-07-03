@@ -13,7 +13,9 @@ namespace nbody
 	//double BHTreeNode::s_bh_theta = 0;
 
 	BHTreeNode::BHTreeNode(Quad const& q, size_t const level, BHTreeNode const* parent)
-		: m_level(level),
+		: m_more(nullptr),
+		m_next(nullptr),
+		m_level(level),
 		m_body(),
 		m_mass(0),
 		m_rcrit_sq((q.getLength() / s_bh_theta) * (q.getLength() / s_bh_theta)),
@@ -24,6 +26,8 @@ namespace nbody
 		m_subdivided(false)
 	{
 		m_daughters[0] = m_daughters[1] = m_daughters[2] = m_daughters[3] = nullptr;
+		//m_more = nullptr;
+		//m_next = nullptr;
 		s_stat.m_node_ct++;
 		if (level > s_stat.m_max_level)
 		{
@@ -155,11 +159,11 @@ namespace nbody
 	{
 		if (isRoot() && !m_quad.contains(pos))
 			return nullptr;
-		
+
 		assert(m_quad.contains(pos));
-		
+
 		auto which = m_daughters[static_cast<size_t>(m_quad.whichDaughter(pos))];
-		
+
 		return which ? which->getHovered(pos) : this;
 	}
 
@@ -239,6 +243,26 @@ namespace nbody
 		m_num++;
 	}
 
+	void BHTreeNode::threadTree(BHTreeNode * next)
+	{
+		m_next = next;
+		
+		if (!isExternal())
+		{
+			auto n_daughters = 0;
+			BHTreeNode * actual_daughters[NUM_DAUGHTERS + 1];
+			for (auto const & d : m_daughters)
+			{
+				if (d)
+					actual_daughters[n_daughters++] = d;
+			}
+			m_more = actual_daughters[0];
+			actual_daughters[n_daughters] = next;
+			for (auto i = 0; i < n_daughters; i++)
+				actual_daughters[i]->threadTree(actual_daughters[i + 1]);
+		}
+	}
+
 	void BHTreeNode::computeMassDistribution()
 	{
 		if (m_num == 1)
@@ -289,7 +313,7 @@ namespace nbody
 	{
 		auto const& s1 = *p1.m_state;
 		auto const& s2 = *p2.m_state;
-		
+
 		if (s1.pos == s2.pos)
 			return {};
 
@@ -301,7 +325,7 @@ namespace nbody
 		auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2
 		auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // rhat = r/|r|
 		rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
-																// F = (G m1 m2 / (|r|**2) * r_hat
+		// F = (G m1 m2 / (|r|**2) * r_hat
 		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;	// a = F / m1
 	}
 
@@ -330,7 +354,7 @@ namespace nbody
 				acc = calcAccel(p, { &combined_state, &combined_aux_state });
 
 				s_stat.m_num_calc++;
-			}	
+			}
 			else // try daughters
 			{
 				m_subdivided = true;
