@@ -8,26 +8,25 @@
 namespace nbody
 {
 	std::vector<ParticleData> BHTreeNode::s_renegades;
-	DebugStats BHTreeNode::s_stat = { 0, 0, 0, 0 };
-	double BHTreeNode::s_bh_theta = 0.9;
-	//double BHTreeNode::s_bh_theta = 0;
+	std::forward_list<BHTreeNode const*> BHTreeNode::s_crit_cells;
+	DebugStats BHTreeNode::s_stat = { 0, 0, 0, 0, 0 };
+	double constexpr BHTreeNode::s_THETA;
+	size_t constexpr BHTreeNode::s_CRIT_SIZE;
 
 	BHTreeNode::BHTreeNode(Quad const& q, size_t const level, BHTreeNode const* parent)
 		: m_more(nullptr),
 		m_next(nullptr),
 		m_level(level),
 		m_body(),
-		m_mass(0),
-		m_rcrit_sq((q.getLength() / s_bh_theta) * (q.getLength() / s_bh_theta)),
-		m_centre_mass(),
+		m_c_state(),
+		m_c_aux_state(),
+		m_rcrit_sq((q.getLength() / s_THETA) * (q.getLength() / s_THETA)),
 		m_quad(q),
 		m_parent(parent),
 		m_num(0),
 		m_subdivided(false)
 	{
 		m_daughters[0] = m_daughters[1] = m_daughters[2] = m_daughters[3] = nullptr;
-		//m_more = nullptr;
-		//m_next = nullptr;
 		s_stat.m_node_ct++;
 		if (level > s_stat.m_max_level)
 		{
@@ -56,14 +55,15 @@ namespace nbody
 		}
 
 		m_quad = q;
-		m_rcrit_sq = (q.getLength() / s_bh_theta) * (q.getLength() / s_bh_theta);
+		m_rcrit_sq = (q.getLength() / s_THETA) * (q.getLength() / s_THETA);
 		m_num = 0;
-		m_mass = 0;
-		m_centre_mass = {};
+		m_c_state = {};
+		m_c_aux_state = {};
 
 		treeStatReset();
 
 		s_renegades.clear();
+		s_crit_cells.clear();
 	}
 
 	bool BHTreeNode::isRoot() const
@@ -101,12 +101,7 @@ namespace nbody
 
 	double BHTreeNode::getTheta()
 	{
-		return s_bh_theta;
-	}
-
-	void BHTreeNode::setTheta(double theta)
-	{
-		s_bh_theta = theta;
+		return s_THETA;
 	}
 
 	size_t BHTreeNode::getLevel() const
@@ -148,11 +143,17 @@ namespace nbody
 		s_stat.m_node_ct = 0;
 		s_stat.m_body_ct = 0;
 		s_stat.m_max_level = 0;
+		s_stat.m_num_crit_size = 0;
 	}
 
 	const Vector2d & BHTreeNode::getCentreMass() const
 	{
-		return m_centre_mass;
+		return m_c_state.pos;
+	}
+
+	double BHTreeNode::getMass() const
+	{
+		return m_c_aux_state.mass;
 	}
 
 	BHTreeNode const* BHTreeNode::getHovered(Vector2d const & pos) const
@@ -268,32 +269,47 @@ namespace nbody
 		if (m_num == 1)
 		{
 			assert(m_body.isNotNull());
-			auto ps = m_body.m_state;
-			auto pa = m_body.m_aux_state;
 
-			m_mass = pa->mass;
-			m_centre_mass = ps->pos;
+			m_c_state = *m_body.m_state;
+			m_c_aux_state = *m_body.m_aux_state;
 		}
 		else
 		{
-			m_mass = 0;
-			m_centre_mass = {};
+			m_c_state = {};
+			m_c_aux_state = {};
 
 			for (auto d : m_daughters)
 			{
 				if (d)
 				{
 					d->computeMassDistribution();
-					m_mass += d->m_mass;
-					m_centre_mass += d->m_centre_mass * d->m_mass;
+					m_c_state.pos += d->m_c_state.pos * d->m_c_aux_state.mass;
+					m_c_aux_state.mass += d->m_c_aux_state.mass;
 				}
 			}
 
-			m_centre_mass /= m_mass;
+			m_c_state.pos /= m_c_aux_state.mass;
 		}
 	}
 
-	Vector2d BHTreeNode::calcForce(ParticleData const & p) const
+	void BHTreeNode::computeCritSizeCells() const
+	{
+		if (m_num > s_CRIT_SIZE)
+		{
+			for (auto const& d : m_daughters)
+			{
+				if (d)
+					d->computeCritSizeCells();
+			}
+		}
+		else
+		{
+			s_crit_cells.push_front(this);
+			s_stat.m_num_crit_size++;
+		}
+	}
+
+	/*Vector2d BHTreeNode::calcForce(ParticleData const & p) const
 	{
 		assert(isRoot());
 
@@ -308,46 +324,46 @@ namespace nbody
 		}
 
 		return acc;
-	}
+	}*/
 
-	Vector2d BHTreeNode::calcTreeForce(ParticleData const& p, BHTreeNode const* root)
-	{
-		Vector2d acc = {};
+	//Vector2d BHTreeNode::calcTreeForce(ParticleData const& p, BHTreeNode const* root)
+	//{
+	//	Vector2d acc = {};
 
-		for (auto q = root; q != nullptr; )
-		{
-			// if this node is leaf, use direct calculation
-			if (q->m_num == 1)
-			{
-				acc += calcAccel(p, q->m_body);
-				q = q->m_next;
-				s_stat.m_num_calc++;
-			}
-			else // m_num > 1
-			{
-				auto rel_pos = q->m_centre_mass - p.m_state->pos;
-				auto rel_pos_mag_sq = rel_pos.mag_sq();
-				// if node is far enough, use BH approx
-				if (rel_pos_mag_sq > q->m_rcrit_sq)
-				{
-					q->m_subdivided = false;
-					// construct 'combined particle'
-					auto combined_state = ParticleState{ q->m_centre_mass, { 0, 0 } };
-					auto combined_aux_state = ParticleAuxState{ q->m_mass };
-					acc += calcAccel(p, { &combined_state, &combined_aux_state });
-					q = q->m_next;
-					s_stat.m_num_calc++;
-				}
-				else // try daughters
-				{
-					q->m_subdivided = true;
-					q = q->m_more;
-				}
-			}
-		}
+	//	for (auto q = root; q != nullptr; )
+	//	{
+	//		// if this node is leaf, use direct calculation
+	//		if (q->m_num == 1)
+	//		{
+	//			acc += calcAccel(p, q->m_body);
+	//			q = q->m_next;
+	//			s_stat.m_num_calc++;
+	//		}
+	//		else // m_num > 1
+	//		{
+	//			auto rel_pos = q->getCentreMass() - p.m_state->pos;
+	//			auto rel_pos_mag_sq = rel_pos.mag_sq();
+	//			// if node is far enough, use BH approx
+	//			if (rel_pos_mag_sq > q->m_rcrit_sq)
+	//			{
+	//				q->m_subdivided = false;
+	//				// construct 'combined particle'
+	//				auto combined_state = ParticleState{ q->getCentreMass(), { 0, 0 } };
+	//				auto combined_aux_state = ParticleAuxState{ q->getMass() };
+	//				acc += calcAccel(p, { &combined_state, &combined_aux_state });
+	//				q = q->m_next;
+	//				s_stat.m_num_calc++;
+	//			}
+	//			else // try daughters
+	//			{
+	//				q->m_subdivided = true;
+	//				q = q->m_more;
+	//			}
+	//		}
+	//	}
 
-		return acc;
-	}
+	//	return acc;
+	//}
 
 	// accel caused by p2 on p1
 	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2)
@@ -368,5 +384,138 @@ namespace nbody
 		rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
 		// F = (G m1 m2 / (|r|**2) * r_hat
 		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;	// a = F / m1
+	}
+
+	void BHTreeNode::calcForces() const
+	{
+		assert(isRoot());
+
+		for (auto cell : s_crit_cells)
+		{
+			auto ilist = makeInteractionList(this, cell);
+
+			// discover bodies in group
+			std::forward_list<ParticleData> bodies;
+			if (cell->m_num > 1)
+			{
+				for (auto q = cell->m_more; q != cell->m_next; )
+				{
+					if (q->isExternal())
+					{
+						bodies.push_front(q->m_body);
+						q = q->m_next;
+					}
+					else
+						q = q->m_more;
+				}
+			}
+			else
+			{
+				bodies.push_front(cell->m_body);
+			}
+
+			// far-field forces
+			for (auto & b : bodies)
+			{
+				b.m_deriv_state->acc = {};
+				for (auto const& elem : ilist)
+				{
+
+					b.m_deriv_state->acc += calcAccel(b, elem);
+				}
+			}
+
+			// near forces within cell are computed all to all
+			for (auto & b1 : bodies)
+			{
+				for (auto const& b2 : bodies)
+				{
+					b1.m_deriv_state->acc += calcAccel(b1, b2);
+				}
+			}
+
+			// renegade forces
+			if (s_renegades.size())
+			{
+				for (auto & b : bodies)
+				{
+					for (auto const& r : s_renegades)
+					{
+						b.m_deriv_state->acc += calcAccel(b, r);
+					}
+				}
+			}
+		}
+	}
+
+	std::forward_list<ParticleData> BHTreeNode::makeInteractionList(BHTreeNode const * root, BHTreeNode const * group)
+	{
+		std::forward_list<ParticleData> ilist;
+
+		for (auto q = root; q != root->m_next; )
+		{
+			// ignore self-interactions
+			if (q == group)
+			{
+				q = q->m_next;
+				continue;
+			}
+
+			// if this node is leaf, use direct calculation
+			if (q->m_num == 1)
+			{
+				ilist.push_front(q->m_body);
+
+				q = q->m_next;
+				s_stat.m_num_calc++;
+			}
+			else // m_num > 1
+			{
+				// if node is far enough, use BH approx
+				if (accept(q, group))
+				{
+					q->m_subdivided = false;
+					// construct 'combined particle'
+					ilist.emplace_front(&q->m_c_state, &q->m_c_aux_state);
+
+					q = q->m_next;
+					s_stat.m_num_calc++;
+				}
+				else // try daughters
+				{
+					q->m_subdivided = true;
+					q = q->m_more;
+				}
+			}
+		}
+
+		return ilist;
+	}
+
+	bool BHTreeNode::accept(BHTreeNode const * n, BHTreeNode const * group)
+	{
+		/*auto group_centre = group->m_quad.getPos();
+		auto group_half_len = group->m_quad.getLength() / 2.0;
+		auto delta_pos = n->getCentreMass() - group_centre;
+
+		auto contact_x = std::min(abs(delta_pos.x), group_half_len);
+		auto contact_y = std::min(abs(delta_pos.y), group_half_len);
+		contact_x *= delta_pos.x > 0 ? 1 : -1;
+		contact_y *= delta_pos.y > 0 ? 1 : -1;
+
+		auto contact = Vector2d{ contact_x, contact_y } +group_centre;
+
+		auto rel_pos = n->getCentreMass() - contact;
+		auto rel_pos_mag_sq = rel_pos.mag_sq();
+
+		return rel_pos_mag_sq > n->m_rcrit_sq;*/
+
+
+		auto delta = n->getCentreMass() - n->getQuad().getPos();
+		auto delta_sq = delta.mag_sq();
+		auto rel_pos = group->getCentreMass() - n->getCentreMass();
+		auto rel_pos_mag_sq = rel_pos.mag_sq();
+
+		return rel_pos_mag_sq > n->m_rcrit_sq + delta_sq;
 	}
 }

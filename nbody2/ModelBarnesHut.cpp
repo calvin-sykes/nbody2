@@ -32,43 +32,19 @@ namespace nbody
 		// Simplifies following logic
 		auto state{ reinterpret_cast<ParticleState *>(state_in) };
 		auto deriv_state{ reinterpret_cast<ParticleDerivState *>(deriv_out) };
-		ParticleData all{ state, m_aux_state };
+		ParticleData all{ state, m_aux_state, deriv_state };
 
 		timings[Timings::TREE_BUILD_START] = Clock::now();
 		calcBounds(all);
 		buildTree(all);
-		m_root.threadTree();
 		timings[Timings::TREE_BUILD_END] = Clock::now();
 
-		/*auto nbodies3 = 0;
-		for(auto q = m_root.m_more; q != nullptr; )
-		{
-			if (q->isExternal())
-			{
-				nbodies3++;
-				q = q->m_next;
-			}
-			else
-				q = q->m_more;
-		}*/
-
 		timings[Timings::FORCE_CALC_START] = Clock::now();
-#pragma omp parallel for schedule(static)
-		for (int i = 1; i < m_num_bodies; i++)
+		m_root.calcForces();
+		for (auto i = 0; i < m_num_bodies; i++)
 		{
-			ParticleData p{ &state[i], &m_aux_state[i] };
-
-			deriv_state[i].acc = m_root.calcForce(p);
 			deriv_state[i].vel = state[i].vel;
 		}
-
-		// particle 0 calculated separately for stats
-		m_root.forceCalcStatReset();
-
-		ParticleData p{ &state[0], &m_aux_state[0] };
-
-		deriv_state[0].acc = m_root.calcForce(p);
-		deriv_state[0].vel = state[0].vel;
 		timings[Timings::FORCE_CALC_END] = Clock::now();
 	}
 
@@ -142,12 +118,14 @@ namespace nbody
 		for (size_t i = 0; i < m_num_bodies; i++)
 		{
 			// extract data for a single particle
-			ParticleData p{ &(all.m_state[i]), &(all.m_aux_state[i]) };
+			ParticleData p{ &all.m_state[i], &all.m_aux_state[i], &all.m_deriv_state[i] };
 
 			m_root.insert(p, 0);
 		}
 
 		m_root.computeMassDistribution();
+		m_root.computeCritSizeCells();
+		m_root.threadTree();
 
 		m_centre_mass = m_root.getCentreMass();
 
