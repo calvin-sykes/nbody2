@@ -73,10 +73,7 @@ namespace nbody
 
 	bool BHTreeNode::isExternal() const
 	{
-		return m_daughters[0] == nullptr
-			&& m_daughters[1] == nullptr
-			&& m_daughters[2] == nullptr
-			&& m_daughters[3] == nullptr;
+		return m_num == 1;
 	}
 
 	bool BHTreeNode::wasSubdivided() const
@@ -184,7 +181,7 @@ namespace nbody
 
 		// which daughter would contain this body?
 		auto which_daughter = m_quad.whichDaughter(new_body.m_state->pos);
-		if (which_daughter == Daughter::NONE)
+		if (which_daughter == NONE)
 		{
 			// Outside root node -> put in renegades vector
 			if (isRoot())
@@ -220,18 +217,18 @@ namespace nbody
 				{
 					// recursively add current body to correct daughter
 					auto current_daughter = m_quad.whichDaughter(p2.pos);
-					m_daughters[static_cast<size_t>(current_daughter)] = createDaughter(m_quad.createDaughter(current_daughter));
-					m_daughters[static_cast<size_t>(current_daughter)]->insert(m_body, level + 1);
+					m_daughters[current_daughter] = createDaughter(m_quad.createDaughter(current_daughter));
+					m_daughters[current_daughter]->insert(m_body, level + 1);
 					// node is no longer external
 					m_body.reset();
 					s_stat.m_body_ct--;
 				}
 			}
 			// create daughter for new body if it does not exist
-			if (!m_daughters[static_cast<size_t>(which_daughter)])
-				m_daughters[static_cast<size_t>(which_daughter)] = createDaughter(m_quad.createDaughter(which_daughter));
+			if (!m_daughters[which_daughter])
+				m_daughters[which_daughter] = createDaughter(m_quad.createDaughter(which_daughter));
 			// add new body
-			m_daughters[static_cast<size_t>(which_daughter)]->insert(new_body, level + 1);
+			m_daughters[which_daughter]->insert(new_body, level + 1);
 		}
 		else // m_num == 0
 		{
