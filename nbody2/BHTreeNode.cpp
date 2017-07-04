@@ -8,7 +8,7 @@
 namespace nbody
 {
 	std::vector<ParticleData> BHTreeNode::s_renegades;
-	std::forward_list<BHTreeNode const*> BHTreeNode::s_crit_cells;
+	std::vector<BHTreeNode const*> BHTreeNode::s_crit_cells;
 	DebugStats BHTreeNode::s_stat = { 0, 0, 0, 0, 0 };
 	double constexpr BHTreeNode::s_THETA;
 	size_t constexpr BHTreeNode::s_CRIT_SIZE;
@@ -260,7 +260,9 @@ namespace nbody
 			m_more = actual_daughters[0];
 			actual_daughters[n_daughters] = next;
 			for (auto i = 0; i < n_daughters; i++)
+			{
 				actual_daughters[i]->threadTree(actual_daughters[i + 1]);
+			}
 		}
 	}
 
@@ -294,6 +296,9 @@ namespace nbody
 
 	void BHTreeNode::computeCritSizeCells() const
 	{
+		if (isRoot())
+			s_crit_cells.reserve(static_cast<size_t>(m_num / s_CRIT_SIZE * 1.1));
+
 		if (m_num > s_CRIT_SIZE)
 		{
 			for (auto const& d : m_daughters)
@@ -304,7 +309,7 @@ namespace nbody
 		}
 		else
 		{
-			s_crit_cells.push_front(this);
+			s_crit_cells.push_back(this);
 			s_stat.m_num_crit_size++;
 		}
 	}
@@ -334,19 +339,24 @@ namespace nbody
 	{
 		assert(isRoot());
 
-		for (auto cell : s_crit_cells)
+		auto len = s_crit_cells.size();
+#pragma omp parallel for schedule(static)
+		for (auto i = 0; i < len; i++)
 		{
+			auto cell = s_crit_cells[i];
+
 			auto ilist = makeInteractionList(this, cell);
 
 			// discover bodies in group
-			std::forward_list<ParticleData> bodies;
+			std::vector<ParticleData> bodies;
+			bodies.reserve(cell->m_num);
 			if (cell->m_num > 1)
 			{
 				for (auto q = cell->m_more; q != cell->m_next; )
 				{
 					if (q->isExternal())
 					{
-						bodies.push_front(q->m_body);
+						bodies.push_back(q->m_body);
 						q = q->m_next;
 					}
 					else
@@ -355,7 +365,7 @@ namespace nbody
 			}
 			else
 			{
-				bodies.push_front(cell->m_body);
+				bodies.push_back(cell->m_body);
 			}
 
 			// far-field forces

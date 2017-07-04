@@ -85,7 +85,7 @@ namespace nbody
 		mutable bool m_subdivided;
 
 		static std::vector<ParticleData> s_renegades;
-		static std::forward_list<BHTreeNode const*> s_crit_cells;
+		static std::vector<BHTreeNode const*> s_crit_cells;
 
 
 		double static constexpr s_THETA = 0.9;
