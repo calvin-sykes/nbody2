@@ -4,7 +4,8 @@
 
 namespace nbody
 {
-	enum class Daughter
+
+	enum Daughter
 	{
 		// order matters!
 		SW,
@@ -13,6 +14,7 @@ namespace nbody
 		NE,
 		NONE = -1
 	};
+
 	constexpr size_t NUM_DAUGHTERS = 4;
 
 	class Quad

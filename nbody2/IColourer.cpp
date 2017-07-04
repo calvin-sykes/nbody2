@@ -22,7 +22,7 @@ namespace nbody
 	{
 		for(auto i = m_offset; i < m_offset + m_num_bodies; i++)
 		{
-			auto p = ParticleData{ const_cast<ParticleState*>(&state[i]), const_cast<ParticleAuxState*>(&aux_state[i]) };
+			auto p = ParticleData{ &state[i], &aux_state[i] };
 			applyImpl(&p, colours + i);
 		}
 	}
