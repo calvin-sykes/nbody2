@@ -309,62 +309,6 @@ namespace nbody
 		}
 	}
 
-	/*Vector2d BHTreeNode::calcForce(ParticleData const & p) const
-	{
-		assert(isRoot());
-
-		auto acc = calcTreeForce(p, this);
-
-		if (s_renegades.size())
-		{
-			for (auto const& r : s_renegades)
-			{
-				acc += calcAccel(p, r);
-			}
-		}
-
-		return acc;
-	}*/
-
-	//Vector2d BHTreeNode::calcTreeForce(ParticleData const& p, BHTreeNode const* root)
-	//{
-	//	Vector2d acc = {};
-
-	//	for (auto q = root; q != nullptr; )
-	//	{
-	//		// if this node is leaf, use direct calculation
-	//		if (q->m_num == 1)
-	//		{
-	//			acc += calcAccel(p, q->m_body);
-	//			q = q->m_next;
-	//			s_stat.m_num_calc++;
-	//		}
-	//		else // m_num > 1
-	//		{
-	//			auto rel_pos = q->getCentreMass() - p.m_state->pos;
-	//			auto rel_pos_mag_sq = rel_pos.mag_sq();
-	//			// if node is far enough, use BH approx
-	//			if (rel_pos_mag_sq > q->m_rcrit_sq)
-	//			{
-	//				q->m_subdivided = false;
-	//				// construct 'combined particle'
-	//				auto combined_state = ParticleState{ q->getCentreMass(), { 0, 0 } };
-	//				auto combined_aux_state = ParticleAuxState{ q->getMass() };
-	//				acc += calcAccel(p, { &combined_state, &combined_aux_state });
-	//				q = q->m_next;
-	//				s_stat.m_num_calc++;
-	//			}
-	//			else // try daughters
-	//			{
-	//				q->m_subdivided = true;
-	//				q = q->m_more;
-	//			}
-	//		}
-	//	}
-
-	//	return acc;
-	//}
-
 	// accel caused by p2 on p1
 	Vector2d BHTreeNode::calcAccel(ParticleData const & p1, ParticleData const & p2)
 	{
@@ -509,7 +453,6 @@ namespace nbody
 		auto rel_pos_mag_sq = rel_pos.mag_sq();
 
 		return rel_pos_mag_sq > n->m_rcrit_sq;*/
-
 
 		auto delta = n->getCentreMass() - n->getQuad().getPos();
 		auto delta_sq = delta.mag_sq();

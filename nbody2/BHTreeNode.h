@@ -40,7 +40,6 @@ namespace nbody
 		Quad const& getQuad() const;
 
 		static double getTheta();
-		//static void setTheta(double theta);
 		size_t getLevel() const;
 
 		static DebugStats const& getStats();
@@ -58,8 +57,6 @@ namespace nbody
 		void insert(ParticleData const& new_body, size_t level);
 		void threadTree(BHTreeNode * next = nullptr);
 
-		//Vector2d calcForce(ParticleData const& p) const;
-
 		void calcForces() const;
 
 		BHTreeNode *m_daughters[NUM_DAUGHTERS];
@@ -68,7 +65,6 @@ namespace nbody
 	private:
 		BHTreeNode * createDaughter(Quad const& q) const;
 
-		//static Vector2d calcTreeForce(ParticleData const& p, BHTreeNode const* root);
 		static Vector2d calcAccel(ParticleData const& p1, ParticleData const& p2);
 
 		static std::forward_list<ParticleData> makeInteractionList(BHTreeNode const* root, BHTreeNode const* group);
@@ -77,8 +73,6 @@ namespace nbody
 
 		size_t m_level;
 		ParticleData m_body;
-		//double m_mass;
-		//Vector2d m_centre_mass;
 
 		// 'combined' particle
 		ParticleState m_c_state;
