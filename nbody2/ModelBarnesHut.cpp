@@ -120,11 +120,10 @@ namespace nbody
 			// extract data for a single particle
 			ParticleData p{ &all.m_state[i], &all.m_aux_state[i], &all.m_deriv_state[i] };
 
-			m_root.insert(p, 0);
+			m_root.insert(p);
 		}
 
 		m_root.computeMassDistribution();
-		m_root.computeCritSizeCells();
 		m_root.threadTree();
 
 		m_centre_mass = m_root.getCentreMass();

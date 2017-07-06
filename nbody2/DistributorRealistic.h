@@ -27,7 +27,7 @@ namespace nbody
 		static std::pair<double, double> constrainMasses(std::pair<double, double> const mass_limits, double const rad, double const core_rad, double const galaxy_rad);
 		
 		/**
-		* \brief Computes a random mass using the Salpeter initial mass function
+		* \brief Generate a random star mass using the Salpeter initial mass function
 		* \param alpha Slope of the power law
 		* \param k Normalisation constant
 		* \param lb Minimum mass value (should be >= 0.5Msun)
