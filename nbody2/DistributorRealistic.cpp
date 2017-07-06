@@ -44,6 +44,7 @@ namespace nbody
 		// random distribution properties
 		auto const n_arms = getIntRand(2, 4);
 		auto const arm_sep = 2 * Constants::PI / n_arms;
+		auto const angle_offset = getRand(0, 2 * Constants::PI);
 
 		if (props.use_parsecs)
 		{
@@ -52,7 +53,7 @@ namespace nbody
 
 		for (auto i = 1; i < props.num; i++)
 		{
-			auto picked_rad = m_cdf.valFromProbability(getRand(0, 1)) + Constants::SOFTENING / Constants::PARSEC;
+			auto picked_rad = m_cdf.valFromProbability(getRand(0, 1)) + 10 * Constants::SOFTENING / Constants::PARSEC;
 			auto a = picked_rad;
 			auto e = eccentricity(a, core_rad, galaxy_rad);
 
@@ -60,7 +61,7 @@ namespace nbody
 			auto alpha = getRand(0, 2 * Constants::PI);
 
 
-			auto beta = angle + arm_sep * getIntRand(0, n_arms - 1);
+			auto beta = angle + angle_offset + arm_sep * getIntRand(0, n_arms - 1);
 
 			auto r = a * (1 - e * e) / (1 + e * cos(alpha - beta));
 
