@@ -237,7 +237,6 @@ namespace nbody
 			s_stat.m_body_ct++;
 
 		}
-
 		m_num++;
 	}
 
@@ -341,28 +340,21 @@ namespace nbody
 		for (auto i = 0; i < len; i++)
 		{
 			auto cell = s_crit_cells[i];
-
 			auto ilist = makeInteractionList(this, cell);
 
 			// discover bodies in group
 			std::vector<ParticleData> bodies;
 			bodies.reserve(cell->m_num);
-			if (cell->m_num > 1)
+
+			for (auto q = cell; q != cell->m_next; )
 			{
-				for (auto q = cell->m_more; q != cell->m_next; )
+				if (q->isExternal())
 				{
-					if (q->isExternal())
-					{
-						bodies.push_back(q->m_body);
-						q = q->m_next;
-					}
-					else
-						q = q->m_more;
+					bodies.push_back(q->m_body);
+					q = q->m_next;
 				}
-			}
-			else
-			{
-				bodies.push_back(cell->m_body);
+				else
+					q = q->m_more;
 			}
 
 			// far-field forces
@@ -371,7 +363,6 @@ namespace nbody
 				b.m_deriv_state->acc = {};
 				for (auto const& elem : ilist)
 				{
-
 					b.m_deriv_state->acc += calcAccel(b, elem);
 				}
 			}
@@ -413,7 +404,7 @@ namespace nbody
 			}
 
 			// if this node is leaf, use direct calculation
-			if (q->m_num == 1)
+			if (q->isExternal())
 			{
 				ilist.push_front(q->m_body);
 
@@ -425,10 +416,10 @@ namespace nbody
 				// if node is far enough, use BH approx
 				if (accept(q, group))
 				{
-					q->m_subdivided = false;
 					// construct 'combined particle'
 					ilist.emplace_front(&q->m_c_state, &q->m_c_aux_state);
 
+					q->m_subdivided = false;
 					q = q->m_next;
 					s_stat.m_num_calc++;
 				}
@@ -439,7 +430,6 @@ namespace nbody
 				}
 			}
 		}
-
 		return ilist;
 	}
 

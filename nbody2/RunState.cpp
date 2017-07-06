@@ -134,6 +134,7 @@ namespace nbody
 			auto t_body = Dble_ms{ timings[Timings::DRAW_BODIES_END] - timings[Timings::DRAW_BODIES_START] };
 			auto t_grid = Dble_ms{ timings[Timings::DRAW_GRID_END] - timings[Timings::DRAW_GRID_START] };
 			auto t_trail = Dble_ms{ timings[Timings::DRAW_TRAILS_END] - timings[Timings::DRAW_TRAILS_START] };
+			auto t_render = Dble_ms{ timings[Timings::RENDER_END] - timings[Timings::RENDER_START] };
 			auto t_energy = Dble_ms{ timings[Timings::ENERGY_CALC_END] - timings[Timings::ENERGY_CALC_START] };
 
 			Text("FPS: %f", fps);
@@ -142,6 +143,7 @@ namespace nbody
 			Text("Draw bodies: %f ms", t_body.count());
 			Text("Draw grid: %f ms", t_grid.count());
 			Text("Draw trails: %f ms", t_trail.count());
+			Text("Render: %f ms", t_render.count());
 			Text("Last total energy calculation: %f ms", t_energy.count());
 			Spacing();
 		}
@@ -396,6 +398,7 @@ namespace nbody
 
 	void RunState::draw(sf::Time const dt)
 	{
+		timings[Timings::RENDER_START] = Clock::now();
 		if (m_flags.view_centre)
 		{
 			auto com = m_sim->m_mod_ptr->getCentreMass();
@@ -423,6 +426,7 @@ namespace nbody
 		m_sim->m_window.setView(m_gui_view);
 
 		ImGui::Render();
+		timings[Timings::RENDER_END] = Clock::now();
 	}
 
 	void RunState::handleInput()

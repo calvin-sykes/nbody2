@@ -23,7 +23,9 @@ namespace nbody
 		DRAW_TRAILS_START,
 		DRAW_TRAILS_END,
 		ENERGY_CALC_START,
-		ENERGY_CALC_END
+		ENERGY_CALC_END,
+		RENDER_START,
+		RENDER_END
 	};
 
 	extern std::map<Timings, std::chrono::time_point<Clock>> timings;
