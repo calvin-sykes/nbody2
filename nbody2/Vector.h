@@ -6,6 +6,8 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
 
+#include <emmintrin.h>
+
 #include <cmath>
 #include <limits>
 
@@ -28,20 +30,25 @@ namespace nbody
 		//////////////////
 
 		// Construct zero vector
-		Vector() noexcept : priv::Components<T, N>() {};
+		Vector() noexcept : priv::Components<T, N>() {}
 
 		// Construct vector with all values equal to val
-		explicit Vector(T const val) noexcept : priv::Components<T, N>(val) {};
+		explicit Vector(T const val) noexcept : priv::Components<T, N>(val) {}
 
 		// Construct from an SFML vector (2D)
 		template <typename Tin, int Dim = N, std::enable_if_t<(Dim == 2)>* = nullptr>
 		explicit Vector(sf::Vector2<Tin> const& source) :
-			priv::Components<T, 2>(static_cast<T>(source.x), static_cast<T>(source.y)) {};
+			priv::Components<T, 2>(static_cast<T>(source.x), static_cast<T>(source.y)) {}
 
 		// Construct from an SFML vector (3D)
 		template <typename Tin, int Dim = N, std::enable_if_t<(Dim == 3)>* = nullptr>
 		explicit Vector(sf::Vector3<Tin> const& source) :
-			priv::Components<T, 3>( static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z)) {};
+			priv::Components<T, 3>( static_cast<T>(source.x), static_cast<T>(source.y), static_cast<T>(source.z)) {}
+
+		// Construct from an SSE type (2D)
+		template <int Dim = N, std::enable_if_t<(Dim == 2)>* = nullptr>
+		explicit Vector(__m128d const& v) :
+			priv::Components<T, 2>(static_cast<T>(v.m128d_f64[0]), static_cast<T>(v.m128d_f64[1])) {}
 
 		// Copy-construct a vector
 		Vector(Vector const& source) noexcept = default;

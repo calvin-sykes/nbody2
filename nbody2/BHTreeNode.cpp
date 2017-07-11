@@ -2,8 +2,12 @@
 #include "Constants.h"
 #include "Error.h"
 
+#include <immintrin.h>
+#include <emmintrin.h>
+
 #include <cassert>
 #include <functional>
+
 
 namespace nbody
 {
@@ -347,8 +351,6 @@ namespace nbody
 
 	std::forward_list<ParticleData> BHTreeNode::makeInteractionList(BHTreeNode const * root) const
 	{
-		assert(isRoot());
-
 		std::forward_list<ParticleData> ilist;
 
 		for (auto q = root; q != root->m_next; )
@@ -396,20 +398,28 @@ namespace nbody
 		auto const& s1 = *p1.m_state;
 		auto const& s2 = *p2.m_state;
 
-		// ignore self-interactions
-		if (s1.pos == s2.pos)
-			return {};
-
-		auto const& r1 = s1.pos;
-		auto const& r2 = s2.pos;
+		auto r1 = _mm_load_pd(&s1.pos.x);
+		auto r2 = _mm_load_pd(&s2.pos.x);
 		auto m2 = p2.m_aux_state->mass;
 
-		auto rel_pos = r2 - r1; // relative position vector r
-		auto rel_pos_mag_sq = rel_pos.mag_sq(); // |r|**2
-		auto unit_vec = (1 / sqrt(rel_pos_mag_sq)) * rel_pos; // rhat = r/|r|
-		rel_pos_mag_sq = std::max(rel_pos_mag_sq, Constants::SOFTENING * Constants::SOFTENING);
-		// F = (G m1 m2 / (|r|**2) * r_hat
-		return (Constants::G * m2 / rel_pos_mag_sq) * unit_vec;	// a = F / m1
+		// ignore self-interactions
+		auto cmp = _mm_cmpeq_pd(r1, r2);
+		auto cmp_equal = _mm_movemask_pd(cmp);
+		if (cmp_equal)
+			return {};
+
+		auto rel_pos = _mm_sub_pd(r2, r1); // relative position vector r
+		auto rel_pos_mag_sq = _mm_dp_pd(rel_pos, rel_pos, 0x33); // |r|**2
+		auto rel_pos_mag = _mm_sqrt_pd(rel_pos_mag_sq); // |r|
+
+		auto unit_vec = _mm_div_pd(rel_pos, rel_pos_mag); // rhat = r/|r|
+		auto eps2 = Constants::SOFTENING * Constants::SOFTENING;
+		auto veps2 = _mm_set_pd(eps2, eps2);
+		rel_pos_mag_sq = _mm_max_pd(rel_pos_mag_sq, veps2);
+		auto scale = _mm_set_pd(Constants::G * m2, Constants::G * m2); // F = (G m1 m2 / (|r|**2) * r_hat
+		auto res = _mm_mul_pd(scale, _mm_div_pd(unit_vec, rel_pos_mag_sq)); // a = F / m1
+
+		return Vector2d{ res };
 	}
 
 	bool BHTreeNode::accept(BHTreeNode const * n) const
