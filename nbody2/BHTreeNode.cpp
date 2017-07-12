@@ -317,7 +317,6 @@ namespace nbody
 		for (auto i = 0; i < len; i++)
 		{
 			auto cell = s_crit_cells[i];
-			auto ilist = cell->makeInteractionList(this);
 
 			// discover bodies in group
 			std::vector<std::reference_wrapper<ParticleData const>> bodies;
@@ -327,12 +326,15 @@ namespace nbody
 			{
 				if (q->isExternal())
 				{
-					bodies.emplace_back(q->m_body);
+					bodies.push_back(q->m_body);
 					q = q->m_next;
 				}
 				else
 					q = q->m_more;
 			}
+
+			// find interactions for bodies in group
+			auto ilist = cell->makeInteractionList(this);
 
 			std::for_each(bodies.begin(), bodies.end(), [&](auto &a)
 			{
@@ -349,9 +351,10 @@ namespace nbody
 		}
 	}
 
-	std::forward_list<ParticleData> BHTreeNode::makeInteractionList(BHTreeNode const * root) const
+	std::vector<ParticleData> BHTreeNode::makeInteractionList(BHTreeNode const * root) const
 	{
-		std::forward_list<ParticleData> ilist;
+		std::vector<ParticleData> ilist;
+		//ilist.reserve(100);
 
 		for (auto q = root; q != root->m_next; )
 		{
@@ -365,7 +368,7 @@ namespace nbody
 			// if this node is leaf, use direct calculation
 			if (q->isExternal())
 			{
-				ilist.push_front(q->m_body);
+				ilist.push_back(q->m_body);
 
 				q = q->m_next;
 				s_stat.m_num_calc++;
@@ -376,7 +379,7 @@ namespace nbody
 				if (accept(q))
 				{
 					// construct 'combined particle'
-					ilist.emplace_front(&q->m_c_state, &q->m_c_aux_state);
+					ilist.emplace_back(&q->m_c_state, &q->m_c_aux_state);
 
 					q->m_subdivided = false;
 					q = q->m_next;

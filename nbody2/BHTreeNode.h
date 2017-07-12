@@ -5,7 +5,6 @@
 #include "Types.h"
 #include "Vector.h"
 
-#include <forward_list>
 #include <vector>
 
 namespace nbody
@@ -141,7 +140,7 @@ namespace nbody
 		 * \param root Pointer to the root node of the tree.
 		 * \return The complete list of interactions after the entire tree has been searched.
 		 */
-		std::forward_list<ParticleData> makeInteractionList(BHTreeNode const* root) const;
+		std::vector<ParticleData> makeInteractionList(BHTreeNode const* root) const;
 		
 		/**
 		 * \brief Determine whether the BH criterion permits the bodies within a tree node to be aggregated.
