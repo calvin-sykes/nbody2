@@ -159,7 +159,7 @@ namespace nbody
 
 				Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
 				if (stats.m_num_calc)
-					ImGui::Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
+					Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
 				Text("Total nodes in tree = %zu", stats.m_node_ct);
 				Text("Level of deepest node = %zu", stats.m_max_level);
 				Text("Particles in tree = %zu", stats.m_body_ct);
@@ -257,22 +257,6 @@ namespace nbody
 			Text("%.3g", energy);
 			Spacing();
 		}
-
-		using namespace specrend;
-
-		static double x, y, z;
-		static double col[3];
-		static auto cs = &SMPTEsystem;
-		static auto temp = 1000;
-
-		SliderInt("Temperature", &temp, 1000, 50000);
-		bbTemp = static_cast<double>(temp);
-		spectrum_to_xyz(bb_spectrum, &x, &y, &z);
-		xyz_to_rgb(cs, x, y, z, col, col + 1, col + 2);
-		constrain_rgb(col, col + 1, col + 2);
-		norm_rgb(col, col + 1, col + 2);
-		SameLine();
-		ColorButton({ static_cast<float>(col[0]), static_cast<float>(col[1]), static_cast<float>(col[2]), 1 });
 
 		/*Text("Screen scale: %f", Display::screen_scale);
 		Text("Body scale: %f", Display::bodyScalingFunc(Display::screen_scale));
