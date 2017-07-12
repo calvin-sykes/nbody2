@@ -1,6 +1,7 @@
 #include "BodyGroupProperties.h"
 #include "Constants.h"
 #include "DistributorRealistic.h"
+#include <numeric>
 
 namespace nbody
 {
@@ -25,6 +26,7 @@ namespace nbody
 
 	void DistributorRealistic::createDistribution(ParticleData & bodies, BodyGroupProperties const & props) const
 	{
+		auto const num_bodies = props.num;
 		auto const pos_offset = props.pos;
 		auto const vel_offset = props.vel;
 		auto const galaxy_rad = props.radius;
@@ -37,8 +39,8 @@ namespace nbody
 		constexpr auto pow_alpha = 2.35;
 
 		// central mass
-		bodies.m_state[0].pos = pos_offset;
-		bodies.m_state[0].vel = vel_offset;
+		bodies.m_state[0].pos = {};
+		bodies.m_state[0].vel = {};
 		bodies.m_aux_state[0].mass = props.central_mass * Constants::SOLAR_MASS;
 
 		// random distribution properties
@@ -51,44 +53,97 @@ namespace nbody
 			bodies.m_state[0].pos *= Constants::PARSEC;
 		}
 
-		for (auto i = 1; i < props.num; i++)
+		auto sma = new double[num_bodies];
+		auto ecc = new double[num_bodies];
+		auto beta = new double[num_bodies];
+
+		for (auto i = 1; i < num_bodies; i++)
 		{
 			auto picked_rad = m_cdf.valFromProbability(getRand(0, 1)) + 10 * Constants::SOFTENING / Constants::PARSEC;
-			auto a = picked_rad;
-			auto e = eccentricity(a, core_rad, galaxy_rad);
+			sma[i] = picked_rad;
+			ecc[i] = eccentricity(sma[i], core_rad, galaxy_rad);
 
-			auto angle = a * delta_ang;
+			auto angle = sma[i] * delta_ang;
 			auto alpha = getRand(0, 2 * Constants::PI);
 
 
-			auto beta = angle + angle_offset + arm_sep * getIntRand(0, n_arms - 1);
+			beta[i] = angle + angle_offset + arm_sep * getIntRand(0, n_arms - 1);
 
-			auto r = a * (1 - e * e) / (1 + e * cos(alpha - beta));
+			auto r = sma[i] * (1 - ecc[i] * ecc[i]) / (1 + ecc[i] * cos(alpha - beta[i]));
 
 			// smudging
 			alpha += getRand(-0.05, 0.05);
 
 			auto pos = Vector2d{ r * cos(alpha), r * sin(alpha) };
 
-			auto vel = velocity(pos * Constants::PARSEC,
-				a * Constants::PARSEC,
-				props.central_mass * Constants::SOLAR_MASS,
-				e,
-				beta);
-
 			auto mass_lims = constrainMasses({ props.min_mass, props.max_mass }, picked_rad, core_rad, galaxy_rad);
 			auto k = (1 - pow_alpha) / (pow(mass_lims.second, 1 - pow_alpha) - pow(mass_lims.first, 1 - pow_alpha));
 			auto mass = salpeterIMF(pow_alpha, k, mass_lims.first);
 
-			bodies.m_state[i].pos = pos + pos_offset;
-			bodies.m_state[i].vel = vel + vel_offset;
-			bodies.m_aux_state[i].mass = mass  * Constants::SOLAR_MASS;
-
+			bodies.m_state[i].pos = pos;
+			bodies.m_aux_state[i].mass = mass * Constants::SOLAR_MASS;
 			if (props.use_parsecs)
 			{
 				bodies.m_state[i].pos *= Constants::PARSEC;
 			}
 		}
+
+		auto indices = new size_t[num_bodies];
+		for (auto i = 0; i < num_bodies; i++)
+			indices[i] = i;
+
+		std::sort(indices,
+			indices + num_bodies,
+			[&](auto a, auto b)
+		{
+			auto dist_a = bodies.m_state[a].pos.mag();
+			auto dist_b = bodies.m_state[b].pos.mag();
+			return dist_a < dist_b;
+		});
+
+		for (auto i = 1; i < num_bodies; i++)
+		{
+			auto current_body = ParticleData{ bodies.m_state + i, bodies.m_aux_state + i };
+			
+			size_t lb = 0;
+			for(auto j = 0 ; j < num_bodies; j++)
+			{
+				auto idx = indices[j];
+				auto idx_rad = bodies.m_state[idx].pos.mag();
+				if (idx_rad > current_body.m_state->pos.mag())
+				{
+					lb = j;
+					break;
+				}
+			}
+
+			auto encl_mass = std::accumulate(indices,
+				&indices[lb],
+				0.0,
+				[&](auto a, auto b)
+			{
+				return a + bodies.m_aux_state[b].mass;
+			});
+
+			auto vel = velocity(current_body.m_state->pos,
+				sma[i] * Constants::PARSEC,
+				encl_mass,
+				ecc[i],
+				beta[i]);
+
+			current_body.m_state->vel = vel;
+		}
+
+		for (auto i = 0; i < num_bodies; i++)
+		{
+			bodies.m_state[i].pos += props.use_parsecs ? pos_offset * Constants::PARSEC : pos_offset;
+			bodies.m_state[i].vel += vel_offset;
+		}
+
+		delete[] sma;
+		delete[] ecc;
+		delete[] beta;
+		delete[] indices;
 	}
 
 	std::pair<double, double> DistributorRealistic::constrainMasses(std::pair<double, double> const limits, double const rad, double const core_rad, double const galaxy_rad)
