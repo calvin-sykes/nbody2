@@ -63,6 +63,7 @@ namespace nbody
 		m_c_aux_state = {};
 
 		treeStatReset();
+		forceCalcStatReset();
 
 		s_renegades.clear();
 		s_crit_cells.clear();
@@ -130,7 +131,7 @@ namespace nbody
 
 		s_stat.m_num_calc = 0;
 
-		std::function<void(BHTreeNode const*)> reset_subdivide_flags =
+		/*std::function<void(BHTreeNode const*)> reset_subdivide_flags =
 			[&reset_subdivide_flags](BHTreeNode const* node)
 		{
 			node->m_subdivided = false;
@@ -142,7 +143,7 @@ namespace nbody
 			}
 		};
 
-		reset_subdivide_flags(this);
+		reset_subdivide_flags(this);*/
 	}
 
 	void BHTreeNode::treeStatReset() const
@@ -262,7 +263,7 @@ namespace nbody
 		}
 
 		// test whether node is first in hierarchy to be smaller than critical size
-		if (m_num < s_CRIT_SIZE && m_parent->m_num > s_CRIT_SIZE)
+		if (isRoot() && m_num < s_CRIT_SIZE || m_num < s_CRIT_SIZE && m_parent->m_num > s_CRIT_SIZE)
 		{
 			s_crit_cells.push_back(this);
 			s_stat.m_num_crit_size++;
@@ -347,6 +348,8 @@ namespace nbody
 				if (s_renegades.size())
 					for (auto const& r : s_renegades)
 						b.m_deriv_state->acc += calcAccel(b, r);
+
+				s_stat.m_num_calc += (ilist.size() + bodies.size() + s_renegades.size());
 			});
 		}
 	}
@@ -371,7 +374,7 @@ namespace nbody
 				ilist.push_back(q->m_body);
 
 				q = q->m_next;
-				s_stat.m_num_calc++;
+				//s_stat.m_num_calc++;
 			}
 			else // !q->isExternal()
 			{
@@ -381,13 +384,13 @@ namespace nbody
 					// construct 'combined particle'
 					ilist.emplace_back(&q->m_c_state, &q->m_c_aux_state);
 
-					q->m_subdivided = false;
+					//q->m_subdivided = false;
 					q = q->m_next;
-					s_stat.m_num_calc++;
+					//s_stat.m_num_calc++;
 				}
 				else // try daughters
 				{
-					q->m_subdivided = true;
+					//q->m_subdivided = true;
 					q = q->m_more;
 				}
 			}

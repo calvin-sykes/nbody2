@@ -7,8 +7,6 @@
 #include "Sim.h"
 #include "Timings.h"
 
-#include "specrend.h"
-
 #include "imgui.h"
 #include "imgui_sfml.h"
 
@@ -157,13 +155,13 @@ namespace nbody
 				auto stats = mod_bh_tree->getTreeRoot()->getStats();
 				auto num_bodies = m_sim->m_mod_ptr->getNumBodies();
 
-				Text("Force calculations for particle 0 = %zu", stats.m_num_calc);
+				Text("Force calculations: %zu", stats.m_num_calc);
 				if (stats.m_num_calc)
-					Text("Speed-up vs. brute-force case = %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc * num_bodies));
-				Text("Total nodes in tree = %zu", stats.m_node_ct);
-				Text("Level of deepest node = %zu", stats.m_max_level);
-				Text("Particles in tree = %zu", stats.m_body_ct);
-				Text("Renegade particles = %zu", num_bodies - stats.m_body_ct);
+					Text("Speed-up vs. brute-force case: %f", static_cast<double>(num_bodies * (num_bodies - 1)) / (2 * stats.m_num_calc));
+				Text("Total nodes in tree: %zu", stats.m_node_ct);
+				Text("Level of deepest node: %zu", stats.m_max_level);
+				Text("Particles in tree: %zu", stats.m_body_ct);
+				Text("Renegade particles: %zu", num_bodies - stats.m_body_ct);
 				Spacing();
 			}
 		}
@@ -454,10 +452,10 @@ namespace nbody
 					{
 						m_flags.show_grid = !m_flags.show_grid;
 					}
-					else if (event.key.code == sf::Keyboard::M && m_flags.show_grid)
+					/*else if (event.key.code == sf::Keyboard::M && m_flags.show_grid)
 					{
 						m_flags.grid_mode_complete = !m_flags.grid_mode_complete;
-					}
+					}*/
 					else if (event.key.code == sf::Keyboard::B)
 					{
 						m_flags.show_bodies = !m_flags.show_bodies;
