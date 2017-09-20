@@ -10,12 +10,12 @@
 // Visual Studio
 #ifdef _MSC_VER
 #define SAFE_STRFN
-#define MSVC_ALIGN __declspec()
+#define SSE_ACCESS(x,type,i) x.type[i]
 #endif
 
 // GCC
 #ifdef __GNUG__
-#define GCC_ALIGN
+#define SSE_ACCESS(x,type,i) x[i]
 #endif
 
 #endif

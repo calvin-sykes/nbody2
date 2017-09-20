@@ -6,8 +6,9 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/System/Vector3.hpp>
 
-#include <emmintrin.h>
+#include "Config.h"
 
+#include <emmintrin.h>
 #include <cmath>
 #include <limits>
 
@@ -48,7 +49,8 @@ namespace nbody
 		// Construct from an SSE type (2D)
 		template <int Dim = N, std::enable_if_t<(Dim == 2)>* = nullptr>
 		explicit Vector(__m128d const& v) :
-			priv::Components<T, 2>(static_cast<T>(v.m128d_f64[0]), static_cast<T>(v.m128d_f64[1])) {}
+			priv::Components<T, 2>(static_cast<T>(SSE_ACCESS(v,m128d_f64,0)), static_cast<T>(SSE_ACCESS(v,m128d_f64,1))) {}
+            //priv::Components<T, 2>(static_cast<T>(v.m128d_f64[0]), static_cast<T>(v.m128d_f64[1])) {}
 
 		// Copy-construct a vector
 		Vector(Vector const& source) noexcept = default;

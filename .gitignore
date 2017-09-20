@@ -244,3 +244,12 @@ ModelManifest.xml
 
 *.ini
 /nbody2/My Amplifier XE Results - nbody2
+
+# CodeLite files
+.codelite
+nbody2.mk
+nbody2.project
+nbody2.workspace
+
+# Linux executable
+nbody2/nbody2

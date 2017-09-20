@@ -13,8 +13,8 @@ namespace nbody
 	bool Quad::contains(Vector2d const & pt) const
 	{
 		auto half_length = m_length / 2;
-		auto bounds_x = abs(pt.x - m_centre.x) < half_length;
-		auto bounds_y = abs(pt.y - m_centre.y) < half_length;
+		auto bounds_x = std::abs(pt.x - m_centre.x) < half_length;
+		auto bounds_y = std::abs(pt.y - m_centre.y) < half_length;
 		return bounds_x && bounds_y;
 	}
 

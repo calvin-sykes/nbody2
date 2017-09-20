@@ -1,6 +1,8 @@
 #include "BodyGroupProperties.h"
 #include "Constants.h"
 #include "DistributorRealistic.h"
+
+#include <algorithm>
 #include <numeric>
 
 namespace nbody
