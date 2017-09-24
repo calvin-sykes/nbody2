@@ -27,7 +27,7 @@ namespace nbody
 				impl_type a_;
 			};
 
-			Components() = default;
+			Components() : a_{0.0, 0.0} {};
 			Components(T const val) : a_{ val, val } {};
 			Components(T const x, T const y) : a_{ x, y } {};
 		};
@@ -45,7 +45,7 @@ namespace nbody
 				impl_type a_;
 			};
 
-			Components() = default;
+			Components() : a_{0.0, 0.0} {};
 			Components(T const val) : a_{ val, val, val } {};
 			Components(T const x, T const y, T const z) : a_{ x, y, z } {};
 		};
