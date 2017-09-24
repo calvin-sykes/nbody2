@@ -13,15 +13,18 @@ LIBRARIES = -lsfml-graphics -lsfml-window -lsfml-system -lm -lGL -lpthread
 # EXECUTABLE NAME
 OUT_FILE = nbody2
 
-#COMPILER FLAGS
-FLAGS = -std=c++1y -fpermissive -pthread -msse4.1 -Wall
+# COMPILER FLAGS
+FLAGS = -std=c++1y -fpermissive -msse4.1 -Wall
+
+# COMPILER FLAGS SPECIFIC TO RELEASE BUILD
+REL_FLAGS = -fopenmp -O3
 
 # COMPILER COMMAND
 BUILD_CMD = $(IN_FILES) -o $(OUT_FILE) -I$(SFML_INCLUDE) -L$(SFML_LIB) $(LIBRARIES)
 
 build:
 	cd nbody2; \
-	$(CC) $(FLAGS) -fopenmp $(BUILD_CMD)
+	$(CC) $(FLAGS) $(REL_FLAGS) $(BUILD_CMD)
 
 debug:
 	cd nbody2; \
